@@ -1,10 +1,7 @@
 import type React from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Logo } from "@/components/ui/logo"
-import { Sidebar } from "./sidebar"
-import { MobileHeader } from "./mobile-header"
-import { Header } from "@/components/dashboard/header"
+import { Navbar } from "@/components/dashboard/navbar"
 import { BackButton } from "@/components/ui/back-button"
 
 export default async function DashboardLayout({
@@ -35,14 +32,11 @@ export default async function DashboardLayout({
       {/* Background FX */}
       <div className="absolute inset-0 grid-bg pointer-events-none z-0"></div>
 
-      {/* RECTIFIED SIDEBAR */}
-      <Sidebar isTeacher={isTeacher} userName={userName} userEmail={userEmail} userInitials={userInitials} />
+      {/* Top Navigation Bar (Handles both Desktop & Mobile) */}
+      <Navbar isTeacher={isTeacher} userName={userName} userEmail={userEmail} userInitials={userInitials} />
 
       {/* Main Content */}
-      <main className="lg:pl-28 h-full overflow-y-auto relative z-10 custom-scrollbar transition-all duration-300">
-        <Header userName={userName} userInitials={userInitials} />
-        <MobileHeader isTeacher={isTeacher} userName={userName} userEmail={userEmail} userInitials={userInitials} />
-
+      <main className="h-full pt-20 overflow-y-auto relative z-10 custom-scrollbar transition-all duration-300">
         <div className="p-4 lg:p-10 max-w-[1600px] mx-auto">
           <BackButton />
           {children}
