@@ -8,16 +8,18 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, GraduationCap, LayoutDashboard } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
 import { motion } from "framer-motion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [role, setRole] = useState<"admin" | "student">("admin")
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -27,12 +29,33 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       if (error) throw error
-      router.push("/dashboard")
+
+      if (user) {
+        if (role === "student") {
+          // Check if user is actually a student
+          const { data: student } = await supabase
+            .from("students")
+            .select("id")
+            .eq("email", email) // Check by email first (loose coupling) or user_id if strict
+            .single()
+
+          if (student) {
+             router.push("/student/dashboard")
+          } else {
+             // Maybe they are a student but the record isn't linked yet, or they are just a user.
+             // For now, if they selected Student login, try to go there.
+             // The dashboard layout should handle unlinked students (maybe prompt to link).
+             router.push("/student/dashboard")
+          }
+        } else {
+          router.push("/dashboard")
+        }
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -63,6 +86,20 @@ export default function LoginPage() {
                 Enter your credentials to access the system
               </p>
             </div>
+
+            <Tabs defaultValue="admin" className="w-full mb-6" onValueChange={(val) => setRole(val as "admin" | "student")}>
+              <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+                <TabsTrigger value="admin" className="data-[state=active]:bg-neon-cyan/20 data-[state=active]:text-neon-cyan">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Admin
+                </TabsTrigger>
+                <TabsTrigger value="student" className="data-[state=active]:bg-neon-purple/20 data-[state=active]:text-neon-purple">
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    Student
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
             <form onSubmit={handleLogin}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
@@ -93,7 +130,11 @@ export default function LoginPage() {
                 {error && <p className="text-sm text-red-500">{error}</p>}
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-neon-cyan to-neon-purple hover:opacity-90 transition-opacity text-white font-bold"
+                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${
+                    role === 'student'
+                    ? 'bg-gradient-to-r from-neon-purple to-pink-500'
+                    : 'bg-gradient-to-r from-neon-cyan to-neon-purple'
+                  }`}
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -102,7 +143,7 @@ export default function LoginPage() {
                       Authenticating...
                     </>
                   ) : (
-                    "Login"
+                    `Login as ${role === 'admin' ? 'Admin' : 'Student'}`
                   )}
                 </Button>
               </div>
