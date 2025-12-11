@@ -23,10 +23,10 @@ export default async function GradingPage() {
     return (
         <div className="space-y-8 pb-20">
             <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-cyan-400 dark:to-purple-400 bg-clip-text text-transparent">
                     Grading
                 </h1>
-                <p className="text-slate-400 mt-2">
+                <p className="text-muted-foreground mt-2">
                     Select an exam to manage submissions and grading.
                 </p>
             </div>
@@ -43,42 +43,42 @@ export default async function GradingPage() {
                                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                     <FileText size={64} />
                                 </div>
-                                
+
                                 <div className="space-y-4 relative z-10">
                                     <div>
-                                        <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
+                                        <h3 className="text-xl font-bold text-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-1">
                                             {exam.exam_name}
                                         </h3>
-                                        <p className="text-sm text-slate-400">
+                                        <p className="text-sm text-muted-foreground">
                                             {exam.subject} • Class {exam.class}
                                         </p>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <div className="flex justify-between text-xs text-slate-400">
+                                        <div className="flex justify-between text-xs text-muted-foreground">
                                             <span>Grading Progress</span>
                                             <span>{Math.round(progress)}%</span>
                                         </div>
-                                        <Progress value={progress} className="h-2 bg-slate-800" indicatorClassName="bg-gradient-to-r from-cyan-500 to-purple-500" />
+                                        <Progress value={progress} className="h-2 bg-slate-200 dark:bg-slate-800" indicatorClassName="bg-gradient-to-r from-cyan-500 to-purple-500" />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 pt-2">
-                                        <div className="flex items-center gap-2 text-sm text-slate-300">
-                                            <Users size={16} className="text-slate-500" />
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Users size={16} className="text-muted-foreground" />
                                             <span>{totalSheets} Submissions</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-slate-300">
-                                            <CheckCircle size={16} className="text-emerald-500" />
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-500" />
                                             <span>{gradedSheets} Graded</span>
                                         </div>
                                     </div>
 
-                                    <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+                                    <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <Clock size={12} />
                                             {new Date(exam.exam_date).toLocaleDateString()}
                                         </span>
-                                        <span className="group-hover:translate-x-1 transition-transform text-cyan-400 flex items-center gap-1">
+                                        <span className="group-hover:translate-x-1 transition-transform text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
                                             Open <ChevronRight size={12} />
                                         </span>
                                     </div>
@@ -89,7 +89,7 @@ export default async function GradingPage() {
                 })}
 
                 {exams?.length === 0 && (
-                    <div className="col-span-full text-center py-12 text-slate-500">
+                    <div className="col-span-full text-center py-12 text-muted-foreground">
                         No exams found. Create an exam first.
                     </div>
                 )}
