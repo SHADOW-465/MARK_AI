@@ -21,6 +21,10 @@ export default async function DashboardLayout({
   // Check user role
   const { data: teacher } = await supabase.from("teachers").select("*").eq("id", user.id).single()
 
+  if (!teacher) {
+    redirect("/student/dashboard")
+  }
+
   const isTeacher = !!teacher
   const userName = teacher?.name || "User"
   const userEmail = user.email || ""
