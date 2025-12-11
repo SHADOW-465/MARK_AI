@@ -10,8 +10,11 @@ export async function POST(request: Request) {
 
     // 1. Fetch Exam Details (Rubric)
     const { data: exam } = await supabase.from("exams").select("*").eq("id", examId).single()
-
     if (!exam) throw new Error("Exam not found")
+
+    // Fetch Answer Sheet to get Student ID
+    const { data: sheet } = await supabase.from("answer_sheets").select("student_id").eq("id", sheetId).single()
+    const studentId = sheet?.student_id
 
     // 2. Construct Prompt for Gemini
     const prompt = `
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
     1. Extract all student answers (OCR from handwriting) across all pages.
     2. Match each answer to the corresponding question.
     3. Grade each answer against the rubric.
-    4. Provide detailed, personalized feedback.
+    4. Provide detailed, personalized feedback including a "Student OS" analysis (ROI, Root Cause, Real World).
 
     ## EXAM DETAILS
     - Subject: ${exam.subject}
@@ -37,6 +40,11 @@ export async function POST(request: Request) {
     - **Understand Intent**: Focus on what the student is trying to convey, not exact wording
     - **Partial Credit**: Award marks for partial understanding
     - **Marking Precision**: Apply ${exam.marking_precision} rounding
+
+    ## ADDITIONAL ANALYSIS FOR STUDENT DASHBOARD
+    - **Root Cause Analysis**: For every lost mark, determine if it was a 'Concept Error', 'Calculation Error', or 'Keywording Error'.
+    - **Real World Application**: Explain ONE key real-world application of the concepts missed (or the exam topic in general) to motivate the student.
+    - **ROI / Focus Areas**: Identify the top 2-3 topics where the student lost the most marks and which are easiest to fix.
 
     ## OUTPUT FORMAT (JSON)
     Return ONLY valid JSON in this exact structure:
@@ -57,17 +65,29 @@ export async function POST(request: Request) {
           "confidence": 0.92,
           "reasoning": "...",
           "strengths": ["..."],
-          "gaps": ["..."]
+          "gaps": ["..."],
+          "root_cause": "Concept Error" // or "Calculation Error", "Keywording Error", "None"
         }
       ],
       "overall_feedback": "...",
+      "student_os_analysis": {
+        "real_world_application": "...", // e.g. "Understanding Thermodynamics is crucial for designing efficient car engines..."
+        "root_cause_summary": {
+           "concept": 5, // Total marks lost due to concept
+           "calculation": 2,
+           "keyword": 1
+        },
+        "focus_areas": ["Thermodynamics", "Kinematics"],
+        "roi_analysis": [
+           { "topic": "Thermodynamics", "potential_gain": 5, "effort": "Medium" }
+        ]
+      },
       "total_score": 42.5,
       "confidence": 0.9
     }
     `
 
     // 3. Call Gemini API
-    // Construct content array with text prompt and all images
     const content: any[] = [{ type: "text", text: prompt }]
 
     if (Array.isArray(fileUrls)) {
@@ -75,12 +95,11 @@ export async function POST(request: Request) {
         content.push({ type: "image", image: new URL(url) })
       })
     } else if (typeof fileUrls === 'string') {
-      // Fallback for single file legacy support
       content.push({ type: "image", image: new URL(fileUrls) })
     }
 
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-exp"), // Or appropriate model
+      model: google("gemini-2.0-flash-exp"),
       messages: [
         {
           role: "user",
@@ -90,7 +109,6 @@ export async function POST(request: Request) {
     })
 
     // 4. Parse Response
-    // Clean up markdown code blocks if present
     const jsonStr = text.replace(/```json\n|\n```/g, "")
     const result = JSON.parse(jsonStr)
 
@@ -115,7 +133,7 @@ export async function POST(request: Request) {
         question_num: evalItem.question_num,
         extracted_text: extraction?.extracted_text || "",
         ai_score: evalItem.score,
-        final_score: evalItem.score, // Default to AI score initially
+        final_score: evalItem.score,
         confidence: evalItem.confidence,
         reasoning: evalItem.reasoning,
         strengths: evalItem.strengths,
@@ -124,6 +142,19 @@ export async function POST(request: Request) {
     })
 
     await supabase.from("question_evaluations").insert(evaluations)
+
+    // Insert Feedback Analysis (Student OS Data)
+    if (result.student_os_analysis && studentId) {
+        await supabase.from("feedback_analysis").insert({
+            answer_sheet_id: sheetId,
+            student_id: studentId,
+            overall_feedback: result.overall_feedback,
+            real_world_application: result.student_os_analysis.real_world_application,
+            root_cause_analysis: result.student_os_analysis.root_cause_summary,
+            focus_areas: result.student_os_analysis.focus_areas,
+            roi_analysis: result.student_os_analysis.roi_analysis
+        })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
