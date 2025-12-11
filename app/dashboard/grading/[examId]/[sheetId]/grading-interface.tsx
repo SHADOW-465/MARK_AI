@@ -341,7 +341,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                       </div>
 
                       <div className="space-y-3">
-                        <div className="bg-black/20 p-3 rounded-lg text-xs font-mono text-slate-300 border border-white/5">
+                        <div className="bg-black/20 p-3 rounded-lg text-xs font-mono text-slate-300 border border-white/5 max-h-[150px] overflow-y-auto">
                           <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Extracted Answer</p>
                           {ev.extracted_text || <span className="italic text-slate-600">No text extracted</span>}
                         </div>
@@ -351,7 +351,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                           <Textarea
                             value={ev.reasoning}
                             onChange={(e) => handleFeedbackChange(index, e.target.value)}
-                            className="text-sm min-h-[60px] bg-transparent border-white/10 focus:border-indigo-500/50 text-slate-300 resize-none"
+                            className="text-sm min-h-[60px] max-h-[200px] overflow-y-auto bg-transparent border-white/10 focus:border-indigo-500/50 text-slate-300 resize-none"
                             placeholder="AI Feedback..."
                           />
                         </div>
@@ -384,7 +384,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                   <Textarea
                     value={overallFeedback}
                     onChange={(e) => setOverallFeedback(e.target.value)}
-                    className="min-h-[150px] bg-black/20 border-white/10 text-slate-300 mb-4"
+                    className="min-h-[150px] max-h-[300px] overflow-y-auto bg-black/20 border-white/10 text-slate-300 mb-4"
                     placeholder="Enter overall feedback for the student..."
                   />
 
