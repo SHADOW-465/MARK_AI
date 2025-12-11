@@ -17,6 +17,7 @@ export default function StudentSignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rollNumber, setRollNumber] = useState("")
+  const [studentClass, setStudentClass] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -31,26 +32,34 @@ export default function StudentSignUpPage() {
         // 1. Verify Student Exists in DB first
         const { data: student, error: studentError } = await supabase
             .from("students")
-            .select("id, email, user_id")
+            .select("id, email, user_id, class, roll_number")
             .eq("roll_number", rollNumber)
+            .eq("class", studentClass)
             .single()
 
         if (studentError || !student) {
-            throw new Error("Student Roll Number not found. Please contact your administrator.")
+            throw new Error(`Student with Roll Number ${rollNumber} in Class ${studentClass} not found. Contact your administrator.`)
         }
 
+        // 2. Security Check: If Admin already set an email, they must use it.
+        if (student.email && student.email.toLowerCase() !== email.toLowerCase()) {
+            throw new Error(`This roll number is registered to ${student.email}. Please use that email or contact admin.`)
+        }
+
+        // 3. Check if already registered
         if (student.user_id) {
-            throw new Error("This student account is already registered. Please login.")
+            throw new Error("This student account is already active. Please login.")
         }
 
-        // 2. Sign Up Auth User
+        // 4. Sign Up Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 data: {
                     role: 'student',
-                    roll_number: rollNumber
+                    roll_number: rollNumber,
+                    class: studentClass
                 }
             }
         })
@@ -58,19 +67,21 @@ export default function StudentSignUpPage() {
         if (authError) throw authError
 
         if (authData.user) {
-            // 3. Link Student Record to Auth User
+            // 5. Link Student Record to Auth User
             const { error: updateError } = await supabase
                 .from("students")
-                .update({ user_id: authData.user.id, email: email }) // Update email too if needed
+                .update({
+                    user_id: authData.user.id,
+                    email: email // Ensure email is consistent
+                })
                 .eq("id", student.id)
 
             if (updateError) {
-                // If linking fails, we might want to delete the auth user?
-                // For now, just show error.
                 console.error("Linking failed:", updateError)
                 throw new Error("Account created but failed to link to student profile. Contact support.")
             }
 
+            // Redirect to dashboard
             router.push("/student/dashboard")
         }
 
@@ -108,18 +119,33 @@ export default function StudentSignUpPage() {
             </div>
             <form onSubmit={handleSignUp}>
               <div className="flex flex-col gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="roll">Roll Number</Label>
-                    <Input
-                        id="roll"
-                        type="text"
-                        placeholder="e.g. 101"
-                        required
-                        value={rollNumber}
-                        onChange={(e) => setRollNumber(e.target.value)}
-                        className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="class">Class</Label>
+                        <Input
+                            id="class"
+                            type="text"
+                            placeholder="e.g. 10A"
+                            required
+                            value={studentClass}
+                            onChange={(e) => setStudentClass(e.target.value)}
+                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="roll">Roll No.</Label>
+                        <Input
+                            id="roll"
+                            type="text"
+                            placeholder="e.g. 101"
+                            required
+                            value={rollNumber}
+                            onChange={(e) => setRollNumber(e.target.value)}
+                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                    </div>
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
