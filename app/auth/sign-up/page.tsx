@@ -5,20 +5,22 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, LayoutDashboard, GraduationCap } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
 import { motion } from "framer-motion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [fullName, setFullName] = useState("")
-  const [role, setRole] = useState<"teacher" | "parent">("teacher")
+  const [rollNumber, setRollNumber] = useState("")
+  const [studentClass, setStudentClass] = useState("")
+  const [role, setRole] = useState<"admin" | "student">("admin")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -30,19 +32,74 @@ export default function SignUpPage() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            full_name: fullName,
-            role: role,
+      if (role === "student") {
+        // 1. Verify Student Exists in DB first
+        const { data: student, error: studentError } = await supabase
+            .from("students")
+            .select("id, email, user_id")
+            .eq("roll_number", rollNumber)
+            .eq("class", studentClass)
+            .single()
+
+        if (studentError || !student) {
+            throw new Error("Student details not found. Please check your Class and Roll Number.")
+        }
+
+        // Strictly enforce email consistency
+        if (student.email && student.email.toLowerCase() !== email.toLowerCase()) {
+            throw new Error("This student ID is already linked to a different email address. Please use the assigned email or contact your teacher.")
+        }
+
+        if (student.user_id) {
+            throw new Error("This student account is already registered. Please login.")
+        }
+
+        // 2. Sign Up Auth User
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    role: 'student',
+                    roll_number: rollNumber,
+                    class: studentClass
+                }
+            }
+        })
+
+        if (authError) throw authError
+
+        if (authData.user) {
+            // 3. Link Student Record to Auth User
+            const { error: updateError } = await supabase
+                .from("students")
+                .update({ user_id: authData.user.id, email: email })
+                .eq("id", student.id)
+
+            if (updateError) {
+                console.error("Linking failed:", updateError)
+                throw new Error("Account created but failed to link to student profile. Contact support.")
+            }
+
+            router.push("/student/dashboard")
+        }
+      } else {
+        // Admin / Teacher Signup
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              full_name: fullName,
+              role: 'teacher', // Defaulting admin role to teacher as per original
+            },
           },
-        },
-      })
-      if (error) throw error
-      router.push("/auth/sign-up-success")
+        })
+        if (error) throw error
+        router.push("/auth/sign-up-success")
+      }
+
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -73,19 +130,72 @@ export default function SignUpPage() {
                 Join MARK AI to start grading smarter
               </p>
             </div>
+
+            <Tabs defaultValue="admin" className="w-full mb-6" onValueChange={(val) => setRole(val as "admin" | "student")}>
+              <TabsList className="grid w-full grid-cols-2 p-1 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-lg">
+                <TabsTrigger
+                  value="admin"
+                  className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-cyan/10 data-[state=active]:text-neon-cyan data-[state=active]:shadow-[0_0_20px_-5px_rgba(0,243,255,0.3)] data-[state=active]:border-neon-cyan/20 border border-transparent"
+                >
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Admin
+                </TabsTrigger>
+                <TabsTrigger
+                  value="student"
+                  className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-purple/10 data-[state=active]:text-neon-purple data-[state=active]:shadow-[0_0_20px_-5px_rgba(188,19,254,0.3)] data-[state=active]:border-neon-purple/20 border border-transparent"
+                >
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    Student
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
             <form onSubmit={handleSignUp}>
               <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    placeholder="John Doe"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
-                  />
-                </div>
+
+                {role === 'admin' && (
+                    <div className="grid gap-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                        id="fullName"
+                        placeholder="John Doe"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                    />
+                    </div>
+                )}
+
+                {role === 'student' && (
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="class">Class</Label>
+                            <Input
+                                id="class"
+                                type="text"
+                                placeholder="e.g. 10A"
+                                required
+                                value={studentClass}
+                                onChange={(e) => setStudentClass(e.target.value)}
+                                className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="roll">Roll Number</Label>
+                            <Input
+                                id="roll"
+                                type="text"
+                                placeholder="e.g. 101"
+                                required
+                                value={rollNumber}
+                                onChange={(e) => setRollNumber(e.target.value)}
+                                className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -95,7 +205,7 @@ export default function SignUpPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                    className={`bg-background/50 border-white/10 ${role === 'student' ? 'focus:border-neon-purple/50 focus:ring-neon-purple/20' : 'focus:border-neon-cyan/50 focus:ring-neon-cyan/20'}`}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -106,25 +216,19 @@ export default function SignUpPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                    className={`bg-background/50 border-white/10 ${role === 'student' ? 'focus:border-neon-purple/50 focus:ring-neon-purple/20' : 'focus:border-neon-cyan/50 focus:ring-neon-cyan/20'}`}
                   />
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="role">I am a...</Label>
-                  <Select value={role} onValueChange={(value: "teacher" | "parent") => setRole(value)}>
-                    <SelectTrigger className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20">
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="teacher">Teacher</SelectItem>
-                      <SelectItem value="parent">Parent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
                 {error && <p className="text-sm text-red-500">{error}</p>}
+
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-neon-cyan to-neon-purple hover:opacity-90 transition-opacity text-white font-bold"
+                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${
+                    role === 'student'
+                    ? 'bg-gradient-to-r from-neon-purple to-pink-500'
+                    : 'bg-gradient-to-r from-neon-cyan to-neon-purple'
+                  }`}
                   disabled={isLoading}
                 >
                   {isLoading ? (
