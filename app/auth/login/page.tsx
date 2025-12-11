@@ -88,12 +88,18 @@ export default function LoginPage() {
             </div>
 
             <Tabs defaultValue="admin" className="w-full mb-6" onValueChange={(val) => setRole(val as "admin" | "student")}>
-              <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-                <TabsTrigger value="admin" className="data-[state=active]:bg-neon-cyan/20 data-[state=active]:text-neon-cyan">
+              <TabsList className="grid w-full grid-cols-2 p-1 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-lg">
+                <TabsTrigger
+                  value="admin"
+                  className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-cyan/10 data-[state=active]:text-neon-cyan data-[state=active]:shadow-[0_0_20px_-5px_rgba(0,243,255,0.3)] data-[state=active]:border-neon-cyan/20 border border-transparent"
+                >
                     <LayoutDashboard className="w-4 h-4 mr-2" />
                     Admin
                 </TabsTrigger>
-                <TabsTrigger value="student" className="data-[state=active]:bg-neon-purple/20 data-[state=active]:text-neon-purple">
+                <TabsTrigger
+                  value="student"
+                  className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-purple/10 data-[state=active]:text-neon-purple data-[state=active]:shadow-[0_0_20px_-5px_rgba(188,19,254,0.3)] data-[state=active]:border-neon-purple/20 border border-transparent"
+                >
                     <GraduationCap className="w-4 h-4 mr-2" />
                     Student
                 </TabsTrigger>

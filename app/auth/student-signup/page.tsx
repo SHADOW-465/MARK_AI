@@ -17,6 +17,7 @@ export default function StudentSignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rollNumber, setRollNumber] = useState("")
+  const [studentClass, setStudentClass] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -33,10 +34,16 @@ export default function StudentSignUpPage() {
             .from("students")
             .select("id, email, user_id")
             .eq("roll_number", rollNumber)
+            .eq("class", studentClass)
             .single()
 
         if (studentError || !student) {
-            throw new Error("Student Roll Number not found. Please contact your administrator.")
+            throw new Error("Student details not found. Please check your Class and Roll Number.")
+        }
+
+        // Strictly enforce email consistency
+        if (student.email && student.email.toLowerCase() !== email.toLowerCase()) {
+            throw new Error("This student ID is already linked to a different email address. Please use the assigned email or contact your teacher.")
         }
 
         if (student.user_id) {
@@ -50,7 +57,8 @@ export default function StudentSignUpPage() {
             options: {
                 data: {
                     role: 'student',
-                    roll_number: rollNumber
+                    roll_number: rollNumber,
+                    class: studentClass
                 }
             }
         })
@@ -108,17 +116,31 @@ export default function StudentSignUpPage() {
             </div>
             <form onSubmit={handleSignUp}>
               <div className="flex flex-col gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="roll">Roll Number</Label>
-                    <Input
-                        id="roll"
-                        type="text"
-                        placeholder="e.g. 101"
-                        required
-                        value={rollNumber}
-                        onChange={(e) => setRollNumber(e.target.value)}
-                        className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="class">Class</Label>
+                        <Input
+                            id="class"
+                            type="text"
+                            placeholder="e.g. 10A"
+                            required
+                            value={studentClass}
+                            onChange={(e) => setStudentClass(e.target.value)}
+                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="roll">Roll Number</Label>
+                        <Input
+                            id="roll"
+                            type="text"
+                            placeholder="e.g. 101"
+                            required
+                            value={rollNumber}
+                            onChange={(e) => setRollNumber(e.target.value)}
+                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                    </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
