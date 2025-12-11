@@ -20,10 +20,9 @@ export default async function DashboardLayout({
 
   // Check user role
   const { data: teacher } = await supabase.from("teachers").select("*").eq("id", user.id).single()
-  const { data: parent } = await supabase.from("parents").select("*").eq("id", user.id).single()
 
   const isTeacher = !!teacher
-  const userName = teacher?.name || parent?.name || "User"
+  const userName = teacher?.name || "User"
   const userEmail = user.email || ""
   const userInitials = userEmail[0].toUpperCase()
 

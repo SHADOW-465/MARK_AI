@@ -63,15 +63,9 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
                                     <div className="flex flex-col px-4 py-6 gap-2">
                                         <NavItem href="/dashboard" icon={LayoutDashboard} label="Overview" active={pathname === "/dashboard"} onClick={() => setIsOpen(false)} />
 
-                                        {isTeacher ? (
-                                            <>
-                                                <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} onClick={() => setIsOpen(false)} />
-                                                <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} onClick={() => setIsOpen(false)} />
-                                                <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} onClick={() => setIsOpen(false)} />
-                                            </>
-                                        ) : (
-                                            <NavItem href="/dashboard/results" icon={FileText} label="Results" active={pathname.includes("/results")} onClick={() => setIsOpen(false)} />
-                                        )}
+                                        <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} onClick={() => setIsOpen(false)} />
 
                                         <NavItem href="/dashboard/messages" icon={MessageSquare} label="Messages" active={pathname.includes("/messages")} onClick={() => setIsOpen(false)} />
                                         <NavItem href="/dashboard/settings" icon={Settings} label="Settings" active={pathname.includes("/settings")} onClick={() => setIsOpen(false)} />
@@ -108,15 +102,9 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
                 <div className="hidden lg:flex items-center gap-1 p-1 bg-secondary/30 backdrop-blur-md rounded-full border border-white/5">
                     <NavItem href="/dashboard" icon={LayoutDashboard} label="Overview" active={pathname === "/dashboard"} />
 
-                    {isTeacher ? (
-                        <>
-                            <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} />
-                            <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} />
-                            <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} />
-                        </>
-                    ) : (
-                        <NavItem href="/dashboard/results" icon={FileText} label="Results" active={pathname.includes("/results")} />
-                    )}
+                    <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} />
+                    <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} />
+                    <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} />
 
                     <NavItem href="/dashboard/messages" icon={MessageSquare} label="Messages" active={pathname.includes("/messages")} />
                     <NavItem href="/dashboard/settings" icon={Settings} label="Settings" active={pathname.includes("/settings")} />
