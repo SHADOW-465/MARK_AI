@@ -37,22 +37,45 @@ export default function LoginPage() {
 
       if (user) {
         if (role === "student") {
-          // Check if user is actually a student
+          // Verify student status
+          // Note: In a production app, custom claims in the JWT (set via a trigger)
+          // would be better than querying the DB on client side.
+          // But for now, we verify existence in 'students' table.
+
           const { data: student } = await supabase
             .from("students")
             .select("id")
-            .eq("email", email) // Check by email first (loose coupling) or user_id if strict
+            .eq("user_id", user.id) // Strict check: Must be linked
             .single()
 
           if (student) {
              router.push("/student/dashboard")
           } else {
-             // Maybe they are a student but the record isn't linked yet, or they are just a user.
-             // For now, if they selected Student login, try to go there.
-             // The dashboard layout should handle unlinked students (maybe prompt to link).
+             // User exists in Auth but not linked to a student record.
+             // This can happen if the linking failed during signup or if they signed up as admin but try student login.
+             // We should check if they are an admin trying to log in as student?
+             // Or just redirect them to a generic dashboard?
+             // Prompt requested: "student login should redirect to the student dashboard"
+             // If not linked, maybe they are a teacher?
+             // Let's check metadata.
+             if (user.user_metadata?.role === 'teacher') {
+                 setError("You are registered as a Teacher. Please login as Admin.")
+                 await supabase.auth.signOut()
+                 return
+             }
+
+             // If metadata says student but no record found (rare edge case), maybe redirect to a "complete profile" page?
+             // For now, we assume if they logged in successfully, they go to dashboard.
+             // The dashboard layout will handle missing profile data.
              router.push("/student/dashboard")
           }
         } else {
+          // Admin / Teacher Login
+          if (user.user_metadata?.role === 'student') {
+             setError("You are registered as a Student. Please login as Student.")
+             await supabase.auth.signOut()
+             return
+          }
           router.push("/dashboard")
         }
       }
@@ -117,7 +140,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                    className={`bg-background/50 border-white/10 ${role === 'student' ? 'focus:border-neon-purple/50 focus:ring-neon-purple/20' : 'focus:border-neon-cyan/50 focus:ring-neon-cyan/20'}`}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -130,7 +153,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                    className={`bg-background/50 border-white/10 ${role === 'student' ? 'focus:border-neon-purple/50 focus:ring-neon-purple/20' : 'focus:border-neon-cyan/50 focus:ring-neon-cyan/20'}`}
                   />
                 </div>
                 {error && <p className="text-sm text-red-500">{error}</p>}

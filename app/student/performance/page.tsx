@@ -45,9 +45,9 @@ export default async function PerformanceLab() {
             if (root) {
                 // Assuming JSON structure: { "concept": 5, "calculation": 2, ... } (marks lost)
                 // We sum them up.
-                gapStats.concept += (root.concept || 0)
-                gapStats.calculation += (root.calculation || 0)
-                gapStats.keyword += (root.keyword || 0)
+                gapStats.concept += Number(root.concept || 0)
+                gapStats.calculation += Number(root.calculation || 0)
+                gapStats.keyword += Number(root.keyword || 0)
             }
         })
         gapStats.total = gapStats.concept + gapStats.calculation + gapStats.keyword
@@ -178,7 +178,7 @@ export default async function PerformanceLab() {
                     <div className="mt-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                         <h4 className="font-bold text-red-400 text-sm mb-2">Recommendation</h4>
                         <p className="text-xs text-foreground/80 leading-relaxed">
-                            Your concept error rate is high. Use the <strong>Deep Work Studio</strong> to ask "Explain like I'm 5" for the topics you missed in the last exam.
+                            Your concept error rate is high. Use the <strong>Deep Work Studio</strong> to ask &quot;Explain like I&apos;m 5&quot; for the topics you missed in the last exam.
                         </p>
                     </div>
                 )}

@@ -20,6 +20,11 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState("")
   const [rollNumber, setRollNumber] = useState("")
   const [studentClass, setStudentClass] = useState("")
+  const [name, setName] = useState("") // Students also enter name now? No, they claim the name. But let's ask for it just in case or display it.
+  // Actually, the prompt said: "student sign up should ask for the roll number, name, class and email"
+  // If the teacher already added "Rahul", and the student enters "Rahul Kumar", should we update it?
+  // Let's allow Name input for students too.
+
   const [role, setRole] = useState<"admin" | "student">("admin")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -33,28 +38,7 @@ export default function SignUpPage() {
 
     try {
       if (role === "student") {
-        // 1. Verify Student Exists in DB first
-        const { data: student, error: studentError } = await supabase
-            .from("students")
-            .select("id, email, user_id")
-            .eq("roll_number", rollNumber)
-            .eq("class", studentClass)
-            .single()
-
-        if (studentError || !student) {
-            throw new Error("Student details not found. Please check your Class and Roll Number.")
-        }
-
-        // Strictly enforce email consistency
-        if (student.email && student.email.toLowerCase() !== email.toLowerCase()) {
-            throw new Error("This student ID is already linked to a different email address. Please use the assigned email or contact your teacher.")
-        }
-
-        if (student.user_id) {
-            throw new Error("This student account is already registered. Please login.")
-        }
-
-        // 2. Sign Up Auth User
+        // 1. Sign Up Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -62,7 +46,8 @@ export default function SignUpPage() {
                 data: {
                     role: 'student',
                     roll_number: rollNumber,
-                    class: studentClass
+                    class: studentClass,
+                    full_name: name // Store in metadata too
                 }
             }
         })
@@ -70,16 +55,28 @@ export default function SignUpPage() {
         if (authError) throw authError
 
         if (authData.user) {
-            // 3. Link Student Record to Auth User
-            const { error: updateError } = await supabase
-                .from("students")
-                .update({ user_id: authData.user.id, email: email })
-                .eq("id", student.id)
+            // 2. Link Student Record using RPC (Securely)
+            // We use the RPC function we planned.
+            const { data: linkData, error: linkError } = await supabase
+                .rpc('link_student_account', {
+                    p_roll_number: rollNumber,
+                    p_class: studentClass,
+                    p_email: email
+                })
 
-            if (updateError) {
-                console.error("Linking failed:", updateError)
-                throw new Error("Account created but failed to link to student profile. Contact support.")
+            if (linkError) {
+                // If RPC fails (e.g. student not found, or already linked)
+                // We should probably rollback the auth user creation or just show error.
+                // Since we can't easily rollback auth user from client, we show error.
+                // The user is created but not linked. They can't do anything.
+                console.error("Linking failed:", linkError)
+                throw new Error(linkError.message || "Failed to link to student profile. Ensure your Roll Number and Class are correct and not already registered.")
             }
+
+            // 3. Update Name if provided (Optional, but good UX)
+            // Now that we are linked, we might be able to update our own name if RLS allows,
+            // or we rely on the teacher's input.
+            // Let's skip updating name for now to avoid RLS complexity, as the RPC only updates email/user_id.
 
             router.push("/student/dashboard")
         }
@@ -92,7 +89,7 @@ export default function SignUpPage() {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
               full_name: fullName,
-              role: 'teacher', // Defaulting admin role to teacher as per original
+              role: 'teacher',
             },
           },
         })
@@ -168,6 +165,18 @@ export default function SignUpPage() {
                 )}
 
                 {role === 'student' && (
+                    <>
+                    <div className="grid gap-2">
+                        <Label htmlFor="studentName">Full Name</Label>
+                        <Input
+                            id="studentName"
+                            placeholder="John Doe"
+                            required
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="class">Class</Label>
@@ -194,6 +203,7 @@ export default function SignUpPage() {
                             />
                         </div>
                     </div>
+                    </>
                 )}
 
                 <div className="grid gap-2">

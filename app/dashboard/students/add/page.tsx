@@ -32,21 +32,42 @@ export default function AddStudentPage() {
 
       if (!user) throw new Error("Not authenticated")
 
-      // In a real app, we'd link this to a school_id.
-      // For now, we'll just insert.
-      const { error } = await supabase.from("students").insert({
-        teacher_id: user.id, // Link student to teacher
-        name,
-        roll_number: rollNumber,
-        class: className,
-        section,
-      })
+      // 1. Check if student exists
+      const { data: existingStudent } = await supabase
+        .from("students")
+        .select("id, name")
+        .eq("roll_number", rollNumber)
+        .eq("class", className)
+        .maybeSingle()
 
-      if (error) throw error
+      if (existingStudent) {
+        // Update existing student details (Name, Section)
+        // We do NOT overwrite teacher_id to preserve the original creator or multi-teacher flexibility.
+        const { error: updateError } = await supabase
+            .from("students")
+            .update({
+                name,
+                section,
+             })
+            .eq("id", existingStudent.id)
+
+        if (updateError) throw updateError
+      } else {
+         // Insert new student
+         const { error: insertError } = await supabase.from("students").insert({
+            teacher_id: user.id,
+            name,
+            roll_number: rollNumber,
+            class: className,
+            section,
+         })
+         if (insertError) throw insertError
+      }
+
       router.push("/dashboard/students")
     } catch (error) {
       console.error("Error adding student:", error)
-      alert("Failed to add student")
+      alert("Failed to add student. Please check your connection.")
     } finally {
       setIsLoading(false)
     }
@@ -65,7 +86,10 @@ export default function AddStudentPage() {
         <Card className="border-border bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Student Details</CardTitle>
-            <CardDescription>Basic information about the student.</CardDescription>
+            <CardDescription>
+                Enter the student&apos;s academic details.
+                They will use their Roll Number and Class to sign up.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
