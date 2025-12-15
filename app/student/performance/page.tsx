@@ -76,11 +76,11 @@ export default async function PerformanceLab() {
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "h-12 w-12 rounded-full flex items-center justify-center border",
-                                    sheet.status === 'graded'
+                                    sheet.status === 'approved' // Change from 'graded' to 'approved'
                                         ? "bg-green-500/10 border-green-500/20 text-green-500"
                                         : "bg-amber-500/10 border-amber-500/20 text-amber-500"
                                 )}>
-                                    {sheet.status === 'graded' ? <CheckCircle size={20} /> : <Clock size={20} />}
+                                    {sheet.status === 'approved' ? <CheckCircle size={20} /> : <Clock size={20} />}
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-foreground text-lg">
@@ -93,7 +93,7 @@ export default async function PerformanceLab() {
                             </div>
 
                             <div className="text-right">
-                                {sheet.status === 'graded' ? (
+                                {sheet.status === 'approved' ? ( // Change from 'graded' to 'approved'
                                     <>
                                         <div className="text-2xl font-bold font-display">
                                             {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-normal">/ {sheet.exam?.total_marks}</span>
@@ -108,7 +108,7 @@ export default async function PerformanceLab() {
                             </div>
                         </div>
 
-                        {sheet.status === 'graded' && (
+                        {sheet.status === 'approved' && ( // Change from 'graded' to 'approved'
                             <div className="bg-white/5 border-t border-white/5 p-4 flex justify-between items-center group-hover:bg-white/10 transition-colors cursor-pointer">
                                 <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">View Full Analysis & Gap Report</span>
                                 <ArrowRight size={16} className="text-muted-foreground group-hover:text-neon-cyan transition-colors" />
