@@ -54,3 +54,7 @@ https://supabase.com/dashboard/project/_/settings/api
  ○ Compiling / ...
  GET / 200 in 6.4s (compile: 5.9s, proxy.ts: 7ms, render: 475ms)
  GET / 200 in 155ms (compile: 15ms, proxy.ts: 9ms, render: 131ms)
+ GET / 200 in 976ms (compile: 275ms, proxy.ts: 97ms, render: 604ms)
+ GET / 200 in 181ms (compile: 35ms, proxy.ts: 10ms, render: 137ms)
+ GET / 200 in 75ms (compile: 7ms, proxy.ts: 7ms, render: 60ms)
+ GET / 200 in 220ms (compile: 15ms, proxy.ts: 7ms, render: 197ms)
