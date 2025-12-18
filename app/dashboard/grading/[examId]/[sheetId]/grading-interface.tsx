@@ -330,9 +330,9 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                         <div className="flex items-center gap-2 bg-black/20 rounded-lg p-1">
                           <Input
                             type="number"
-                            value={ev.final_score}
+                            value={ev.final_score ?? ''}
                             onChange={(e) => handleScoreChange(index, e.target.value)}
-                            className="w-12 h-8 text-center bg-transparent border-none text-white font-bold p-0 focus-visible:ring-0"
+                            className="w-12 h-8 text-center bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold p-0 focus:ring-1 focus:ring-indigo-500"
                             max={question?.max_marks}
                             min={0}
                           />
