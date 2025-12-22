@@ -285,7 +285,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
       </div>
 
       {/* Right Panel: Grading & Feedback */}
-      <div className="w-[500px] border-l border-white/10 flex flex-col bg-slate-900/50 backdrop-blur-xl">
+      <div className="w-[500px] border-l border-white/10 flex flex-col bg-slate-900/50 backdrop-blur-xl overflow-hidden">
 
         {/* Tabs */}
         <div className="p-4 border-b border-white/10">
