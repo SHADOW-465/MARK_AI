@@ -79,8 +79,9 @@ export default async function StudentsPage({
                 <th className="px-6 py-4 w-[50px]"></th>
                 <th className="px-6 py-4">Roll No</th>
                 <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Class</th>
-                <th className="px-6 py-4">Section</th>
+                <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -93,14 +94,32 @@ export default async function StudentsPage({
                         <User className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-foreground">{student.roll_number}</td>
-                    <td className="px-6 py-4 font-bold text-foreground">{student.name}</td>
+                    <td className="px-6 py-4 font-mono text-foreground text-xs">{student.roll_number}</td>
+                    <td className="px-6 py-4 font-bold text-foreground">
+                      {student.name}
+                      {student.section && (
+                        <span className="ml-2 text-[10px] text-slate-500 font-normal uppercase">Sec {student.section}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-mono">{student.email || "-"}</td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-500/20">
                         Class {student.class}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{student.section || "-"}</td>
+                    <td className="px-6 py-4">
+                      {student.user_id ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-500 border border-emerald-500/20">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          Registered
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 px-2 py-0.5 text-xs font-medium text-slate-500 border border-slate-500/20">
+                          <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                          Pending
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <DeleteStudentButton id={student.id} />
                     </td>
