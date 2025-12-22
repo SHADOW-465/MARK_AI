@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Plus, Search, MoreHorizontal, FileText } from "lucide-react"
 import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
+import { ExportDialog } from "./export-dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,6 +106,8 @@ export default async function ExamsPage() {
                               Edit Exam
                             </Link>
                           </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-border" />
+                          <ExportDialog exam={exam} />
                           <DropdownMenuSeparator className="bg-border" />
                           <DropdownMenuItem className="text-rose-500 dark:text-rose-400 focus:text-rose-600 dark:focus:text-rose-300 focus:bg-rose-500/10 cursor-pointer">
                             Delete
