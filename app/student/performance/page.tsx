@@ -17,6 +17,7 @@ export default async function PerformanceLab() {
 
   let exams: any[] = []
   let gapStats = { concept: 0, calculation: 0, keyword: 0, total: 0 }
+  let lastExamStats = { concept: 0, calculation: 0, keyword: 0, currentGrade: 0, maxScore: 100 }
 
   if (student) {
     // Fetch Answer Sheets with Exam details
@@ -34,24 +35,38 @@ export default async function PerformanceLab() {
 
     exams = sheets || []
 
-    // Fetch Feedback Analysis for Gap Stats
+    // Fetch Feedback Analysis for Gap Stats (Global Accumulation)
     const { data: feedbackList } = await supabase
         .from("feedback_analysis")
-        .select("root_cause_analysis")
+        .select("root_cause_analysis, answer_sheet_id")
         .eq("student_id", student.id)
 
     if (feedbackList) {
         feedbackList.forEach((f: any) => {
             const root = f.root_cause_analysis
             if (root) {
-                // Assuming JSON structure: { "concept": 5, "calculation": 2, ... } (marks lost)
-                // We sum them up.
                 gapStats.concept += Number(root.concept || 0)
                 gapStats.calculation += Number(root.calculation || 0)
                 gapStats.keyword += Number(root.keyword || 0)
             }
         })
         gapStats.total = gapStats.concept + gapStats.calculation + gapStats.keyword
+    }
+
+    // Prepare Data for Predictive Sandbox (Based on LATEST APPROVED EXAM)
+    const latestApproved = exams.find(e => e.status === 'approved')
+    if (latestApproved) {
+        const feedback = feedbackList?.find((f: any) => f.answer_sheet_id === latestApproved.id)
+        if (feedback && feedback.root_cause_analysis) {
+            const r = feedback.root_cause_analysis
+            lastExamStats = {
+                concept: Number(r.concept || 0),
+                calculation: Number(r.calculation || 0),
+                keyword: Number(r.keyword || 0),
+                currentGrade: latestApproved.total_score,
+                maxScore: latestApproved.exam?.total_marks || 100
+            }
+        }
     }
   }
 
@@ -65,6 +80,11 @@ export default async function PerformanceLab() {
         <p className="text-muted-foreground">Analyze your results and close the gaps.</p>
       </div>
 
+      {/* Predictive Sandbox */}
+      {lastExamStats.maxScore > 0 && (
+         <PredictiveGradeSandbox initialStats={lastExamStats} />
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Exam History List */}
         <div className="lg:col-span-2 space-y-4">
@@ -77,7 +97,7 @@ export default async function PerformanceLab() {
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "h-12 w-12 rounded-full flex items-center justify-center border",
-                                    sheet.status === 'approved' // Change from 'graded' to 'approved'
+                                    sheet.status === 'approved'
                                         ? "bg-green-500/10 border-green-500/20 text-green-500"
                                         : "bg-amber-500/10 border-amber-500/20 text-amber-500"
                                 )}>
@@ -94,7 +114,7 @@ export default async function PerformanceLab() {
                             </div>
 
                             <div className="text-right">
-                                {sheet.status === 'approved' ? ( // Change from 'graded' to 'approved'
+                                {sheet.status === 'approved' ? (
                                     <>
                                         <div className="text-2xl font-bold font-display">
                                             {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-normal">/ {sheet.exam?.total_marks}</span>

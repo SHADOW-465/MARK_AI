@@ -2,45 +2,104 @@ import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { generateText } from "ai"
 import { google } from "@ai-sdk/google"
+import { truncateContext } from "@/lib/utils"
 
 export async function POST(request: Request) {
   try {
     const { message, fileId } = await request.json()
     const supabase = await createClient()
 
-    // 1. Fetch File Content (Context)
-    // In a full implementation, we would download the file from Storage or use a vector DB.
-    // For this implementation, we use the `extracted_text` column if available,
-    // or fallback to a generic response if the file is a PDF/Image that we haven't processed yet.
+    // 0. Verify Student & Get User Details (Interests, Challenge Mode)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    let context = ""
+    const { data: student } = await supabase
+        .from("students")
+        .select("id, interests, challenge_mode")
+        .eq("user_id", user.id)
+        .single()
+
+    if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 })
+
+    // 1. Fetch File Content (Context)
+    let fileContext = ""
     if (fileId) {
         const { data: file } = await supabase
             .from("study_materials")
             .select("title, extracted_text")
             .eq("id", fileId)
+            .eq("student_id", student.id) // Security check
             .single()
 
         if (file) {
-            context = `
+            fileContext = `
             CONTEXT FROM USER FILE "${file.title}":
-            ${file.extracted_text ? file.extracted_text.substring(0, 10000) : "[No text extracted. Respond based on general knowledge but mention you can't read the file yet.]"}
+            ${truncateContext(file.extracted_text)}
             `
         }
     }
 
-    // 2. Call Gemini
+    // 2. Fetch Last 5 Concept Errors (Gap Analysis)
+    // We look for feedback_analysis entries where root_cause_analysis indicates concept errors
+    // Since root_cause_analysis is JSONB, we just fetch the latest ones and parse in prompt if needed.
+    // Ideally we filter, but for now we take the latest 5 feedbacks.
+    const { data: feedbackList } = await supabase
+        .from("feedback_analysis")
+        .select("root_cause_analysis, focus_areas")
+        .eq("student_id", student.id)
+        .order("created_at", { ascending: false })
+        .limit(5)
+
+    let gapContext = ""
+    if (feedbackList && feedbackList.length > 0) {
+        const errors = feedbackList
+            .map(f => {
+                const root = f.root_cause_analysis as any
+                // Only include if there are concept errors
+                if (root?.concept && Number(root.concept) > 0) {
+                   return `Focus Areas: ${f.focus_areas?.join(", ")} (Concept Errors: ${root.concept} marks lost)`
+                }
+                return null
+            })
+            .filter(Boolean)
+
+        if (errors.length > 0) {
+            gapContext = `
+            RECENT STUDENT STRUGGLES (CONCEPT GAPS):
+            The student has recently lost marks in these areas due to conceptual misunderstanding. Use this to tailor your explanations:
+            ${errors.join("\n")}
+            `
+        }
+    }
+
+    // 3. Construct System Prompt
+    const modeInstruction = student.challenge_mode
+        ? "MODE: CHALLENGE. The student is a high-achiever. Do not simplify too much. Push them with edge cases, university-level applications, and deeper questions. Test their mastery."
+        : "MODE: SUPPORT. Explain concepts simply ('Like I'm 5'). Use analogies."
+
+    const interestInstruction = (student.interests && student.interests.length > 0)
+        ? `ANALOGY FRAMEWORK: The student is interested in: ${student.interests.join(", ")}. Use these topics for metaphors and examples.`
+        : ""
+
+    const systemPrompt = `
+    You are an AI Tutor in the "Deep Work Studio".
+    ${modeInstruction}
+    ${interestInstruction}
+
+    ${gapContext}
+
+    ${fileContext}
+
+    If the context is missing, apologize and answer generally, but warn the user.
+    `
+
+    // 4. Call Gemini
     const { text } = await generateText({
       model: google("gemini-2.0-flash-exp"),
       messages: [
         {
           role: "system",
-          content: `You are an AI Tutor in the "Deep Work Studio".
-          Your goal is to explain concepts simply ("Like I'm 5") or using the student's interests if specified.
-          Use the provided context from the student's notes to answer their question.
-          If the context is missing, apologize and answer generally.
-
-          ${context}`
+          content: systemPrompt
         },
         {
           role: "user",
