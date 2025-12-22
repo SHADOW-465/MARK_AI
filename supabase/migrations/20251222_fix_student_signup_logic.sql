@@ -53,12 +53,6 @@ BEGIN
     -- 4. Selective Update (Only update if currently missing/empty)
     UPDATE students
     SET user_id = v_current_user_id,
-        email = COALESCE(NULLIF(v_existing_email, ''), p_email), -- If email is already there, keep it. But during registration, the user's email IS the new info.
-        -- Actually, user specifically asked: "update only the information that is not already there"
-        -- But for registration, we MUST link the email/user_id for them to log in.
-        -- If the student was added by admin WITHOUT email, we add it. 
-        -- If they had an email, we keep the original? Usually registration email should override if it's the one they are using to log in.
-        -- Let's stick to: Update if empty.
         name = CASE 
             WHEN (v_existing_name IS NULL OR v_existing_name = '') THEN p_name 
             ELSE v_existing_name 
