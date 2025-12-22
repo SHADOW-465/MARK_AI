@@ -131,14 +131,12 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
     setEvaluations(newEvaluations)
   }
 
-  const saveChanges = async () => {
+  const saveChanges = async (silent = false) => {
     setIsSaving(true)
     try {
       // Update evaluations
       for (const ev of evaluations) {
-        // Skip if score is empty/invalid
         if (ev.final_score === "" || ev.final_score === null) continue
-
         await supabase
           .from("question_evaluations")
           .update({
@@ -161,10 +159,11 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         })
         .eq("id", sheet.id)
 
-      alert("Changes saved successfully!")
+      if (!silent) alert("Changes saved successfully!")
     } catch (error) {
       console.error("Error saving:", error)
-      alert("Failed to save changes.")
+      if (!silent) alert("Failed to save changes.")
+      throw error // Re-throw for approveGrading to catch
     } finally {
       setIsSaving(false)
     }
@@ -176,8 +175,34 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
 
     setIsSaving(true)
     try {
-      await saveChanges() // Save first
+      await saveChanges(true) // Silent save
 
+      // 1. Calculate refined metrics for Dashboard (Feedback Analysis)
+      const rcSummary = { concept: 0, calculation: 0, keyword: 0 }
+      evaluations.forEach(ev => {
+        const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
+        const max = question?.max_marks || 0
+        const lost = max - (ev.final_score || 0)
+
+        if (lost > 0) {
+          const cause = (ev.root_cause || 'concept').toLowerCase()
+          if (cause.includes('concept')) rcSummary.concept += lost
+          else if (cause.includes('calc')) rcSummary.calculation += lost
+          else if (cause.includes('key')) rcSummary.keyword += lost
+          else rcSummary.concept += lost // default
+        }
+      })
+
+      // 2. Update Feedback Analysis
+      await supabase
+        .from("feedback_analysis")
+        .update({
+          overall_feedback: overallFeedback,
+          root_cause_analysis: rcSummary,
+        })
+        .eq("answer_sheet_id", sheet.id)
+
+      // 3. Mark Sheet as Approved
       await supabase
         .from("answer_sheets")
         .update({
@@ -186,10 +211,11 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         })
         .eq("id", sheet.id)
 
-      router.push(`/dashboard/grading`) // Redirect to queue
+      router.push(`/dashboard/grading`)
+      router.refresh()
     } catch (error) {
       console.error("Error approving:", error)
-      alert("Failed to approve.")
+      alert("Failed to finalize grading. Please check your connection.")
     } finally {
       setIsSaving(false)
     }
@@ -416,7 +442,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1 bg-transparent border-white/10 hover:bg-white/5 text-slate-300" onClick={saveChanges} disabled={isSaving}>
+            <Button variant="outline" className="flex-1 bg-transparent border-white/10 hover:bg-white/5 text-slate-300" onClick={() => saveChanges()} disabled={isSaving}>
               <Save className="mr-2 h-4 w-4" />
               Save Draft
             </Button>

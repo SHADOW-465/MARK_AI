@@ -19,9 +19,27 @@ export default async function StudentDashboard() {
         .from("students")
         .select("id, name, class, challenge_mode")
         .eq("user_id", user.id)
-        .single()
+        .maybeSingle()
 
-    if (!student) return <div>Student record not found</div>
+    if (!student) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+                <div className="h-20 w-20 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+                    <AlertCircle size={40} />
+                </div>
+                <div className="space-y-2">
+                    <h1 className="text-2xl font-bold font-display">Account Link Required</h1>
+                    <p className="text-muted-foreground max-w-sm">
+                        We couldn&apos;t find a student record linked to your account. This happens if your teacher hasn&apos;t added you yet or if the roll number didn&apos;t match.
+                    </p>
+                </div>
+                <div className="flex gap-4">
+                    <ButtonAction href="/auth/sign-up" label="Try Linking Again" icon={<ArrowRight size={16} />} primary />
+                    <ButtonAction href="/" label="Back Home" icon={<Target size={16} />} />
+                </div>
+            </div>
+        )
+    }
 
     // 1. NBA Hero: Query Tasks sorted by impact (metadata->priority_weight)
     let nbaTask = null
