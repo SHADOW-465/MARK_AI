@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
 import { cn } from "@/lib/utils"
 import { CheckCircle, AlertCircle, Clock, ArrowRight } from "lucide-react"
-import { PredictiveGradeSandbox } from "@/components/performance/predictive-grade-sandbox"
+import Link from "next/link"
 
 export default async function PerformanceLab() {
   const supabase = await createClient()
@@ -129,11 +129,13 @@ export default async function PerformanceLab() {
                             </div>
                         </div>
 
-                        {sheet.status === 'approved' && (
-                            <div className="bg-white/5 border-t border-white/5 p-4 flex justify-between items-center group-hover:bg-white/10 transition-colors cursor-pointer">
-                                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">View Full Analysis & Gap Report</span>
-                                <ArrowRight size={16} className="text-muted-foreground group-hover:text-neon-cyan transition-colors" />
-                            </div>
+                        {sheet.status === 'approved' && ( // Change from 'graded' to 'approved'
+                            <Link href={`/student/performance/${sheet.id}`}>
+                                <div className="bg-white/5 border-t border-white/5 p-4 flex justify-between items-center group-hover:bg-white/10 transition-colors cursor-pointer">
+                                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">View Full Analysis & Gap Report</span>
+                                    <ArrowRight size={16} className="text-muted-foreground group-hover:text-neon-cyan transition-colors" />
+                                </div>
+                            </Link>
                         )}
                     </GlassCard>
                 ))
