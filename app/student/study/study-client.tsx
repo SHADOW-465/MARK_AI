@@ -4,14 +4,16 @@ import { useState } from "react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Upload, FileText, Send, Sparkles } from "lucide-react"
+import { Upload, FileText, Send, Sparkles, Target } from "lucide-react"
 import { uploadStudyMaterial } from "@/app/actions/study"
 
-export function StudyClient({ initialMaterials }: { initialMaterials: any[] }) {
+export function StudyClient({ initialMaterials, initialExams }: { initialMaterials: any[], initialExams: any[] }) {
     const [materials, setMaterials] = useState(initialMaterials)
+    const [exams, setExams] = useState(initialExams)
     const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
+    const [selectedExamId, setSelectedExamId] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
-    const [messages, setMessages] = useState<{role: 'user' | 'ai', text: string}[]>([
+    const [messages, setMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([
         { role: 'ai', text: "Welcome to your Deep Work Studio. Upload your notes or textbooks, and I'll help you master them." }
     ])
     const [input, setInput] = useState("")
@@ -46,13 +48,17 @@ export function StudyClient({ initialMaterials }: { initialMaterials: any[] }) {
             const res = await fetch("/api/student/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg, fileId: selectedFileId })
+                body: JSON.stringify({
+                    message: userMsg,
+                    fileId: selectedFileId,
+                    examId: selectedExamId
+                })
             })
             const data = await res.json()
             if (data.reply) {
                 setMessages(prev => [...prev, { role: 'ai', text: data.reply }])
             } else {
-                 setMessages(prev => [...prev, { role: 'ai', text: "Sorry, I encountered an error." }])
+                setMessages(prev => [...prev, { role: 'ai', text: "Sorry, I encountered an error." }])
             }
         } catch (e) {
             setMessages(prev => [...prev, { role: 'ai', text: "Network error." }])
@@ -91,21 +97,55 @@ export function StudyClient({ initialMaterials }: { initialMaterials: any[] }) {
                             <FileText size={16} className="text-neon-cyan" />
                             Sources
                         </h3>
-                        <div className="space-y-2 overflow-y-auto flex-1">
-                            {materials.length > 0 ? materials.map((f: any, i: number) => (
-                                <div
-                                    key={i}
-                                    onClick={() => setSelectedFileId(f.id)}
-                                    className={`p-3 rounded-lg text-sm cursor-pointer transition-colors flex items-center gap-2 ${
-                                        selectedFileId === f.id ? 'bg-neon-cyan/20 text-foreground' : 'bg-white/5 hover:bg-white/10 text-muted-foreground'
-                                    }`}
-                                >
-                                    <FileText size={14} className="opacity-50" />
-                                    <span className="truncate">{f.title}</span>
+                        <div className="space-y-4 overflow-y-auto flex-1 h-0 pr-1">
+                            <div>
+                                <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2 px-1">Study Materials</h4>
+                                <div className="space-y-1">
+                                    {materials.length > 0 ? materials.map((f: any, i: number) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => {
+                                                setSelectedFileId(f.id)
+                                                setSelectedExamId(null)
+                                            }}
+                                            className={`p-3 rounded-lg text-sm cursor-pointer transition-colors flex items-center gap-2 ${selectedFileId === f.id ? 'bg-neon-cyan/20 text-foreground' : 'bg-white/5 hover:bg-white/10 text-muted-foreground'
+                                                }`}
+                                        >
+                                            <FileText size={14} className="opacity-50" />
+                                            <span className="truncate">{f.title}</span>
+                                        </div>
+                                    )) : (
+                                        <p className="text-[10px] text-muted-foreground text-center py-2 italic opacity-50">No notes yet.</p>
+                                    )}
                                 </div>
-                            )) : (
-                                <p className="text-xs text-muted-foreground text-center mt-4">No notes uploaded yet.</p>
-                            )}
+                            </div>
+
+                            <div className="pt-2">
+                                <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2 px-1">Graded Exams</h4>
+                                <div className="space-y-1">
+                                    {exams.length > 0 ? exams.map((s: any, i: number) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => {
+                                                setSelectedExamId(s.id)
+                                                setSelectedFileId(null)
+                                            }}
+                                            className={`p-3 rounded-lg text-sm cursor-pointer transition-colors flex flex-col gap-0.5 ${selectedExamId === s.id ? 'bg-neon-purple/20 text-foreground' : 'bg-white/5 hover:bg-white/10 text-muted-foreground'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <Target size={14} className="opacity-50" />
+                                                <span className="truncate font-bold italic">{s.exams?.exam_name}</span>
+                                            </div>
+                                            <div className="text-[10px] opacity-60 ml-5">
+                                                Score: {s.total_score} / {s.exams?.total_marks}
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <p className="text-[10px] text-muted-foreground text-center py-2 italic opacity-50">No graded exams yet.</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </GlassCard>
                 </div>
@@ -117,11 +157,10 @@ export function StudyClient({ initialMaterials }: { initialMaterials: any[] }) {
                         <div className="flex-1 overflow-y-auto p-6 space-y-4">
                             {messages.map((m, i) => (
                                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] p-4 rounded-2xl ${
-                                        m.role === 'user'
+                                    <div className={`max-w-[80%] p-4 rounded-2xl ${m.role === 'user'
                                         ? 'bg-neon-purple/20 text-foreground rounded-br-none'
                                         : 'bg-white/5 text-muted-foreground rounded-bl-none'
-                                    }`}>
+                                        }`}>
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
                                     </div>
                                 </div>
@@ -139,7 +178,7 @@ export function StudyClient({ initialMaterials }: { initialMaterials: any[] }) {
                         <div className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-sm">
                             <div className="flex gap-2">
                                 <Input
-                                    placeholder={selectedFileId ? "Ask about this file..." : "Select a file to ask context-aware questions..."}
+                                    placeholder={selectedExamId ? "Ask about your exam performance..." : selectedFileId ? "Ask about this file..." : "Select a source to start deep work..."}
                                     className="bg-background/50 border-white/10"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
