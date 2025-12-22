@@ -6,7 +6,7 @@ import { truncateContext } from "@/lib/utils"
 
 export async function POST(request: Request) {
   try {
-    const { message, fileId, examId } = await request.json()
+    const { message, fileIds = [], examIds = [] } = await request.json()
     const supabase = await createClient()
 
     // 0. Verify Student & Get User Details (Interests, Challenge Mode)
@@ -21,55 +21,55 @@ export async function POST(request: Request) {
 
     if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 })
 
-    // 1. Fetch File Content (Context)
+    // 1. Fetch File Content (Context) from multiple files
     let fileContext = ""
-    if (fileId) {
-      const { data: file } = await supabase
+    if (fileIds.length > 0) {
+      const { data: files } = await supabase
         .from("study_materials")
         .select("title, extracted_text")
-        .eq("id", fileId)
-        .eq("student_id", student.id) // Security check
-        .single()
+        .in("id", fileIds)
+        .eq("student_id", student.id)
 
-      if (file) {
-        fileContext = `
-            CONTEXT FROM USER FILE "${file.title}":
-            ${truncateContext(file.extracted_text)}
-            `
+      if (files) {
+        fileContext = files.map(f => `
+                CONTEXT FROM USER FILE "${f.title}":
+                ${truncateContext(f.extracted_text)}
+            `).join("\n---\n")
       }
     }
 
-    // 1.1 Fetch Exam Content if examId provided
+    // 1.1 Fetch Exam Content if multiple examIds provided
     let examContext = ""
-    if (examId) {
-      const { data: sheet } = await supabase
+    if (examIds.length > 0) {
+      const { data: sheets } = await supabase
         .from("answer_sheets")
         .select(`
                 total_score,
                 exams (exam_name, subject, marking_scheme),
                 question_evaluations (question_num, extracted_text, final_score, reasoning)
             `)
-        .eq("id", examId)
+        .in("id", examIds)
         .eq("student_id", student.id)
-        .single()
 
-      if (sheet) {
-        const evals = (sheet.question_evaluations as any[]).map(e => {
-          const q = (sheet.exams as any).marking_scheme.find((mq: any) => mq.question_num === e.question_num)
-          return `Question ${e.question_num} (${q?.question_text || "N/A"}): 
-                - Student Answer: ${e.extracted_text}
-                - Score: ${e.final_score}/${q?.max_marks || "N/A"}
-                - Teacher Feedback: ${e.reasoning}`
-        }).join("\n\n")
+      if (sheets) {
+        examContext = sheets.map(sheet => {
+          const evals = (sheet.question_evaluations as any[]).map(e => {
+            const q = (sheet.exams as any).marking_scheme.find((mq: any) => mq.question_num === e.question_num)
+            return `Question ${e.question_num} (${q?.question_text || "N/A"}): 
+                        - Student Answer: ${e.extracted_text}
+                        - Score: ${e.final_score}/${q?.max_marks || "N/A"}
+                        - Teacher Feedback: ${e.reasoning}`
+          }).join("\n\n")
 
-        examContext = `
-            CONTEXT FROM GRADED EXAM "${(sheet.exams as any).exam_name}":
-            Subject: ${(sheet.exams as any).subject}
-            Total Score: ${sheet.total_score}
-            
-            Detailed Evaluations:
-            ${evals}
-            `
+          return `
+                    CONTEXT FROM GRADED EXAM "${(sheet.exams as any).exam_name}":
+                    Subject: ${(sheet.exams as any).subject}
+                    Total Score: ${sheet.total_score}
+                    
+                    Detailed Evaluations:
+                    ${evals}
+                `
+        }).join("\n---\n")
       }
     }
 

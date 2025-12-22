@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { StudyClient } from "./study-client"
 
-export default async function DeepWorkStudio() {
+export default async function DeepWorkStudio({ searchParams }: { searchParams: Promise<{ examId?: string }> }) {
+    const { examId: preSelectedExamId } = await searchParams
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -34,7 +35,11 @@ export default async function DeepWorkStudio() {
 
     return (
         <div className="h-[calc(100vh-8rem)] flex flex-col gap-6">
-            <StudyClient initialMaterials={materials} initialExams={exams} />
+            <StudyClient
+                initialMaterials={materials}
+                initialExams={exams}
+                preSelectedExamId={preSelectedExamId}
+            />
         </div>
     )
 }
