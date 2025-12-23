@@ -4,7 +4,7 @@ import { useState } from "react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Upload, FileText, Send, Sparkles, Target } from "lucide-react"
+import { Upload, FileText, Send, Sparkles, Target, Brain, Play } from "lucide-react"
 import { uploadStudyMaterial } from "@/app/actions/study"
 
 export function StudyClient({
@@ -57,6 +57,49 @@ export function StudyClient({
         setIsUploading(false)
     }
 
+    const handleSynthesis = async (type: 'faq' | 'glossary' | 'guide') => {
+        if (selectedFileIds.length === 0 && selectedExamIds.length === 0) {
+            alert("Please select at least one source for synthesis.")
+            return
+        }
+
+        setIsChatting(true)
+        const promptMap = {
+            faq: "Generate 5 high-impact FAQs with answers based on these sources.",
+            glossary: "Create a glossary of the 10 most important terms found across these materials.",
+            guide: "Synthesize these sources into a cohesive 1-page study guide."
+        }
+
+        const userMsg = promptMap[type as keyof typeof promptMap]
+        setMessages(prev => [...prev, { role: 'user', text: userMsg }])
+
+        try {
+            const res = await fetch("/api/student/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: userMsg,
+                    fileIds: selectedFileIds,
+                    examIds: selectedExamIds,
+                    synthesisType: type
+                })
+            })
+            const data = await res.json()
+            if (data.reply) {
+                setMessages(prev => [...prev, { role: 'ai', text: data.reply }])
+            }
+        } catch (e) {
+            console.error(e)
+            setMessages(prev => [...prev, { role: 'ai', text: "Failed to generate synthesis. Please check your connection." }])
+        } finally {
+            setIsChatting(false)
+        }
+    }
+
+    const handleAudioOverview = () => {
+        alert("Audio Overview: Processing your sources... Your AI-generated study podcast will be ready in a few minutes! (Simulation)")
+    }
+
     const handleSend = async () => {
         if (!input.trim()) return
         const userMsg = input
@@ -95,6 +138,34 @@ export function StudyClient({
                     <p className="text-muted-foreground text-sm">Synthesize multiple sources into one master concept.</p>
                 </div>
                 <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-neon-purple/20 text-neon-purple hover:bg-neon-purple/5"
+                        onClick={() => handleSynthesis('faq')}
+                    >
+                        <Brain size={14} />
+                        Gen FAQ
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-neon-cyan/20 text-neon-cyan hover:bg-neon-cyan/5"
+                        onClick={() => handleSynthesis('glossary')}
+                    >
+                        <Sparkles size={14} />
+                        Glossary
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        className="gap-2 bg-white/5 hover:bg-white/10"
+                        onClick={handleAudioOverview}
+                    >
+                        <Play size={14} />
+                        Audio Overview
+                    </Button>
+                    <div className="w-px h-8 bg-white/10 mx-2" />
                     <Button variant="outline" className="gap-2 border-dashed border-white/20 hover:border-neon-cyan/50 hover:bg-neon-cyan/5 relative">
                         <input
                             type="file"

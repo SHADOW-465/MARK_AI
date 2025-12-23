@@ -17,7 +17,7 @@ export default async function StudentDashboard() {
     // Fetch Student Data
     const { data: student } = await supabase
         .from("students")
-        .select("id, name, class, challenge_mode")
+        .select("id, name, class, challenge_mode, xp, streak, level")
         .eq("user_id", user.id)
         .maybeSingle()
 
@@ -168,7 +168,32 @@ export default async function StudentDashboard() {
                         Optimized for {student.challenge_mode ? "Mastery & Challenge" : "Efficiency & Growth"}.
                     </p>
                 </div>
-                <ChallengeModeToggle initialState={student.challenge_mode} studentId={student.id} />
+                <div className="flex items-center gap-6">
+                    {/* XP & Streak Display */}
+                    <div className="flex items-center gap-4 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl">
+                        <div className="flex items-center gap-2" title="Mastery Streak">
+                            <Flame size={20} className={cn(
+                                "transition-colors",
+                                (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500 animate-pulse" : "text-muted-foreground"
+                            )} />
+                            <span className="font-bold font-display">{student.streak || 0}</span>
+                        </div>
+                        <div className="h-6 w-px bg-white/10" />
+                        <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                                <span>Level {student.level || 1}</span>
+                                <span>{(student.xp || 0) % 1000}/1000 XP</span>
+                            </div>
+                            <div className="h-1.5 w-32 bg-white/10 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all duration-1000"
+                                    style={{ width: `${((student.xp || 0) % 1000) / 10}%` }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <ChallengeModeToggle initialState={student.challenge_mode} studentId={student.id} />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -278,10 +303,10 @@ export default async function StudentDashboard() {
                                             </div>
                                         </div>
                                         <ButtonAction
-                                            href={`/student/performance/${latestSheet?.id}`}
-                                            label="Fix Concept"
-                                            icon={<Play size={12} />}
-                                            className="text-[10px] h-8 px-4"
+                                            href={`/student/flashcards`}
+                                            label="Recall Fix"
+                                            icon={<Brain size={12} />}
+                                            className="text-[10px] h-8 px-4 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
                                         />
                                     </GlassCard>
                                 ))}
@@ -313,15 +338,24 @@ export default async function StudentDashboard() {
                             <p className="text-xs text-muted-foreground italic">Analyze an exam to see real-world impact.</p>
                         )}
 
-                        <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
-                            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Notebooks</h4>
-                            <Link href="/student/study" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all group">
-                                <div className="h-8 w-8 rounded flex items-center justify-center bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20">
-                                    <FileText size={16} />
+                        <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
+                            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Student OS Hubs</h4>
+                            <Link href="/student/vault" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all group">
+                                <div className="h-8 w-8 rounded flex items-center justify-center bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
+                                    <Folder size={16} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate">Class Notes</p>
-                                    <p className="text-[10px] text-muted-foreground">2 sources</p>
+                                    <p className="text-xs font-bold truncate">The Vault</p>
+                                    <p className="text-[10px] text-muted-foreground">Tasks & Knowledge</p>
+                                </div>
+                            </Link>
+                            <Link href="/student/flashcards" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all group">
+                                <div className="h-8 w-8 rounded flex items-center justify-center bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20">
+                                    <Brain size={16} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-bold truncate">Flashcards</p>
+                                    <p className="text-[10px] text-muted-foreground">Active Recall</p>
                                 </div>
                             </Link>
                         </div>
@@ -350,4 +384,4 @@ function ButtonAction({ href, label, icon, primary, className }: { href: string,
     )
 }
 
-import { AlertCircle, FileText, Sparkles } from "lucide-react"
+import { AlertCircle, FileText, Sparkles, Flame, Folder } from "lucide-react"

@@ -6,7 +6,7 @@ import { truncateContext } from "@/lib/utils"
 
 export async function POST(request: Request) {
   try {
-    const { message, fileIds = [], examIds = [] } = await request.json()
+    const { message, fileIds = [], examIds = [], synthesisType } = await request.json()
     const supabase = await createClient()
 
     // 0. Verify Student & Get User Details (Interests, Challenge Mode)
@@ -108,29 +108,40 @@ export async function POST(request: Request) {
 
     // 3. Construct System Prompt
     const modeInstruction = student.challenge_mode
-      ? "MODE: CHALLENGE. The student is a high-achiever. Do not simplify too much. Push them with edge cases, university-level applications, and deeper questions. Test their mastery."
+      ? "MODE: CHALLENGE. The student is a high-achiever. Do not simplify too much. Push them with edge cases, university-level applications, and deeper questions."
       : "MODE: SUPPORT. Explain concepts simply ('Like I'm 5'). Use analogies."
 
     const interestInstruction = (student.interests && student.interests.length > 0)
-      ? `ANALOGY FRAMEWORK: The student is interested in: ${student.interests.join(", ")}. Use these topics for metaphors and examples.`
+      ? `ANALOGY FRAMEWORK: Use student interests: ${student.interests.join(", ")}.`
       : ""
 
+    const synthesisInstruction = synthesisType === 'faq'
+      ? "FORMAT: Return a structured list of FAQs."
+      : synthesisType === 'glossary'
+        ? "FORMAT: Return a glossary list."
+        : ""
+
     const systemPrompt = `
-    You are an AI Tutor in the "Deep Work Studio".
+    You are an AI Tutor in the "Deep Work Studio", inspired by NotebookLM.
     ${modeInstruction}
     ${interestInstruction}
+    ${synthesisInstruction}
 
     ${gapContext}
 
+    SOURCE MATERIALS:
     ${fileContext}
     ${examContext}
 
-    If the context is missing, apologize and answer generally, but warn the user.
+    CRITICAL RULE FOR CITATIONS:
+    Whenever you use information from a source, YOU MUST cite it in-line using brackets with the source name, e.g. [[Force & Motion Notes]] or [[Midterm Physics Exam]].
+    
+    If the context is missing, apologize and answer generally.
     `
 
     // 4. Call Gemini
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-exp"),
+      model: google("gemini-1.5-flash"),
       messages: [
         {
           role: "system",
