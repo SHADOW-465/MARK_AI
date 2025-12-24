@@ -49,6 +49,31 @@ export async function POST(req: Request) {
 
         const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(fileName)
 
+        // 5. If study_material, also insert a database record
+        if (type === 'study_material') {
+            // Get student ID
+            const { data: student } = await supabase
+                .from('students')
+                .select('id')
+                .eq('user_id', user.id)
+                .single()
+
+            if (student) {
+                const { error: dbError } = await supabase.from('study_materials').insert({
+                    student_id: student.id,
+                    title: metadata.name,
+                    file_url: publicUrlData.publicUrl,
+                    file_type: fileExt,
+                    extracted_text: '[Google Drive import - text extraction pending]'
+                })
+
+                if (dbError) {
+                    console.error('DB insert error:', dbError)
+                    // Don't fail the whole request, file is already uploaded
+                }
+            }
+        }
+
         return NextResponse.json({
             success: true,
             fileId,
