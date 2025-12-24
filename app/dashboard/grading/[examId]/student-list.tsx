@@ -130,17 +130,35 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
             if (dbError) throw dbError
 
             // Trigger AI Grading
-            await fetch("/api/gemini/grade", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    sheetId: sheetData.id,
-                    fileUrls: uploadedUrls, // Send array
-                    examId: examId,
-                }),
-            })
+            try {
+                const gradeRes = await fetch("/api/gemini/grade", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sheetId: sheetData.id,
+                        fileUrls: uploadedUrls,
+                        examId: examId,
+                    }),
+                })
 
-            toast.success("Answer sheets uploaded and grading started")
+                const gradeData = await gradeRes.json()
+
+                if (!gradeRes.ok || gradeData.error) {
+                    // Update status to error if grading failed
+                    await supabase
+                        .from('answer_sheets')
+                        .update({ status: 'error' })
+                        .eq('id', sheetData.id)
+                    throw new Error(gradeData.error || 'Grading failed')
+                }
+
+                toast.success("Answer sheets uploaded and graded successfully")
+            } catch (gradeError: any) {
+                console.error("Grading error:", gradeError)
+                toast.error(`Grading failed: ${gradeError.message}`)
+                // Status already updated to error in the catch above or remains processing for retry
+            }
+
             setIsOpen(false)
             setFiles([])
             router.refresh()
@@ -186,17 +204,33 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
             if (dbError) throw dbError
 
             // 3. Trigger AI Grading
-            await fetch('/api/gemini/grade', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sheetId: sheetData.id,
-                    fileUrls: [driveData.supabaseUrl],
-                    examId: examId,
-                }),
-            })
+            try {
+                const gradeRes = await fetch('/api/gemini/grade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sheetId: sheetData.id,
+                        fileUrls: [driveData.supabaseUrl],
+                        examId: examId,
+                    }),
+                })
 
-            toast.success(`Imported "${driveData.fileName}" and grading started`)
+                const gradeData = await gradeRes.json()
+
+                if (!gradeRes.ok || gradeData.error) {
+                    await supabase
+                        .from('answer_sheets')
+                        .update({ status: 'error' })
+                        .eq('id', sheetData.id)
+                    throw new Error(gradeData.error || 'Grading failed')
+                }
+
+                toast.success(`Imported "${driveData.fileName}" and graded successfully`)
+            } catch (gradeError: any) {
+                console.error('Grading error:', gradeError)
+                toast.error(`Grading failed: ${gradeError.message}`)
+            }
+
             setIsOpen(false)
             setDriveUrl('')
             router.refresh()
