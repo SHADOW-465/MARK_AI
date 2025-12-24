@@ -4,7 +4,7 @@ import { useState } from "react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Upload, FileText, Send, Sparkles, Target, Brain, Play } from "lucide-react"
+import { Upload, FileText, Send, Sparkles, Target, Brain, Play, Link2 } from "lucide-react"
 import { uploadStudyMaterial } from "@/app/actions/study"
 
 export function StudyClient({
@@ -26,6 +26,9 @@ export function StudyClient({
     ])
     const [input, setInput] = useState("")
     const [isChatting, setIsChatting] = useState(false)
+    const [showDriveDialog, setShowDriveDialog] = useState(false)
+    const [driveUrl, setDriveUrl] = useState('')
+    const [isDriveImporting, setIsDriveImporting] = useState(false)
 
     const toggleFile = (id: string) => {
         setSelectedFileIds(prev =>
@@ -55,6 +58,29 @@ export function StudyClient({
             window.location.reload()
         }
         setIsUploading(false)
+    }
+
+    const handleDriveImport = async () => {
+        if (!driveUrl.trim()) return
+        setIsDriveImporting(true)
+        try {
+            const res = await fetch('/api/drive/fetch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ driveUrl, type: 'study_material' })
+            })
+            const data = await res.json()
+            if (!res.ok || data.error) throw new Error(data.error)
+
+            // Reload to show new material
+            setShowDriveDialog(false)
+            setDriveUrl('')
+            window.location.reload()
+        } catch (error: any) {
+            alert(error.message || 'Failed to import from Drive')
+        } finally {
+            setIsDriveImporting(false)
+        }
     }
 
     const handleSynthesis = async (type: 'faq' | 'glossary' | 'guide') => {
@@ -166,19 +192,62 @@ export function StudyClient({
                         Audio Overview
                     </Button>
                     <div className="w-px h-8 bg-white/10 mx-2" />
-                    <Button variant="outline" className="gap-2 border-dashed border-white/20 hover:border-neon-cyan/50 hover:bg-neon-cyan/5 relative">
-                        <input
-                            type="file"
-                            accept=".pdf,.txt,.md"
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                            onChange={handleUpload}
-                            disabled={isUploading}
-                        />
-                        <Upload size={16} />
-                        {isUploading ? "Uploading..." : "Add Source"}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" className="gap-2 border-dashed border-white/20 hover:border-neon-cyan/50 hover:bg-neon-cyan/5 relative">
+                            <input
+                                type="file"
+                                accept=".pdf,.txt,.md"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                onChange={handleUpload}
+                                disabled={isUploading}
+                            />
+                            <Upload size={16} />
+                            {isUploading ? "Uploading..." : "Upload"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="gap-2 border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                            onClick={() => setShowDriveDialog(true)}
+                        >
+                            <Link2 size={16} />
+                            Drive
+                        </Button>
+                    </div>
                 </div>
             </div>
+
+            {/* Drive Import Dialog */}
+            {showDriveDialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <GlassCard className="w-full max-w-md p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                <Link2 className="text-purple-400" size={20} />
+                                Import from Google Drive
+                            </h3>
+                            <Button variant="ghost" size="icon" onClick={() => setShowDriveDialog(false)}>
+                                ×
+                            </Button>
+                        </div>
+                        <Input
+                            placeholder="https://drive.google.com/file/d/..."
+                            value={driveUrl}
+                            onChange={(e) => setDriveUrl(e.target.value)}
+                            className="bg-white/5 border-white/10"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Paste a Google Drive share link. Make sure the file is set to &quot;Anyone with link&quot;.
+                        </p>
+                        <Button
+                            className="w-full bg-purple-600 hover:bg-purple-500"
+                            onClick={handleDriveImport}
+                            disabled={!driveUrl.trim() || isDriveImporting}
+                        >
+                            {isDriveImporting ? 'Importing...' : 'Import to Notebook'}
+                        </Button>
+                    </GlassCard>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
                 {/* Knowledge Base Sidebar */}
@@ -292,6 +361,6 @@ export function StudyClient({
                     </GlassCard>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
