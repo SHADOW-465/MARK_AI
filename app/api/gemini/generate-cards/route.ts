@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+import { generateText } from "ai"
+import { google } from "@ai-sdk/google"
 
 export async function POST(req: Request) {
     try {
@@ -19,6 +18,10 @@ export async function POST(req: Request) {
             .eq("id", sheetId)
             .single()
 
+        if (!sheet) {
+            return new NextResponse("Answer sheet not found", { status: 404 })
+        }
+
         const { data: evals } = await supabase
             .from("question_evaluations")
             .select("question_num, gaps, strengths, extracted_text")
@@ -30,13 +33,13 @@ export async function POST(req: Request) {
         }
 
         // 2. Prepare Prompt for Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+        const examData = sheet.exams as { exam_name: string; subject: string }
         const prompt = `
             You are an expert tutor. I will provide you with AI-generated feedback on a student's exam answers.
             Your goal is to create high-quality active recall flashcards (Question/Answer/Explanation) to help the student fix these specific gaps.
             
-            Subject: ${sheet.exams.subject}
-            Exam: ${sheet.exams.exam_name}
+            Subject: ${examData.subject}
+            Exam: ${examData.exam_name}
             
             Feedback Data:
             ${JSON.stringify(evals.map(e => ({ q: e.question_num, text: e.extracted_text, gap: e.gaps })))}
@@ -50,8 +53,11 @@ export async function POST(req: Request) {
             Only return the JSON array.
         `
 
-        const result = await model.generateContent(prompt)
-        const text = result.response.text()
+        const { text } = await generateText({
+            model: google("gemini-1.5-flash"),
+            prompt: prompt,
+        })
+
         // Clean markdown if present
         const jsonMatch = text.match(/\[[\s\S]*\]/)
         const cards = JSON.parse(jsonMatch ? jsonMatch[0] : text)
@@ -62,7 +68,7 @@ export async function POST(req: Request) {
             .insert(cards.map((c: any) => ({
                 student_id: sheet.student_id,
                 source_answer_sheet_id: sheetId,
-                subject: sheet.exams.subject,
+                subject: examData.subject,
                 question: c.question,
                 answer: c.answer,
                 explanation: c.explanation,
