@@ -32,7 +32,8 @@ export async function POST(req: Request) {
         // 4. Upload to Supabase Storage
         const bucket = type === 'answer_sheet' ? 'answer-sheets' : 'study_materials'
         const fileExt = metadata.name.split('.').pop() || 'bin'
-        const fileName = `drive-import/${Date.now()}-${fileId}.${fileExt}`
+        // Use user ID as folder to avoid UUID parsing issues
+        const fileName = `${user.id}/${Date.now()}-gdrive.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
             .from(bucket)
