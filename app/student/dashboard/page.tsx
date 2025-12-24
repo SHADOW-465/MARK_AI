@@ -4,6 +4,7 @@ import { ArrowUpRight, Target, Brain, TrendingUp, Zap, ArrowRight, Play } from "
 import Link from "next/link"
 import { ChallengeModeToggle } from "@/components/dashboard/challenge-mode-toggle"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
+import { StreakReminder } from "@/components/student/streak-reminder"
 import { cn } from "@/lib/utils"
 
 export default async function StudentDashboard() {
@@ -17,7 +18,7 @@ export default async function StudentDashboard() {
     // Fetch Student Data
     const { data: student } = await supabase
         .from("students")
-        .select("id, name, class, challenge_mode, xp, streak, level")
+        .select("id, name, class, challenge_mode, xp, streak, level, last_active_at")
         .eq("user_id", user.id)
         .maybeSingle()
 
@@ -158,6 +159,9 @@ export default async function StudentDashboard() {
 
     return (
         <div className="space-y-10 pb-20">
+            {/* Streak Reminder (Client Component) */}
+            <StreakReminder streak={student.streak || 0} lastActiveAt={student.last_active_at} />
+
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

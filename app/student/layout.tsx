@@ -1,7 +1,7 @@
 import type React from "react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
-import { Home, BookOpen, BarChart2, Calendar, LogOut, Folder, Brain } from "lucide-react"
+import { Home, BookOpen, BarChart2, Calendar, LogOut, Folder, Brain, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
@@ -44,6 +44,7 @@ export default async function StudentLayout({
                         <NavLink href="/student/vault" icon={Folder} label="The Vault" />
                         <NavLink href="/student/flashcards" icon={Brain} label="Flashcards" />
                         <NavLink href="/student/study" icon={BookOpen} label="Deep Work Studio" />
+                        <NavLink href="/student/analytics" icon={TrendingUp} label="Analytics" />
                         <NavLink href="/student/performance" icon={BarChart2} label="Performance Lab" />
                         <NavLink href="/student/planner" icon={Calendar} label="Autopilot" />
                     </nav>
@@ -63,7 +64,7 @@ export default async function StudentLayout({
                     <Link href="/student/dashboard" className="p-2 text-muted-foreground hover:text-neon-cyan"><Home size={20} /></Link>
                     <Link href="/student/vault" className="p-2 text-muted-foreground hover:text-neon-purple"><Folder size={20} /></Link>
                     <Link href="/student/flashcards" className="p-2 text-muted-foreground hover:text-neon-cyan"><Brain size={20} /></Link>
-                    <Link href="/student/study" className="p-2 text-muted-foreground hover:text-neon-cyan"><BookOpen size={20} /></Link>
+                    <Link href="/student/analytics" className="p-2 text-muted-foreground hover:text-neon-cyan"><TrendingUp size={20} /></Link>
                     <Link href="/student/performance" className="p-2 text-muted-foreground hover:text-neon-cyan"><BarChart2 size={20} /></Link>
                 </div>
 

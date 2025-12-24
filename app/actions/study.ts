@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { extractTextFromPDF, isPDF } from "@/lib/pdf-extract"
 
 export async function uploadStudyMaterial(formData: FormData) {
     const supabase = await createClient()
@@ -17,7 +18,7 @@ export async function uploadStudyMaterial(formData: FormData) {
     if (!file) return { error: "No file provided" }
 
     // 1. Upload to Supabase Storage
-    const fileExt = file.name.split('.').pop()
+    const fileExt = file.name.split('.').pop() || 'bin'
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
     const filePath = `${student.id}/${fileName}`
 
@@ -26,21 +27,29 @@ export async function uploadStudyMaterial(formData: FormData) {
         .upload(filePath, file)
 
     if (uploadError) {
-        // If bucket doesn't exist, this fails.
-        // Ideally we handle this, but for now we return error.
         return { error: `Upload failed: ${uploadError.message}` }
     }
 
     const { data: publicUrlData } = supabase.storage.from('study_materials').getPublicUrl(filePath)
 
-    // 2. Simple Text Extraction (Mock/Basic)
-    // For real PDF extraction, we'd need a library.
-    // Here we check if it's a text file.
+    // 2. Text Extraction
     let extractedText = null
+
     if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        // Plain text files
         extractedText = await file.text()
+    } else if (isPDF(file.name, file.type)) {
+        // PDF files - extract text
+        try {
+            const arrayBuffer = await file.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            extractedText = await extractTextFromPDF(buffer)
+        } catch (error) {
+            console.error('PDF extraction error:', error)
+            extractedText = '[PDF text extraction failed]'
+        }
     } else {
-        extractedText = "[PDF/Image content extraction pending]"
+        extractedText = '[Image/binary content - no text extracted]'
     }
 
     // 3. Insert Record
