@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, UploadCloud, FileText, CheckCircle, AlertCircle, ChevronRight, X, Link2 } from "lucide-react"
+import { Loader2, UploadCloud, FileText, CheckCircle, AlertCircle, ChevronRight, X, Link2, Trash2, RefreshCw, MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -57,6 +57,8 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
     const [uploadMode, setUploadMode] = useState<'file' | 'drive'>('file')
     const [driveUrl, setDriveUrl] = useState('')
     const [isDriveFetching, setIsDriveFetching] = useState(false)
+    const [isDeleting, setIsDeleting] = useState<string | null>(null)
+    const [showActionsFor, setShowActionsFor] = useState<string | null>(null)
 
     const getStudentSheet = (studentId: string) => {
         return answerSheets.find(s => s.student_id === studentId)
@@ -99,17 +101,22 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
                 uploadedUrls.push(publicUrl)
             }
 
-            // Insert or Update Answer Sheet
-            // We use upsert to handle re-uploads if needed, but for now insert is fine as per logic
-            // Actually, if a sheet exists, we might want to update it. But the UI shows "Review" if sheet exists.
-            // So this is for new uploads.
+            // Check if sheet already exists (reupload case)
+            const existingSheet = getStudentSheet(studentId)
+            if (existingSheet) {
+                // Delete old data first
+                await supabase.from('question_evaluations').delete().eq('answer_sheet_id', existingSheet.id)
+                await supabase.from('feedback_analysis').delete().eq('answer_sheet_id', existingSheet.id)
+                await supabase.from('answer_sheets').delete().eq('id', existingSheet.id)
+            }
 
+            // Insert new Answer Sheet
             const { data: sheetData, error: dbError } = await supabase
                 .from("answer_sheets")
                 .insert({
                     exam_id: examId,
                     student_id: studentId,
-                    file_urls: uploadedUrls, // New column
+                    file_urls: uploadedUrls,
                     status: "processing",
                 })
                 .select()
@@ -196,6 +203,39 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
         }
     }
 
+    const handleDeleteSheet = async (sheetId: string) => {
+        if (!confirm('Are you sure you want to delete this answer sheet? This will remove all grading data.')) return
+
+        setIsDeleting(sheetId)
+        const supabase = createClient()
+
+        try {
+            // Delete related records first
+            await supabase.from('question_evaluations').delete().eq('answer_sheet_id', sheetId)
+            await supabase.from('feedback_analysis').delete().eq('answer_sheet_id', sheetId)
+
+            // Delete the answer sheet
+            const { error } = await supabase.from('answer_sheets').delete().eq('id', sheetId)
+            if (error) throw error
+
+            toast.success('Answer sheet deleted successfully')
+            router.refresh()
+        } catch (error: any) {
+            console.error('Delete error:', error)
+            toast.error(error.message || 'Failed to delete answer sheet')
+        } finally {
+            setIsDeleting(null)
+            setShowActionsFor(null)
+        }
+    }
+
+    const handleReupload = (studentId: string) => {
+        // Close actions menu and open upload dialog
+        setShowActionsFor(null)
+        setUploadingFor(studentId)
+        setIsOpen(true)
+    }
+
     return (
         <GlassCard className="p-0 overflow-hidden">
             <Table>
@@ -247,11 +287,49 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {sheet ? (
-                                        <Link href={`/dashboard/grading/${examId}/${sheet.id}`}>
-                                            <Button variant="ghost" size="sm" className="hover:bg-cyan-500/20 hover:text-cyan-400">
-                                                Review <ChevronRight className="w-4 h-4 ml-1" />
-                                            </Button>
-                                        </Link>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Link href={`/dashboard/grading/${examId}/${sheet.id}`}>
+                                                <Button variant="ghost" size="sm" className="hover:bg-cyan-500/20 hover:text-cyan-400">
+                                                    Review <ChevronRight className="w-4 h-4 ml-1" />
+                                                </Button>
+                                            </Link>
+
+                                            {/* Actions Dropdown */}
+                                            <div className="relative">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-slate-400 hover:text-white"
+                                                    onClick={() => setShowActionsFor(showActionsFor === sheet.id ? null : sheet.id)}
+                                                >
+                                                    <MoreHorizontal className="w-4 h-4" />
+                                                </Button>
+
+                                                {showActionsFor === sheet.id && (
+                                                    <div className="absolute right-0 top-full mt-1 w-40 bg-slate-900 border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                                                        <button
+                                                            onClick={() => handleReupload(student.id)}
+                                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                        >
+                                                            <RefreshCw className="w-4 h-4" />
+                                                            Reupload
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteSheet(sheet.id)}
+                                                            disabled={isDeleting === sheet.id}
+                                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors disabled:opacity-50"
+                                                        >
+                                                            {isDeleting === sheet.id ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                            ) : (
+                                                                <Trash2 className="w-4 h-4" />
+                                                            )}
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     ) : (
                                         <Dialog open={isOpen && uploadingFor === student.id} onOpenChange={(open) => {
                                             setIsOpen(open)
@@ -280,8 +358,8 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
                                                         <button
                                                             onClick={() => setUploadMode('file')}
                                                             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${uploadMode === 'file'
-                                                                    ? 'bg-cyan-500/20 text-cyan-400'
-                                                                    : 'text-slate-400 hover:text-white'
+                                                                ? 'bg-cyan-500/20 text-cyan-400'
+                                                                : 'text-slate-400 hover:text-white'
                                                                 }`}
                                                         >
                                                             <UploadCloud className="w-4 h-4" />
@@ -290,8 +368,8 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
                                                         <button
                                                             onClick={() => setUploadMode('drive')}
                                                             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${uploadMode === 'drive'
-                                                                    ? 'bg-purple-500/20 text-purple-400'
-                                                                    : 'text-slate-400 hover:text-white'
+                                                                ? 'bg-purple-500/20 text-purple-400'
+                                                                : 'text-slate-400 hover:text-white'
                                                                 }`}
                                                         >
                                                             <Link2 className="w-4 h-4" />
