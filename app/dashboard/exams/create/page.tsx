@@ -18,9 +18,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, Plus, Trash2, Wand2, FileText, Save, Sparkles } from "lucide-react"
+import { useVoiceForm } from "@/components/voice-assistant"
 
 interface Question {
   question_num: number
@@ -59,6 +60,21 @@ export default function CreateExamPage() {
       model_answer: "",
     },
   ])
+
+  // Voice Assistant Integration
+  const voiceFieldSetters = useMemo(() => ({
+    examName: setExamName,
+    subject: setSubject,
+    className: setClassName,
+    class: setClassName, // Alias
+    totalMarks: (v: any) => setTotalMarks(Number(v)),
+    marks: (v: any) => setTotalMarks(Number(v)), // Alias
+    examDate: setExamDate,
+    date: setExamDate, // Alias
+    passingPercentage: (v: any) => setPassingPercentage(Number(v))
+  }), [])
+
+  useVoiceForm("exam_creation", voiceFieldSetters)
 
   const addQuestion = () => {
     setQuestions([
