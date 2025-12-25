@@ -111,29 +111,31 @@ export default async function StudentDashboard() {
 
 
     // 4. Recent Graded Exams for Progress Tracking
-    const { data: recentExams } = await supabase
+    // Use exams!inner or exams to control join behavior
+    const { data: recentExams, error: recentExamsError } = await supabase
         .from("answer_sheets")
         .select(`
         id,
         total_score,
         status,
         created_at,
-        exams (exam_name, total_marks, subject)
+        exam_id,
+        exams!left (exam_name, total_marks, subject)
     `)
         .eq("student_id", student.id)
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(3)
 
-    // DEBUG: Fetch ALL answer sheets for this student (any status)
+    // DEBUG: Fetch ALL answer sheets for this student (any status) INCLUDING exam_id
     const { data: debugAllSheets } = await supabase
         .from("answer_sheets")
-        .select("id, status, total_score, student_id")
+        .select("id, status, total_score, student_id, exam_id")
         .eq("student_id", student.id)
         .limit(10)
 
     // Log for debugging
-    console.log("DEBUG: Student ID:", student.id, "All sheets:", debugAllSheets, "Approved:", recentExams)
+    console.log("DEBUG: Student ID:", student.id, "All sheets:", debugAllSheets, "Approved:", recentExams, "Error:", recentExamsError)
 
     // 5. Improvement Path: Finding Specific Gaps (Questions where score < 70% of max)
     let gaps: any[] = []
@@ -185,12 +187,13 @@ export default async function StudentDashboard() {
                         <ul className="mt-2 space-y-1">
                             {debugAllSheets.map((s: any) => (
                                 <li key={s.id}>
-                                    Sheet ID: {s.id.slice(0, 8)}... | Status: <span className={s.status === 'approved' ? 'text-green-400' : 'text-yellow-400'}>{s.status}</span> | Score: {s.total_score}
+                                    Sheet ID: {s.id.slice(0, 8)}... | Status: <span className={s.status === 'approved' ? 'text-green-400' : 'text-yellow-400'}>{s.status}</span> | Score: {s.total_score} | Exam: {s.exam_id?.slice(0, 8) || 'NULL'}
                                 </li>
                             ))}
                         </ul>
                     )}
                     <p className="mt-2 text-muted-foreground">Approved sheets shown below: {recentExams?.length || 0}</p>
+                    {recentExamsError && <p className="text-red-400">Query Error: {recentExamsError.message}</p>}
                 </div>
             )}
 
