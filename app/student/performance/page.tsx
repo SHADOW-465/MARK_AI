@@ -5,6 +5,8 @@ import { CheckCircle, AlertCircle, Clock, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { PredictiveGradeSandbox } from "@/components/performance/predictive-grade-sandbox"
 
+export const dynamic = 'force-dynamic'
+
 export default async function PerformanceLab() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

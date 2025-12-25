@@ -7,6 +7,8 @@ import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
 import { StreakReminder } from "@/components/student/streak-reminder"
 import { cn } from "@/lib/utils"
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudentDashboard() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

@@ -4,6 +4,8 @@ import Link from "next/link"
 import { ChevronRight, FileText, Users, CheckCircle, Clock } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
+export const dynamic = 'force-dynamic'
+
 export default async function GradingPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
