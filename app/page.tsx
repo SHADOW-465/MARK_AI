@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Loader2, GraduationCap, LayoutDashboard } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useVoiceForm } from "@/components/voice-assistant"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -21,6 +22,14 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState<"admin" | "student">("admin")
   const router = useRouter()
+
+  // Voice Assistant Integration
+  const voiceFieldSetters = useMemo(() => ({
+    email: setEmail,
+    password: setPassword
+  }), [])
+
+  useVoiceForm("login", voiceFieldSetters)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,32 +58,32 @@ export default function LoginPage() {
             .single()
 
           if (student) {
-             router.push("/student/dashboard")
+            router.push("/student/dashboard")
           } else {
-             // User exists in Auth but not linked to a student record.
-             // This can happen if the linking failed during signup or if they signed up as admin but try student login.
-             // We should check if they are an admin trying to log in as student?
-             // Or just redirect them to a generic dashboard?
-             // Prompt requested: "student login should redirect to the student dashboard"
-             // If not linked, maybe they are a teacher?
-             // Let's check metadata.
-             if (user.user_metadata?.role === 'teacher') {
-                 setError("You are registered as a Teacher. Please login as Admin.")
-                 await supabase.auth.signOut()
-                 return
-             }
+            // User exists in Auth but not linked to a student record.
+            // This can happen if the linking failed during signup or if they signed up as admin but try student login.
+            // We should check if they are an admin trying to log in as student?
+            // Or just redirect them to a generic dashboard?
+            // Prompt requested: "student login should redirect to the student dashboard"
+            // If not linked, maybe they are a teacher?
+            // Let's check metadata.
+            if (user.user_metadata?.role === 'teacher') {
+              setError("You are registered as a Teacher. Please login as Admin.")
+              await supabase.auth.signOut()
+              return
+            }
 
-             // If metadata says student but no record found (rare edge case), maybe redirect to a "complete profile" page?
-             // For now, we assume if they logged in successfully, they go to dashboard.
-             // The dashboard layout will handle missing profile data.
-             router.push("/student/dashboard")
+            // If metadata says student but no record found (rare edge case), maybe redirect to a "complete profile" page?
+            // For now, we assume if they logged in successfully, they go to dashboard.
+            // The dashboard layout will handle missing profile data.
+            router.push("/student/dashboard")
           }
         } else {
           // Admin / Teacher Login
           if (user.user_metadata?.role === 'student') {
-             setError("You are registered as a Student. Please login as Student.")
-             await supabase.auth.signOut()
-             return
+            setError("You are registered as a Student. Please login as Student.")
+            await supabase.auth.signOut()
+            return
           }
           router.push("/dashboard")
         }
@@ -116,15 +125,15 @@ export default function LoginPage() {
                   value="admin"
                   className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-cyan/10 data-[state=active]:text-neon-cyan data-[state=active]:shadow-[0_0_20px_-5px_rgba(0,243,255,0.3)] data-[state=active]:border-neon-cyan/20 border border-transparent"
                 >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Admin
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Admin
                 </TabsTrigger>
                 <TabsTrigger
                   value="student"
                   className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-purple/10 data-[state=active]:text-neon-purple data-[state=active]:shadow-[0_0_20px_-5px_rgba(188,19,254,0.3)] data-[state=active]:border-neon-purple/20 border border-transparent"
                 >
-                    <GraduationCap className="w-4 h-4 mr-2" />
-                    Student
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Student
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -159,11 +168,10 @@ export default function LoginPage() {
                 {error && <p className="text-sm text-red-500">{error}</p>}
                 <Button
                   type="submit"
-                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${
-                    role === 'student'
-                    ? 'bg-gradient-to-r from-neon-purple to-pink-500'
-                    : 'bg-gradient-to-r from-neon-cyan to-neon-purple'
-                  }`}
+                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${role === 'student'
+                      ? 'bg-gradient-to-r from-neon-purple to-pink-500'
+                      : 'bg-gradient-to-r from-neon-cyan to-neon-purple'
+                    }`}
                   disabled={isLoading}
                 >
                   {isLoading ? (

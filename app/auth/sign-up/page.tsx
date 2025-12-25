@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Loader2, LayoutDashboard, GraduationCap } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useVoiceForm } from "@/components/voice-assistant"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -27,6 +28,21 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  // Voice Assistant Integration
+  const voiceFieldSetters = useMemo(() => ({
+    email: setEmail,
+    password: setPassword,
+    name: setName,
+    fullName: setFullName,
+    rollNumber: setRollNumber,
+    roll: setRollNumber, // Alias
+    studentClass: setStudentClass,
+    class: setStudentClass, // Alias
+    section: setSection
+  }), [])
+
+  useVoiceForm("signup", voiceFieldSetters)
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
