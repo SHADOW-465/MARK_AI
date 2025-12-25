@@ -116,6 +116,7 @@ export default async function StudentDashboard() {
         .select(`
         id,
         total_score,
+        status,
         created_at,
         exams (exam_name, total_marks, subject)
     `)
@@ -123,6 +124,16 @@ export default async function StudentDashboard() {
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(3)
+
+    // DEBUG: Fetch ALL answer sheets for this student (any status)
+    const { data: debugAllSheets } = await supabase
+        .from("answer_sheets")
+        .select("id, status, total_score, student_id")
+        .eq("student_id", student.id)
+        .limit(10)
+
+    // Log for debugging
+    console.log("DEBUG: Student ID:", student.id, "All sheets:", debugAllSheets, "Approved:", recentExams)
 
     // 5. Improvement Path: Finding Specific Gaps (Questions where score < 70% of max)
     let gaps: any[] = []
@@ -163,6 +174,25 @@ export default async function StudentDashboard() {
         <div className="space-y-10 pb-20">
             {/* Streak Reminder (Client Component) */}
             <StreakReminder streak={student.streak || 0} lastActiveAt={student.last_active_at} />
+
+            {/* DEBUG: Show data linkage info (remove after debugging) */}
+            {debugAllSheets && (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs">
+                    <p className="font-bold text-amber-400 mb-2">🔍 Debug Info (will be removed)</p>
+                    <p>Your Student ID: <code className="bg-black/20 px-1 rounded">{student.id}</code></p>
+                    <p>Total Answer Sheets Found: <span className="font-bold">{debugAllSheets?.length || 0}</span></p>
+                    {debugAllSheets?.length > 0 && (
+                        <ul className="mt-2 space-y-1">
+                            {debugAllSheets.map((s: any) => (
+                                <li key={s.id}>
+                                    Sheet ID: {s.id.slice(0, 8)}... | Status: <span className={s.status === 'approved' ? 'text-green-400' : 'text-yellow-400'}>{s.status}</span> | Score: {s.total_score}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    <p className="mt-2 text-muted-foreground">Approved sheets shown below: {recentExams?.length || 0}</p>
+                </div>
+            )}
 
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
