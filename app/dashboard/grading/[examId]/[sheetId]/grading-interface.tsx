@@ -393,6 +393,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                             <Textarea
                               value={ev.reasoning}
                               onChange={(e) => handleFeedbackChange(index, e.target.value)}
+                              enableVoice
                               className="text-sm min-h-[60px] max-h-[200px] overflow-y-auto bg-transparent border-white/10 focus:border-indigo-500/50 text-slate-300 resize-none"
                               placeholder="AI Feedback..."
                             />
@@ -426,6 +427,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                     <Textarea
                       value={overallFeedback}
                       onChange={(e) => setOverallFeedback(e.target.value)}
+                      enableVoice
                       className="min-h-[150px] max-h-[300px] overflow-y-auto bg-black/20 border-white/10 text-slate-300 mb-4"
                       placeholder="Enter overall feedback for the student..."
                     />

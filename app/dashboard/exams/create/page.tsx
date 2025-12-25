@@ -248,6 +248,7 @@ export default function CreateExamPage() {
                     <Textarea
                       placeholder="Paste your questions here. e.g.&#10;1. What is the speed of light? (2 marks)&#10;2. Explain Newton's First Law. (5 marks)"
                       className="min-h-[200px] max-h-[500px] overflow-y-auto bg-background/50"
+                      enableVoice
                       value={importText}
                       onChange={(e) => setImportText(e.target.value)}
                     />
@@ -279,6 +280,7 @@ export default function CreateExamPage() {
                     <Textarea
                       placeholder="e.g. Create 5 questions. Mix of multiple choice and short answer. Hard difficulty."
                       className="bg-background/50 max-h-[200px] overflow-y-auto"
+                      enableVoice
                       value={generationPrompt}
                       onChange={(e) => setGenerationPrompt(e.target.value)}
                     />
@@ -459,6 +461,7 @@ export default function CreateExamPage() {
                         placeholder="Enter the question here..."
                         value={question.question_text}
                         onChange={(e) => updateQuestion(index, "question_text", e.target.value)}
+                        enableVoice
                         required
                         className="bg-background/50 min-h-[80px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
@@ -484,6 +487,7 @@ export default function CreateExamPage() {
                         placeholder="What is the ideal answer?"
                         value={question.model_answer}
                         onChange={(e) => updateQuestion(index, "model_answer", e.target.value)}
+                        enableVoice
                         required
                         className="bg-background/50 min-h-[100px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
@@ -494,6 +498,7 @@ export default function CreateExamPage() {
                         placeholder="e.g. 2 marks for definition, 3 marks for diagram..."
                         value={question.rubric}
                         onChange={(e) => updateQuestion(index, "rubric", e.target.value)}
+                        enableVoice
                         required
                         className="bg-background/50 min-h-[100px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
