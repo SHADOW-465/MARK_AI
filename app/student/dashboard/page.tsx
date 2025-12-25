@@ -118,13 +118,11 @@ export default async function StudentDashboard() {
         id,
         total_score,
         status,
-        created_at,
         exam_id,
         exams!left (exam_name, total_marks, subject)
     `)
         .eq("student_id", student.id)
         .eq("status", "approved")
-        .order("created_at", { ascending: false })
         .limit(3)
 
     // DEBUG: Fetch ALL answer sheets for this student (any status) INCLUDING exam_id
