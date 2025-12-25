@@ -23,18 +23,17 @@ export default async function PerformanceLab() {
     let lastExamStats = { concept: 0, calculation: 0, keyword: 0, currentGrade: 0, maxScore: 100 }
 
     if (student) {
-        // Fetch Answer Sheets with Exam details
+        // Fetch Answer Sheets with Exam details (use left join for deleted exams)
         const { data: sheets } = await supabase
             .from("answer_sheets")
             .select(`
         id,
         total_score,
         status,
-        created_at,
-        exam:exams (exam_name, total_marks, subject)
+        exam_id,
+        exams!left (exam_name, total_marks, subject)
       `)
             .eq("student_id", student.id)
-            .order("created_at", { ascending: false })
 
         exams = sheets || []
 
@@ -67,7 +66,7 @@ export default async function PerformanceLab() {
                     calculation: Number(r.calculation || 0),
                     keyword: Number(r.keyword || 0),
                     currentGrade: latestApproved.total_score,
-                    maxScore: latestApproved.exam?.total_marks || 100
+                    maxScore: latestApproved.exams?.total_marks || 100
                 }
             }
         }
@@ -108,10 +107,10 @@ export default async function PerformanceLab() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-foreground text-lg">
-                                                {sheet.exam?.exam_name || "Unknown Exam"}
+                                                {sheet.exams?.exam_name || "Unknown Exam"}
                                             </h4>
                                             <p className="text-sm text-muted-foreground">
-                                                {sheet.exam?.subject} • {new Date(sheet.created_at).toLocaleDateString()}
+                                                {sheet.exams?.subject || 'General'}
                                             </p>
                                         </div>
                                     </div>
@@ -120,7 +119,7 @@ export default async function PerformanceLab() {
                                         {sheet.status === 'approved' ? (
                                             <>
                                                 <div className="text-2xl font-bold font-display">
-                                                    {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-normal">/ {sheet.exam?.total_marks}</span>
+                                                    {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-normal">/ {sheet.exams?.total_marks || '?'}</span>
                                                 </div>
                                                 <div className="text-xs font-mono text-muted-foreground">SCORE</div>
                                             </>

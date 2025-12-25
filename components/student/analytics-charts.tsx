@@ -6,7 +6,7 @@ import { TrendingUp, Flame, Zap, FileText, Target, Award } from "lucide-react"
 
 interface AnalyticsChartsProps {
     xpData: Array<{ date: string; xp: number; totalXp: number }>
-    examScoreData: Array<{ name: string; score: number; total: number; percentage: number; subject: string; date: string }>
+    examScoreData: Array<{ name: string; score: number; total: number; percentage: number; subject: string; date?: string }>
     subjectData: Array<{ subject: string; avgScore: number; examsCount: number }>
     currentStats: {
         xp: number
@@ -96,7 +96,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                         <ResponsiveContainer width="100%" height={250}>
                             <BarChart data={examScoreData}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                                <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
+                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
                                 <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} />
                                 <Tooltip
                                     contentStyle={{

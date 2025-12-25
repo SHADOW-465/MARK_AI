@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { AnalyticsCharts } from "@/components/student/analytics-charts"
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudentAnalytics() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -11,7 +13,7 @@ export default async function StudentAnalytics() {
     // Get student
     const { data: student } = await supabase
         .from("students")
-        .select("id, name, xp, streak, level, created_at")
+        .select("id, name, xp, streak, level")
         .eq("user_id", user.id)
         .single()
 
@@ -19,7 +21,7 @@ export default async function StudentAnalytics() {
         return <div className="text-center py-20 text-muted-foreground">Student record not found.</div>
     }
 
-    // Fetch XP logs for chart
+    // Fetch XP logs for chart (xp_logs table has created_at)
     const { data: xpLogs } = await supabase
         .from("xp_logs")
         .select("amount, activity_type, created_at")
@@ -27,18 +29,17 @@ export default async function StudentAnalytics() {
         .order("created_at", { ascending: true })
         .limit(50)
 
-    // Fetch exam history
+    // Fetch exam history (use left join for deleted exams, don't use created_at from answer_sheets)
     const { data: examHistory } = await supabase
         .from("answer_sheets")
         .select(`
             id,
             total_score,
-            created_at,
-            exams (exam_name, total_marks, subject)
+            exam_id,
+            exams!left (exam_name, total_marks, subject)
         `)
         .eq("student_id", student.id)
         .eq("status", "approved")
-        .order("created_at", { ascending: true })
 
     // Aggregate data for charts
     const xpChartData = xpLogs?.reduce((acc: any[], log) => {
@@ -65,8 +66,7 @@ export default async function StudentAnalytics() {
         score: sheet.total_score,
         total: sheet.exams?.total_marks || 100,
         percentage: Math.round((sheet.total_score / (sheet.exams?.total_marks || 100)) * 100),
-        subject: sheet.exams?.subject || 'General',
-        date: new Date(sheet.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        subject: sheet.exams?.subject || 'General'
     })) || []
 
     // Subject-wise performance
