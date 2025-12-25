@@ -193,17 +193,27 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         }
       })
 
-      // 2. Update Feedback Analysis
-      await supabase
+      // 2. Upsert Feedback Analysis (create if doesn't exist)
+      const { error: feedbackError } = await supabase
         .from("feedback_analysis")
-        .update({
+        .upsert({
+          answer_sheet_id: sheet.id,
+          student_id: sheet.student_id,
           overall_feedback: overallFeedback,
           root_cause_analysis: rcSummary,
+          focus_areas: sheet.gemini_response?.student_os_analysis?.focus_areas || [],
+          real_world_application: sheet.gemini_response?.student_os_analysis?.real_world_application || '',
+          roi_analysis: sheet.gemini_response?.student_os_analysis?.roi_analysis || []
+        }, {
+          onConflict: 'answer_sheet_id'
         })
-        .eq("answer_sheet_id", sheet.id)
+
+      if (feedbackError) {
+        console.error("Feedback upsert error:", feedbackError)
+      }
 
       // 3. Mark Sheet as Approved
-      await supabase
+      const { error: sheetError } = await supabase
         .from("answer_sheets")
         .update({
           status: "approved",
@@ -211,6 +221,11 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         })
         .eq("id", sheet.id)
 
+      if (sheetError) {
+        throw sheetError
+      }
+
+      alert("Grading finalized and sent to student!")
       router.push(`/dashboard/grading`)
       router.refresh()
     } catch (error) {
