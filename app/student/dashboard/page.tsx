@@ -295,14 +295,14 @@ export default async function StudentDashboard() {
                                 <Link key={exam.id} href={`/student/performance/${exam.id}`}>
                                     <GlassCard className="p-4 hover:border-neon-cyan/50 transition-all group overflow-hidden h-full">
                                         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-neon-cyan transition-colors">
-                                            {(exam.exams as any).subject}
+                                            {exam.exams?.subject || 'Unknown Subject'}
                                         </div>
                                         <h4 className="font-bold text-sm truncate mb-3 group-hover:text-foreground">
-                                            {(exam.exams as any).exam_name}
+                                            {exam.exams?.exam_name || 'Exam (Deleted)'}
                                         </h4>
                                         <div className="flex items-end justify-between">
                                             <div className="text-2xl font-bold font-display">
-                                                {exam.total_score} <span className="text-[10px] text-muted-foreground font-sans font-normal">/ {(exam.exams as any).total_marks}</span>
+                                                {exam.total_score} <span className="text-[10px] text-muted-foreground font-sans font-normal">/ {exam.exams?.total_marks || '?'}</span>
                                             </div>
                                             <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                         </div>
