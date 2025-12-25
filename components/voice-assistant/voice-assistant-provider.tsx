@@ -3,6 +3,50 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 
+// Web Speech API type declarations (not in default TypeScript lib)
+interface ISpeechRecognition extends EventTarget {
+    continuous: boolean
+    interimResults: boolean
+    lang: string
+    onstart: (() => void) | null
+    onresult: ((event: ISpeechRecognitionEvent) => void) | null
+    onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null
+    onend: (() => void) | null
+    start: () => void
+    stop: () => void
+    abort: () => void
+}
+
+interface ISpeechRecognitionEvent {
+    results: {
+        [index: number]: {
+            [index: number]: {
+                transcript: string
+                confidence: number
+            }
+        }
+        length: number
+    }
+    resultIndex: number
+}
+
+interface ISpeechRecognitionErrorEvent {
+    error: string
+    message: string
+}
+
+interface ISpeechRecognitionConstructor {
+    new(): ISpeechRecognition
+}
+
+declare global {
+    interface Window {
+        SpeechRecognition: ISpeechRecognitionConstructor
+        webkitSpeechRecognition: ISpeechRecognitionConstructor
+    }
+}
+
+
 interface VoiceAssistantContextType {
     isListening: boolean
     isProcessing: boolean
@@ -63,7 +107,7 @@ export function VoiceAssistantProvider({ children }: VoiceAssistantProviderProps
     const [formContext, setFormContext] = useState<string | null>(null)
     const [conversationHistory, setConversationHistory] = useState<string>("")
 
-    const recognitionRef = useRef<SpeechRecognition | null>(null)
+    const recognitionRef = useRef<ISpeechRecognition | null>(null)
     const formSettersRef = useRef<Map<string, (value: any) => void>>(new Map())
     const synthRef = useRef<SpeechSynthesis | null>(null)
 
@@ -220,12 +264,12 @@ export function VoiceAssistantProvider({ children }: VoiceAssistantProviderProps
             setError(null)
         }
 
-        recognition.onresult = (event) => {
+        recognition.onresult = (event: ISpeechRecognitionEvent) => {
             const transcript = event.results[0][0].transcript
             processCommand(transcript)
         }
 
-        recognition.onerror = (event) => {
+        recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
             console.error("Speech recognition error:", event.error)
             setError(event.error)
             setIsListening(false)
