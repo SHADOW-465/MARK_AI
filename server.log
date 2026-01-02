@@ -2,7 +2,7 @@
 > my-v0-project@0.1.0 dev
 > next dev
 
-   ▲ Next.js 16.0.10 (Turbopack)
+   ▲ Next.js 16.0.8 (Turbopack)
    - Local:         http://localhost:3000
    - Network:       http://192.168.0.2:3000
 
@@ -13,7 +13,7 @@ You can learn more, including how to opt-out if you'd not like to participate in
 https://nextjs.org/telemetry
 
  ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
- ✓ Ready in 1651ms
+ ✓ Ready in 1455ms
  ⨯ Error: Your project's URL and Key are required to create a Supabase client!
 
 Check your Supabase project's API settings to find these values
@@ -30,7 +30,7 @@ https://supabase.com/dashboard/project/_/settings/api
   12 |     process.env.NEXT_PUBLIC_SUPABASE_URL!,
   13 |     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   14 |     {
- GET /student/dashboard 404 in 2.6s (compile: -295912µs, proxy.ts: 2.6s, render: 306ms)
+ GET / 404 in 2.1s (compile: -299764µs, proxy.ts: 2.0s, render: 313ms)
  ⨯ Error: Your project's URL and Key are required to create a Supabase client!
 
 Check your Supabase project's API settings to find these values
@@ -47,16 +47,5 @@ https://supabase.com/dashboard/project/_/settings/api
   12 |     process.env.NEXT_PUBLIC_SUPABASE_URL!,
   13 |     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   14 |     {
- GET /student/performance 404 in 58ms (compile: -11772µs, proxy.ts: 52ms, render: 18ms)
+ GET /student/performance 404 in 148ms (compile: -11085µs, proxy.ts: 142ms, render: 17ms)
  ○ Compiling /_not-found/page ...
-   Reload env: .env.local
- ✓ Compiled in 558ms
- ○ Compiling / ...
- GET / 200 in 6.4s (compile: 5.9s, proxy.ts: 7ms, render: 475ms)
- GET / 200 in 155ms (compile: 15ms, proxy.ts: 9ms, render: 131ms)
- GET / 200 in 976ms (compile: 275ms, proxy.ts: 97ms, render: 604ms)
- GET / 200 in 181ms (compile: 35ms, proxy.ts: 10ms, render: 137ms)
- GET / 200 in 75ms (compile: 7ms, proxy.ts: 7ms, render: 60ms)
- GET / 200 in 220ms (compile: 15ms, proxy.ts: 7ms, render: 197ms)
- GET / 200 in 901ms (compile: 295ms, proxy.ts: 114ms, render: 492ms)
- GET / 200 in 793ms (compile: 363ms, proxy.ts: 15ms, render: 415ms)

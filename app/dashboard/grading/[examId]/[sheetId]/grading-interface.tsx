@@ -346,40 +346,45 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full p-4">
-            <AnimatePresence mode="wait">
-              {activeTab === 'grading' ? (
-                <motion.div
-                  key="grading"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-4"
-                >
-                  {evaluations.map((ev, index) => {
-                    const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
-                    const isOverridden = ev.teacher_score !== null
+        <ScrollArea className="flex-1 p-4">
+          <AnimatePresence mode="wait">
+            {activeTab === 'grading' ? (
+              <motion.div
+                key="grading"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                {evaluations.map((ev, index) => {
+                  const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
+                  const isOverridden = ev.teacher_score !== null
 
-                    return (
-                      <GlassCard key={ev.id} className={`p-4 border-l-4 ${isOverridden ? "border-l-amber-500" : "border-l-indigo-500"}`}>
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <span className="px-2 py-1 bg-white/5 rounded text-xs text-slate-400 font-mono mr-2">Q{ev.question_num}</span>
-                            <span className="font-semibold text-white text-sm">{question?.question_text}</span>
-                          </div>
-                          <div className="flex items-center gap-2 bg-black/20 rounded-lg p-1">
-                            <Input
-                              type="number"
-                              value={ev.final_score}
-                              onChange={(e) => handleScoreChange(index, e.target.value)}
-                              className="w-12 h-8 text-center bg-transparent border-none text-white font-bold p-0 focus-visible:ring-0"
-                              max={question?.max_marks}
-                              min={0}
-                            />
-                            <span className="text-xs text-slate-500">/{question?.max_marks}</span>
-                          </div>
+                  return (
+                    <GlassCard key={ev.id} className={`p-4 border-l-4 ${isOverridden ? "border-l-amber-500" : "border-l-indigo-500"}`}>
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <span className="px-2 py-1 bg-white/5 rounded text-xs text-slate-400 font-mono mr-2">Q{ev.question_num}</span>
+                          <span className="font-semibold text-white text-sm">{question?.question_text}</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-black/20 rounded-lg p-1">
+                          <Input
+                            type="number"
+                            value={ev.final_score ?? ''}
+                            onChange={(e) => handleScoreChange(index, e.target.value)}
+                            className="w-12 h-8 text-center bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold p-0 focus:ring-1 focus:ring-indigo-500"
+                            max={question?.max_marks}
+                            min={0}
+                          />
+                          <span className="text-xs text-slate-500">/{question?.max_marks}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="bg-black/20 p-3 rounded-lg text-xs font-mono text-slate-300 border border-white/5 max-h-[150px] overflow-y-auto">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Extracted Answer</p>
+                          {ev.extracted_text || <span className="italic text-slate-600">No text extracted</span>}
                         </div>
 
                         <div className="space-y-3">
