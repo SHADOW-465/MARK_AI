@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { useVoiceForm } from "@/components/voice-assistant"
 
 export default function AddStudentPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,6 +20,19 @@ export default function AddStudentPage() {
   const [rollNumber, setRollNumber] = useState("")
   const [className, setClassName] = useState("")
   const [section, setSection] = useState("")
+
+  // Voice Assistant Integration
+  const voiceFieldSetters = useMemo(() => ({
+    name: setName,
+    studentName: setName, // Alias
+    rollNumber: setRollNumber,
+    roll: setRollNumber, // Alias
+    className: setClassName,
+    class: setClassName, // Alias
+    section: setSection
+  }), [])
+
+  useVoiceForm("student_add", voiceFieldSetters)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,24 +58,24 @@ export default function AddStudentPage() {
         // Update existing student details (Name, Section)
         // We do NOT overwrite teacher_id to preserve the original creator or multi-teacher flexibility.
         const { error: updateError } = await supabase
-            .from("students")
-            .update({
-                name,
-                section,
-             })
-            .eq("id", existingStudent.id)
+          .from("students")
+          .update({
+            name,
+            section,
+          })
+          .eq("id", existingStudent.id)
 
         if (updateError) throw updateError
       } else {
-         // Insert new student
-         const { error: insertError } = await supabase.from("students").insert({
-            teacher_id: user.id,
-            name,
-            roll_number: rollNumber,
-            class: className,
-            section,
-         })
-         if (insertError) throw insertError
+        // Insert new student
+        const { error: insertError } = await supabase.from("students").insert({
+          teacher_id: user.id,
+          name,
+          roll_number: rollNumber,
+          class: className,
+          section,
+        })
+        if (insertError) throw insertError
       }
 
       router.push("/dashboard/students")
@@ -87,8 +101,8 @@ export default function AddStudentPage() {
           <CardHeader>
             <CardTitle>Student Details</CardTitle>
             <CardDescription>
-                Enter the student&apos;s academic details.
-                They will use their Roll Number and Class to sign up.
+              Enter the student&apos;s academic details.
+              They will use their Roll Number and Class to sign up.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

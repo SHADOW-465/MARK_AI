@@ -1,6 +1,7 @@
 import type React from "react"
 import { Rajdhani, Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { VoiceAssistantWrapper } from "@/components/voice-assistant/voice-assistant-wrapper"
 import "./globals.css"
 
 const rajdhani = Rajdhani({
@@ -35,7 +36,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <VoiceAssistantWrapper>
+            {children}
+          </VoiceAssistantWrapper>
         </ThemeProvider>
       </body>
     </html>

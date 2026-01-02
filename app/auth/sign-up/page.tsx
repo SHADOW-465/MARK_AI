@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Loader2, LayoutDashboard, GraduationCap } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Logo } from "@/components/ui/logo"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useVoiceForm } from "@/components/voice-assistant"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -20,15 +21,28 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState("")
   const [rollNumber, setRollNumber] = useState("")
   const [studentClass, setStudentClass] = useState("")
-  const [name, setName] = useState("") // Students also enter name now? No, they claim the name. But let's ask for it just in case or display it.
-  // Actually, the prompt said: "student sign up should ask for the roll number, name, class and email"
-  // If the teacher already added "Rahul", and the student enters "Rahul Kumar", should we update it?
-  // Let's allow Name input for students too.
+  const [section, setSection] = useState("")
+  const [name, setName] = useState("")
 
   const [role, setRole] = useState<"admin" | "student">("admin")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  // Voice Assistant Integration
+  const voiceFieldSetters = useMemo(() => ({
+    email: setEmail,
+    password: setPassword,
+    name: setName,
+    fullName: setFullName,
+    rollNumber: setRollNumber,
+    roll: setRollNumber, // Alias
+    studentClass: setStudentClass,
+    class: setStudentClass, // Alias
+    section: setSection
+  }), [])
+
+  useVoiceForm("signup", voiceFieldSetters)
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,45 +54,47 @@ export default function SignUpPage() {
       if (role === "student") {
         // 1. Sign Up Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    role: 'student',
-                    roll_number: rollNumber,
-                    class: studentClass,
-                    full_name: name // Store in metadata too
-                }
+          email,
+          password,
+          options: {
+            data: {
+              role: 'student',
+              roll_number: rollNumber,
+              class: studentClass,
+              full_name: name // Store in metadata too
             }
+          }
         })
 
         if (authError) throw authError
 
         if (authData.user) {
-            // 2. Link Student Record using RPC (Securely)
-            // We use the RPC function we planned.
-            const { data: linkData, error: linkError } = await supabase
-                .rpc('link_student_account', {
-                    p_roll_number: rollNumber,
-                    p_class: studentClass,
-                    p_email: email
-                })
+          // 2. Link Student Record using RPC (Securely)
+          // We use the RPC function we planned.
+          const { data: linkData, error: linkError } = await supabase
+            .rpc('link_student_account', {
+              p_roll_number: rollNumber,
+              p_class: studentClass,
+              p_email: email,
+              p_name: name,
+              p_section: section
+            })
 
-            if (linkError) {
-                // If RPC fails (e.g. student not found, or already linked)
-                // We should probably rollback the auth user creation or just show error.
-                // Since we can't easily rollback auth user from client, we show error.
-                // The user is created but not linked. They can't do anything.
-                console.error("Linking failed:", linkError)
-                throw new Error(linkError.message || "Failed to link to student profile. Ensure your Roll Number and Class are correct and not already registered.")
-            }
+          if (linkError) {
+            // If RPC fails (e.g. student not found, or already linked)
+            // We should probably rollback the auth user creation or just show error.
+            // Since we can't easily rollback auth user from client, we show error.
+            // The user is created but not linked. They can't do anything.
+            console.error("Linking failed:", linkError)
+            throw new Error(linkError.message || "Failed to link to student profile. Ensure your Roll Number and Class are correct and not already registered.")
+          }
 
-            // 3. Update Name if provided (Optional, but good UX)
-            // Now that we are linked, we might be able to update our own name if RLS allows,
-            // or we rely on the teacher's input.
-            // Let's skip updating name for now to avoid RLS complexity, as the RPC only updates email/user_id.
+          // 3. Update Name if provided (Optional, but good UX)
+          // Now that we are linked, we might be able to update our own name if RLS allows,
+          // or we rely on the teacher's input.
+          // Let's skip updating name for now to avoid RLS complexity, as the RPC only updates email/user_id.
 
-            router.push("/student/dashboard")
+          router.push("/student/dashboard")
         }
       } else {
         // Admin / Teacher Signup
@@ -134,15 +150,15 @@ export default function SignUpPage() {
                   value="admin"
                   className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-cyan/10 data-[state=active]:text-neon-cyan data-[state=active]:shadow-[0_0_20px_-5px_rgba(0,243,255,0.3)] data-[state=active]:border-neon-cyan/20 border border-transparent"
                 >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Admin
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Admin
                 </TabsTrigger>
                 <TabsTrigger
                   value="student"
                   className="rounded-md transition-all duration-300 data-[state=active]:bg-neon-purple/10 data-[state=active]:text-neon-purple data-[state=active]:shadow-[0_0_20px_-5px_rgba(188,19,254,0.3)] data-[state=active]:border-neon-purple/20 border border-transparent"
                 >
-                    <GraduationCap className="w-4 h-4 mr-2" />
-                    Student
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Student
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -151,59 +167,71 @@ export default function SignUpPage() {
               <div className="flex flex-col gap-6">
 
                 {role === 'admin' && (
-                    <div className="grid gap-2">
+                  <div className="grid gap-2">
                     <Label htmlFor="fullName">Full Name</Label>
                     <Input
-                        id="fullName"
-                        placeholder="John Doe"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
+                      id="fullName"
+                      placeholder="John Doe"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="bg-background/50 border-white/10 focus:border-neon-cyan/50 focus:ring-neon-cyan/20"
                     />
-                    </div>
+                  </div>
                 )}
 
                 {role === 'student' && (
-                    <>
+                  <>
                     <div className="grid gap-2">
-                        <Label htmlFor="studentName">Full Name</Label>
+                      <Label htmlFor="studentName">Full Name</Label>
+                      <Input
+                        id="studentName"
+                        placeholder="John Doe"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="class">Class</Label>
                         <Input
-                            id="studentName"
-                            placeholder="John Doe"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                          id="class"
+                          type="text"
+                          placeholder="e.g. 10"
+                          required
+                          value={studentClass}
+                          onChange={(e) => setStudentClass(e.target.value)}
+                          className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
                         />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="section">Section</Label>
+                        <Input
+                          id="section"
+                          type="text"
+                          placeholder="e.g. A"
+                          required
+                          value={section}
+                          onChange={(e) => setSection(e.target.value)}
+                          className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="roll">Roll No</Label>
+                        <Input
+                          id="roll"
+                          type="text"
+                          placeholder="e.g. 101"
+                          required
+                          value={rollNumber}
+                          onChange={(e) => setRollNumber(e.target.value)}
+                          className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
+                        />
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="class">Class</Label>
-                            <Input
-                                id="class"
-                                type="text"
-                                placeholder="e.g. 10A"
-                                required
-                                value={studentClass}
-                                onChange={(e) => setStudentClass(e.target.value)}
-                                className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="roll">Roll Number</Label>
-                            <Input
-                                id="roll"
-                                type="text"
-                                placeholder="e.g. 101"
-                                required
-                                value={rollNumber}
-                                onChange={(e) => setRollNumber(e.target.value)}
-                                className="bg-background/50 border-white/10 focus:border-neon-purple/50 focus:ring-neon-purple/20"
-                            />
-                        </div>
-                    </div>
-                    </>
+                  </>
                 )}
 
                 <div className="grid gap-2">
@@ -234,11 +262,10 @@ export default function SignUpPage() {
 
                 <Button
                   type="submit"
-                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${
-                    role === 'student'
+                  className={`w-full text-white font-bold transition-opacity hover:opacity-90 ${role === 'student'
                     ? 'bg-gradient-to-r from-neon-purple to-pink-500'
                     : 'bg-gradient-to-r from-neon-cyan to-neon-purple'
-                  }`}
+                    }`}
                   disabled={isLoading}
                 >
                   {isLoading ? (

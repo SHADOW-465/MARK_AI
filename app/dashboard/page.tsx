@@ -7,6 +7,8 @@ import { UpcomingExams } from "@/components/dashboard/upcoming-exams"
 import { SystemStatus } from "@/components/dashboard/system-status"
 import { cn } from "@/lib/utils"
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const supabase = await createClient()
 
@@ -150,118 +152,118 @@ export default async function DashboardPage() {
 
         {/* Analytics Chart - Spans 2 columns */}
         <div className="md:col-span-2 lg:col-span-2">
-            <GlassCard className="p-6 flex flex-col min-h-[350px]">
-              <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
-                Performance Analytics
-              </h3>
-              <div className="flex-1 w-full">
-                <AnalyticsChart data={analyticsData} />
-              </div>
-            </GlassCard>
+          <GlassCard className="p-6 flex flex-col min-h-[350px]">
+            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
+              Performance Analytics
+            </h3>
+            <div className="flex-1 w-full">
+              <AnalyticsChart data={analyticsData} />
+            </div>
+          </GlassCard>
         </div>
 
         {/* Upcoming Exams - Spans 1 column */}
         <div className="md:col-span-1 lg:col-span-1">
-            <GlassCard className="p-6 flex flex-col h-full">
-              <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-                Upcoming Exams
-              </h3>
-              <UpcomingExams exams={upcomingExams || []} />
-            </GlassCard>
+          <GlassCard className="p-6 flex flex-col h-full">
+            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+              Upcoming Exams
+            </h3>
+            <UpcomingExams exams={upcomingExams || []} />
+          </GlassCard>
         </div>
 
         {/* System Status - Spans 1 column */}
         <div className="md:col-span-1 lg:col-span-1">
-            <GlassCard className="p-6 flex flex-col h-full">
-              <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-emerald-500 rounded-full"></span>
-                System Health
-              </h3>
-              <SystemStatus />
-            </GlassCard>
+          <GlassCard className="p-6 flex flex-col h-full">
+            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-emerald-500 rounded-full"></span>
+              System Health
+            </h3>
+            <SystemStatus />
+          </GlassCard>
         </div>
 
         {/* Quick Actions - Spans 2 columns */}
         <div className="md:col-span-2 lg:col-span-2">
-            <GlassCard className="p-6 flex flex-col h-full">
-              <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
-                Quick Actions
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
-                <Link href="/dashboard/exams/create" className="group">
-                  <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all">
-                    <div className="p-3 rounded-lg bg-blue-500/20 text-blue-400 w-fit mb-3">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">Create New Exam</span>
-                      <span className="text-xs text-muted-foreground">Set up a new test paper</span>
-                    </div>
-                    <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-cyan-400 transition-colors self-end mt-2" />
+          <GlassCard className="p-6 flex flex-col h-full">
+            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
+              Quick Actions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
+              <Link href="/dashboard/exams/create" className="group">
+                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all">
+                  <div className="p-3 rounded-lg bg-blue-500/20 text-blue-400 w-fit mb-3">
+                    <FileText size={20} />
                   </div>
-                </Link>
-                <Link href="/dashboard/students/add" className="group">
-                  <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-purple-500/10 hover:border-purple-500/30 transition-all">
-                    <div className="p-3 rounded-lg bg-purple-500/20 text-purple-400 w-fit mb-3">
-                      <Users size={20} />
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold text-foreground group-hover:text-purple-500 transition-colors">Add Student</span>
-                      <span className="text-xs text-muted-foreground">Register new students</span>
-                    </div>
-                    <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-purple-400 transition-colors self-end mt-2" />
+                  <div>
+                    <span className="block text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">Create New Exam</span>
+                    <span className="text-xs text-muted-foreground">Set up a new test paper</span>
                   </div>
-                </Link>
-                <Link href="/dashboard/grading" className="group">
-                  <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all">
-                    <div className="p-3 rounded-lg bg-emerald-500/20 text-emerald-400 w-fit mb-3">
-                      <CheckCircle size={20} />
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold text-foreground group-hover:text-emerald-500 transition-colors">Review Pending Grades</span>
-                      <span className="text-xs text-muted-foreground">Check ungraded sheets</span>
-                    </div>
-                    <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-emerald-400 transition-colors self-end mt-2" />
+                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-cyan-400 transition-colors self-end mt-2" />
+                </div>
+              </Link>
+              <Link href="/dashboard/students/add" className="group">
+                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-purple-500/10 hover:border-purple-500/30 transition-all">
+                  <div className="p-3 rounded-lg bg-purple-500/20 text-purple-400 w-fit mb-3">
+                    <Users size={20} />
                   </div>
-                </Link>
-              </div>
-            </GlassCard>
+                  <div>
+                    <span className="block text-sm font-bold text-foreground group-hover:text-purple-500 transition-colors">Add Student</span>
+                    <span className="text-xs text-muted-foreground">Register new students</span>
+                  </div>
+                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-purple-400 transition-colors self-end mt-2" />
+                </div>
+              </Link>
+              <Link href="/dashboard/grading" className="group">
+                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all">
+                  <div className="p-3 rounded-lg bg-emerald-500/20 text-emerald-400 w-fit mb-3">
+                    <CheckCircle size={20} />
+                  </div>
+                  <div>
+                    <span className="block text-sm font-bold text-foreground group-hover:text-emerald-500 transition-colors">Review Pending Grades</span>
+                    <span className="text-xs text-muted-foreground">Check ungraded sheets</span>
+                  </div>
+                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-emerald-400 transition-colors self-end mt-2" />
+                </div>
+              </Link>
+            </div>
+          </GlassCard>
         </div>
 
         {/* Recent Activity - Spans 2 columns */}
         <div className="md:col-span-2 lg:col-span-2">
-            <GlassCard className="p-6 flex flex-col h-full">
-              <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-                Recent Activity
-              </h3>
-              <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-                {recentExams && recentExams.length > 0 ? (
-                  recentExams.map((exam, i) => (
-                    <div className="flex items-center p-4 rounded-xl bg-secondary/30 border border-border hover:bg-secondary/50 transition-colors group" key={i}>
-                      <div className="h-12 w-12 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 group-hover:scale-110 transition-transform">
-                        <FileText className="h-5 w-5 text-cyan-500" />
-                      </div>
-                      <div className="ml-4 space-y-1">
-                        <p className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">New Exam Created</p>
-                        <p className="text-xs text-muted-foreground font-mono">{exam.exam_name}</p>
-                      </div>
-                      <div className="ml-auto font-mono text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">
-                        {new Date(exam.created_at).toLocaleDateString()}
-                      </div>
+          <GlassCard className="p-6 flex flex-col h-full">
+            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+              Recent Activity
+            </h3>
+            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
+              {recentExams && recentExams.length > 0 ? (
+                recentExams.map((exam, i) => (
+                  <div className="flex items-center p-4 rounded-xl bg-secondary/30 border border-border hover:bg-secondary/50 transition-colors group" key={i}>
+                    <div className="h-12 w-12 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 group-hover:scale-110 transition-transform">
+                      <FileText className="h-5 w-5 text-cyan-500" />
                     </div>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <Clock className="h-8 w-8 mb-2 opacity-50" />
-                    <p className="text-sm font-mono">No recent activity</p>
+                    <div className="ml-4 space-y-1">
+                      <p className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">New Exam Created</p>
+                      <p className="text-xs text-muted-foreground font-mono">{exam.exam_name}</p>
+                    </div>
+                    <div className="ml-auto font-mono text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">
+                      {new Date(exam.created_at).toLocaleDateString()}
+                    </div>
                   </div>
-                )}
-              </div>
-            </GlassCard>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                  <Clock className="h-8 w-8 mb-2 opacity-50" />
+                  <p className="text-sm font-mono">No recent activity</p>
+                </div>
+              )}
+            </div>
+          </GlassCard>
         </div>
 
       </div>

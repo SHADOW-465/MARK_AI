@@ -138,6 +138,7 @@ export async function POST(request: Request) {
         reasoning: evalItem.reasoning,
         strengths: evalItem.strengths,
         gaps: evalItem.gaps,
+        root_cause: evalItem.root_cause, // NEW: Store category for dashboard
       }
     })
 
@@ -145,15 +146,15 @@ export async function POST(request: Request) {
 
     // Insert Feedback Analysis (Student OS Data)
     if (result.student_os_analysis && studentId) {
-        await supabase.from("feedback_analysis").insert({
-            answer_sheet_id: sheetId,
-            student_id: studentId,
-            overall_feedback: result.overall_feedback,
-            real_world_application: result.student_os_analysis.real_world_application,
-            root_cause_analysis: result.student_os_analysis.root_cause_summary,
-            focus_areas: result.student_os_analysis.focus_areas,
-            roi_analysis: result.student_os_analysis.roi_analysis
-        })
+      await supabase.from("feedback_analysis").insert({
+        answer_sheet_id: sheetId,
+        student_id: studentId,
+        overall_feedback: result.overall_feedback,
+        real_world_application: result.student_os_analysis.real_world_application,
+        root_cause_analysis: result.student_os_analysis.root_cause_summary,
+        focus_areas: result.student_os_analysis.focus_areas,
+        roi_analysis: result.student_os_analysis.roi_analysis
+      })
     }
 
     return NextResponse.json({ success: true })
