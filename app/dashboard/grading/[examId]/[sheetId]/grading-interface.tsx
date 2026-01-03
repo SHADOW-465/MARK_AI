@@ -14,9 +14,44 @@ import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { GlassCard } from "@/components/ui/glass-card"
 
+interface MarkingSchemeQuestion {
+  question_num: number
+  question_text: string
+  max_marks: number
+}
+
+interface Evaluation {
+  id: string
+  question_num: number
+  final_score: number | string | null
+  teacher_score: number | null
+  reasoning: string
+  extracted_text?: string
+  confidence: number
+  root_cause?: string
+}
+
 interface GradingInterfaceProps {
-  sheet: any
-  initialEvaluations: any[]
+  sheet: {
+    id: string
+    student_id: string
+    file_url?: string
+    file_urls?: string[]
+    total_score: number
+    gemini_response?: {
+      overall_feedback?: string
+      student_os_analysis?: {
+        focus_areas?: string[]
+        real_world_application?: string
+        roi_analysis?: any[]
+      }
+    }
+    exams: {
+      total_marks: number
+      marking_scheme: MarkingSchemeQuestion[]
+    }
+  }
+  initialEvaluations: Evaluation[]
 }
 
 export default function GradingInterface({ sheet, initialEvaluations }: GradingInterfaceProps) {
@@ -93,7 +128,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
   const currentFileUrl = fileUrls[currentPageIndex]
 
   // Calculate totals
-  const totalScore = evaluations.reduce((sum, ev) => sum + (ev.final_score || 0), 0)
+  const totalScore = evaluations.reduce((sum, ev) => sum + Number(ev.final_score || 0), 0)
   const maxScore = sheet.exams.total_marks
   const percentage = Math.round((totalScore / maxScore) * 100)
 
@@ -180,9 +215,9 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
       // 1. Calculate refined metrics for Dashboard (Feedback Analysis)
       const rcSummary = { concept: 0, calculation: 0, keyword: 0 }
       evaluations.forEach(ev => {
-        const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
+        const question = sheet.exams.marking_scheme.find((q: MarkingSchemeQuestion) => q.question_num === ev.question_num)
         const max = question?.max_marks || 0
-        const lost = max - (ev.final_score || 0)
+        const lost = max - Number(ev.final_score || 0)
 
         if (lost > 0) {
           const cause = (ev.root_cause || 'concept').toLowerCase()
@@ -387,72 +422,65 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                           {ev.extracted_text || <span className="italic text-slate-600">No text extracted</span>}
                         </div>
 
-                        <div className="space-y-3">
-                          <div className="bg-black/20 p-3 rounded-lg text-xs font-mono text-slate-300 border border-white/5 max-h-[150px] overflow-y-auto">
-                            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Extracted Answer</p>
-                            {ev.extracted_text || <span className="italic text-slate-600">No text extracted</span>}
-                          </div>
-
-                          <div className="flex gap-2 items-start">
-                            <CheckCircle size={16} className="text-emerald-500 mt-0.5 shrink-0" />
-                            <Textarea
-                              value={ev.reasoning}
-                              onChange={(e) => handleFeedbackChange(index, e.target.value)}
-                              enableVoice
-                              className="text-sm min-h-[60px] max-h-[200px] overflow-y-auto bg-transparent border-white/10 focus:border-indigo-500/50 text-slate-300 resize-none"
-                              placeholder="AI Feedback..."
-                            />
-                          </div>
-
-                          {ev.confidence < 0.7 && (
-                            <div className="flex gap-2 items-center text-amber-400 text-xs bg-amber-500/10 p-2 rounded">
-                              <AlertTriangle size={14} />
-                              <span>Low confidence ({Math.round(ev.confidence * 100)}%). Verify manually.</span>
-                            </div>
-                          )}
+                        <div className="flex gap-2 items-start">
+                          <CheckCircle size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+                          <Textarea
+                            value={ev.reasoning}
+                            onChange={(e) => handleFeedbackChange(index, e.target.value)}
+                            enableVoice
+                            className="text-sm min-h-[60px] max-h-[200px] overflow-y-auto bg-transparent border-white/10 focus:border-indigo-500/50 text-slate-300 resize-none"
+                            placeholder="AI Feedback..."
+                          />
                         </div>
-                      </GlassCard>
-                    )
-                  })}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="feedback"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-4"
-                >
-                  <GlassCard className="p-6 bg-gradient-to-br from-indigo-900/20 to-purple-900/20">
-                    <div className="flex items-center gap-3 mb-4 text-emerald-400">
-                      <Sparkles size={20} />
-                      <h3 className="font-bold">Personalized Growth Plan</h3>
-                    </div>
-                    <Textarea
-                      value={overallFeedback}
-                      onChange={(e) => setOverallFeedback(e.target.value)}
-                      enableVoice
-                      className="min-h-[150px] max-h-[300px] overflow-y-auto bg-black/20 border-white/10 text-slate-300 mb-4"
-                      placeholder="Enter overall feedback for the student..."
-                    />
 
-
-                  </GlassCard>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button variant="secondary" className="bg-white/5 hover:bg-white/10 border-white/10 text-slate-300">
-                      <Mic size={16} className="mr-2" /> Record Audio
-                    </Button>
-                    <Button variant="secondary" className="bg-white/5 hover:bg-white/10 border-white/10 text-slate-300">
-                      <Share2 size={16} className="mr-2" /> Send Preview
-                    </Button>
+                        {ev.confidence < 0.7 && (
+                          <div className="flex gap-2 items-center text-amber-400 text-xs bg-amber-500/10 p-2 rounded">
+                            <AlertTriangle size={14} />
+                            <span>Low confidence ({Math.round(ev.confidence * 100)}%). Verify manually.</span>
+                          </div>
+                        )}
+                      </div>
+                    </GlassCard>
+                  )
+                })}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="feedback"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <GlassCard className="p-6 bg-gradient-to-br from-indigo-900/20 to-purple-900/20">
+                  <div className="flex items-center gap-3 mb-4 text-emerald-400">
+                    <Sparkles size={20} />
+                    <h3 className="font-bold">Personalized Growth Plan</h3>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </ScrollArea>
-        </div>
+                  <Textarea
+                    value={overallFeedback}
+                    onChange={(e) => setOverallFeedback(e.target.value)}
+                    enableVoice
+                    className="min-h-[150px] max-h-[300px] overflow-y-auto bg-black/20 border-white/10 text-slate-300 mb-4"
+                    placeholder="Enter overall feedback for the student..."
+                  />
+
+
+                </GlassCard>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Button variant="secondary" className="bg-white/5 hover:bg-white/10 border-white/10 text-slate-300">
+                    <Mic size={16} className="mr-2" /> Record Audio
+                  </Button>
+                  <Button variant="secondary" className="bg-white/5 hover:bg-white/10 border-white/10 text-slate-300">
+                    <Share2 size={16} className="mr-2" /> Send Preview
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </ScrollArea>
 
         {/* Footer */}
         <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">

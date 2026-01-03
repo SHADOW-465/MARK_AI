@@ -34,13 +34,6 @@ export default async function GradingReviewPage({
     .eq("answer_sheet_id", sheetId)
     .order("question_num", { ascending: true })
 
-  console.log("--- DEBUG GRADING REVIEW PAGE ---")
-  console.log("Sheet ID:", sheetId)
-  console.log("Sheet Found:", !!sheet)
-  console.log("Evaluations Count:", evaluations?.length)
-  if (evaluations?.length === 0) {
-    console.log("WARNING: No evaluations found for this sheet.")
-  }
   // ---------------------------------------------
 
   return (

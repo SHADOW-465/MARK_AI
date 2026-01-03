@@ -3,6 +3,7 @@ import { GlassCard } from "@/components/ui/glass-card"
 import { cn } from "@/lib/utils"
 import { CheckCircle, AlertCircle, Clock, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { PredictiveGradeSandbox } from "@/components/performance/predictive-grade-sandbox"
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,13 @@ export default async function PerformanceLab() {
 
     let exams: any[] = []
     let gapStats = { concept: 0, calculation: 0, keyword: 0, total: 0 }
-    let lastExamStats = { concept: 0, calculation: 0, keyword: 0, currentGrade: 0, maxScore: 100 }
+    let lastExamStats = {
+        concept: 0,
+        calculation: 0,
+        keyword: 0,
+        currentGrade: 0,
+        maxScore: 100
+    }
 
     if (student) {
         // Fetch Answer Sheets with Exam details (use left join for deleted exams)
@@ -144,20 +151,7 @@ export default async function PerformanceLab() {
                         <div className="text-center py-20 bg-white/5 rounded-xl border border-white/5 border-dashed">
                             <p className="text-muted-foreground">No exams found.</p>
                         </div>
-
-                        {sheet.status === 'approved' && ( // Change from 'graded' to 'approved'
-                            <Link href={`/student/performance/${sheet.id}`}>
-                                <div className="bg-white/5 border-t border-white/5 p-4 flex justify-between items-center group-hover:bg-white/10 transition-colors cursor-pointer">
-                                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">View Full Analysis & Gap Report</span>
-                                    <ArrowRight size={16} className="text-muted-foreground group-hover:text-neon-cyan transition-colors" />
-                                </div>
-                            </Link>
-                        )}
-                    </GlassCard>
-                ))
-            ) : (
-                <div className="text-center py-20 bg-white/5 rounded-xl border border-white/5 border-dashed">
-                    <p className="text-muted-foreground">No exams found.</p>
+                    )}
                 </div>
 
                 {/* Gap Analysis Summary (Real Data) */}
