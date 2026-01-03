@@ -178,16 +178,16 @@ export default async function StudentDashboard() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent">
-                        {student.name.split(' ')[0]}&apos;s Mission Control
+                        Hey {student.name.split(' ')[0]},
                     </h1>
-                    <p className="text-muted-foreground mt-1 font-medium italic">
-                        System Status: Optimized for {student.challenge_mode ? "Maximum Mastery" : "Peak Efficiency"}.
+                    <p className="text-muted-foreground mt-1 font-medium font-sans">
+                        How can I help you with your learning today?
                     </p>
                 </div>
                 <div className="flex items-center gap-6">
                     {/* XP & Streak Display */}
                     <div className="flex items-center gap-4 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md shadow-xl">
-                        <div className="flex items-center gap-2.5" title="Mastery Streak">
+                        <div className="flex items-center gap-2.5" title="Learning Streak">
                             <Flame size={22} className={cn(
                                 "transition-all duration-500",
                                 (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] animate-pulse" : "text-muted-foreground opacity-50"
@@ -197,7 +197,7 @@ export default async function StudentDashboard() {
                         <div className="h-8 w-px bg-white/10 mx-1" />
                         <div className="flex flex-col gap-1.5 min-w-[140px]">
                             <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
-                                <span>LVL {student.level || 1}</span>
+                                <span>Mastery LVL {student.level || 1}</span>
                                 <span>{(student.xp || 0) % 1000}/1000 XP</span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
@@ -208,7 +208,6 @@ export default async function StudentDashboard() {
                             </div>
                         </div>
                     </div>
-                    <ChallengeModeToggle initialState={student.challenge_mode} studentId={student.id} />
                 </div>
             </div>
 
@@ -217,44 +216,44 @@ export default async function StudentDashboard() {
                 {/* MAIN FEED (Left 3 cols) */}
                 <div className="lg:col-span-3 space-y-10">
 
-                    {/* NEXT BEST ACTION HERO */}
-                    <GlassCard className="p-0 overflow-hidden border-neon-cyan/30 relative group">
+                    {/* AI GUIDANCE HERO */}
+                    <GlassCard className="p-0 overflow-hidden border-neon-cyan/20 relative group hover:border-neon-cyan/40 transition-colors">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-cyan to-neon-purple" />
                         <div className="p-8">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="space-y-1">
-                                    <span className="text-xs font-mono text-neon-cyan uppercase tracking-wider flex items-center gap-2">
-                                        <Target size={14} /> Next Best Action
+                                    <span className="text-[10px] font-mono text-neon-cyan uppercase tracking-widest flex items-center gap-2 font-bold">
+                                        <Sparkles size={14} /> AI Recommendation
                                     </span>
-                                    <h2 className="text-2xl font-bold font-display text-foreground group-hover:text-neon-cyan transition-colors">
-                                        {nbaTask ? nbaTask.title : "No high-priority missions detected."}
+                                    <h2 className="text-2xl font-bold font-display text-foreground mt-2">
+                                        {nbaTask ? `Your next milestone: ${nbaTask.title}` : "Your dashboard is clear. What's next?"}
                                     </h2>
                                 </div>
                                 {nbaTask && (
                                     <span className={cn(
-                                        "text-xs font-bold px-3 py-1 rounded-full border",
+                                        "text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wider",
                                         (nbaTask.metadata?.effort_score || 0) <= 3 ? "bg-green-500/10 border-green-500/20 text-green-400" :
                                             (nbaTask.metadata?.effort_score || 0) >= 8 ? "bg-red-500/10 border-red-500/20 text-red-400" :
                                                 "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
                                     )}>
-                                        {nbaTask.metadata?.effort_score ? `Effort: ${nbaTask.metadata.effort_score}/10` : "High Priority"}
+                                        {nbaTask.metadata?.effort_score ? `Approx. ${nbaTask.metadata.effort_score * 10} min` : "Top Priority"}
                                     </span>
                                 )}
                             </div>
 
-                            <p className="text-muted-foreground mb-8 max-w-2xl leading-relaxed">
-                                {nbaTask?.why || "Your dashboard is clear. Review your recent exams or upload new study materials to generate tasks."}
+                            <p className="text-muted-foreground mb-8 max-w-2xl leading-relaxed text-sm">
+                                {nbaTask?.why || "You've handled your active missions! Take a moment to review your progress or dive into the library to explore new topics."}
                             </p>
 
                             {nbaTask ? (
                                 <div className="flex gap-4">
-                                    <ButtonAction href="/student/planner" label="Resolve Now" icon={<Play size={16} />} primary />
-                                    <ButtonAction href={`/student/study?examId=${latestSheet?.id}`} label="Deep Dive Source" icon={<Brain size={16} />} />
+                                    <ButtonAction href="/student/vault?tab=missions" label="Start Mission" icon={<Play size={16} />} primary />
+                                    <ButtonAction href={`/student/vault?tab=ai_studio&examId=${latestSheet?.id}`} label="AI Deep Dive" icon={<Brain size={16} />} />
                                 </div>
                             ) : (
                                 <div className="flex gap-4">
-                                    <ButtonAction href="/student/study" label="Upload Materials" icon={<ArrowUpRight size={16} />} primary />
-                                    <ButtonAction href="/student/performance" label="View History" icon={<TrendingUp size={16} />} />
+                                    <ButtonAction href="/student/vault" label="Go to Library" icon={<Folder size={16} />} primary />
+                                    <ButtonAction href="/student/performance" label="Insights" icon={<TrendingUp size={16} />} />
                                 </div>
                             )}
                         </div>
@@ -265,42 +264,42 @@ export default async function StudentDashboard() {
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-bold flex items-center gap-2">
                                 <TrendingUp size={18} className="text-neon-cyan" />
-                                Recent Results
+                                Latest Insights
                             </h3>
-                            <Link href="/student/performance" className="text-xs text-muted-foreground hover:text-foreground">View all results &rarr;</Link>
+                            <Link href="/student/performance" className="text-xs text-muted-foreground hover:text-foreground">View all progress &rarr;</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {recentExams && recentExams.length > 0 ? recentExams.map((exam: any) => (
                                 <Link key={exam.id} href={`/student/performance/${exam.id}`}>
                                     <GlassCard className="p-4 hover:border-neon-cyan/50 transition-all group overflow-hidden h-full">
                                         <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-neon-cyan transition-colors">
-                                            {exam.exams?.subject || 'Unknown Subject'}
+                                            {exam.exams?.subject || 'General'}
                                         </div>
                                         <h4 className="font-bold text-sm truncate mb-3 group-hover:text-foreground">
-                                            {exam.exams?.exam_name || 'Exam (Deleted)'}
+                                            {exam.exams?.exam_name || 'Evaluation'}
                                         </h4>
                                         <div className="flex items-end justify-between">
                                             <div className="text-2xl font-bold font-display">
                                                 {exam.total_score} <span className="text-[10px] text-muted-foreground font-sans font-normal">/ {exam.exams?.total_marks || '?'}</span>
                                             </div>
-                                            <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                         </div>
                                     </GlassCard>
                                 </Link>
                             )) : (
-                                <div className="md:col-span-3 p-8 border-dashed border border-white/5 rounded-xl text-center text-muted-foreground text-sm">
-                                    No graded papers yet.
+                                <div className="md:col-span-3 p-8 border-dashed border border-white/5 rounded-xl text-center text-muted-foreground text-sm italic">
+                                    No graded results yet.
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* IMPROVEMENT PATH (Specific Question Gaps) */}
+                    {/* URGENT GAPS */}
                     {gaps.length > 0 && (
                         <div className="space-y-4">
                             <h3 className="text-lg font-bold flex items-center gap-2">
                                 <AlertCircle size={18} className="text-amber-500" />
-                                Urgent Gaps to Fix
+                                Knowledge Gaps
                             </h3>
                             <div className="space-y-3">
                                 {gaps.slice(0, 3).map((gap, i) => (
@@ -313,14 +312,14 @@ export default async function StudentDashboard() {
                                                 <p className="text-xs font-medium text-foreground leading-relaxed italic mb-1">
                                                     &quot;{gap.text?.substring(0, 100)}...&quot;
                                                 </p>
-                                                <p className="text-[10px] text-muted-foreground">
-                                                    Feedback: {gap.feedback?.substring(0, 80)}...
+                                                <p className="text-[10px] text-muted-foreground line-clamp-1">
+                                                    AI Tip: {gap.feedback}
                                                 </p>
                                             </div>
                                         </div>
                                         <ButtonAction
                                             href={`/student/flashcards`}
-                                            label="Recall Fix"
+                                            label="Practice Recall"
                                             icon={<Brain size={12} />}
                                             className="text-[10px] h-8 px-4 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
                                         />
@@ -337,45 +336,35 @@ export default async function StudentDashboard() {
 
                     <MarkRecoveryWidget stats={recoveryStats} />
 
-                    <GlassCard className="p-6 flex flex-col relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-32 bg-neon-purple/5 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
+                    <GlassCard className="p-6 flex flex-col relative overflow-hidden bg-neon-purple/5">
+                        <div className="absolute top-0 right-0 p-32 bg-neon-purple/10 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
                         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                             <Sparkles className="text-neon-purple" size={18} />
-                            Why it Matters
+                            AI Insight
                         </h3>
                         {whyItem ? (
-                            <div className="space-y-4">
-                                <span className="text-[10px] font-mono p-1 bg-neon-purple/10 text-neon-purple border border-neon-purple/20 rounded uppercase tracking-wider">
+                            <div className="space-y-4 relative z-10">
+                                <span className="text-[10px] font-mono px-2 py-0.5 bg-neon-purple/20 text-neon-purple border border-neon-purple/20 rounded uppercase tracking-widest font-bold">
                                     {whyItem.topic}
                                 </span>
-                                <p className="text-xs text-foreground/80 leading-relaxed italic">
-                                    {whyItem.desc}
+                                <p className="text-xs text-foreground/80 leading-relaxed font-medium italic">
+                                    &quot;{whyItem.desc}&quot;
+                                </p>
+                                <p className="text-[10px] text-muted-foreground pt-2 border-t border-white/5">
+                                    This concept is vital for real-world applications in this field.
                                 </p>
                             </div>
                         ) : (
-                            <p className="text-xs text-muted-foreground italic">Analyze an exam to see real-world impact.</p>
+                            <p className="text-xs text-muted-foreground italic">Analyze an exam to reveal specialized learning insights.</p>
                         )}
 
-                        <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
-                            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Student OS Hubs</h4>
-                            <Link href="/student/vault" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all group">
-                                <div className="h-8 w-8 rounded flex items-center justify-center bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
-                                    <Folder size={16} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate">The Vault</p>
-                                    <p className="text-[10px] text-muted-foreground">Tasks & Knowledge</p>
-                                </div>
-                            </Link>
-                            <Link href="/student/flashcards" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all group">
-                                <div className="h-8 w-8 rounded flex items-center justify-center bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20">
-                                    <Brain size={16} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate">Flashcards</p>
-                                    <p className="text-[10px] text-muted-foreground">Active Recall</p>
-                                </div>
-                            </Link>
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-[10px] font-bold text-neon-cyan uppercase tracking-tighter mb-1">Pro Tip</p>
+                                <p className="text-xs text-muted-foreground leading-snug">
+                                    Consistency beats intensity. Even 15 minutes of <b>Active Recall</b> daily will yield 2x better retention.
+                                </p>
+                            </div>
                         </div>
                     </GlassCard>
                 </div>

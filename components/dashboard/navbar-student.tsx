@@ -65,13 +65,10 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
                                         <Logo />
                                     </div>
                                     <div className="flex flex-col px-4 py-6 gap-2 font-display">
-                                        <NavItem href="/student/dashboard" icon={Home} label="Mission Control" active={pathname === "/student/dashboard"} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/vault" icon={Folder} label="The Vault" active={pathname.includes("/vault")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={pathname.includes("/flashcards")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/study" icon={BookOpen} label="Deep Work" active={pathname.includes("/study")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/analytics" icon={TrendingUp} label="Analytics" active={pathname.includes("/analytics")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/performance" icon={BarChart2} label="Performance" active={pathname.includes("/performance")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/planner" icon={Calendar} label="Autopilot" active={pathname.includes("/planner")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/dashboard" icon={Home} label="Home" active={pathname === "/student/dashboard"} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/vault" icon={BookOpen} label="Library" active={isActive("/student/vault") || isActive("/student/study")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/performance" icon={BarChart2} label="Insights" active={isActive("/student/performance") || isActive("/student/analytics")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={isActive("/student/flashcards")} onClick={() => setIsOpen(false)} />
                                     </div>
 
                                     {/* Bottom Profile Section Mobile */}
@@ -103,42 +100,10 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
 
                 {/* Center Navigation - Desktop */}
                 <div className="hidden lg:flex items-center gap-1 p-1 bg-secondary/30 backdrop-blur-md rounded-full border border-white/5">
-                    <NavItem href="/student/dashboard" icon={Home} label="Command Center" active={pathname === "/student/dashboard"} />
-                    <NavItem href="/student/vault" icon={Folder} label="The Vault" active={pathname.includes("/vault")} />
-                    <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={pathname.includes("/flashcards")} />
-                    <NavItem href="/student/study" icon={BookOpen} label="Deep Work" active={pathname.includes("/study")} />
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-secondary/50",
-                                (pathname.includes("/analytics") || pathname.includes("/performance") || pathname.includes("/planner")) && "bg-foreground/10 text-foreground"
-                            )}>
-                                <MoreHorizontal size={18} />
-                                <span>More</span>
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl p-2">
-                            <DropdownMenuItem asChild>
-                                <Link href="/student/analytics" className="flex items-center gap-2 p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors">
-                                    <TrendingUp size={16} />
-                                    <span>Analytics</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/student/performance" className="flex items-center gap-2 p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors">
-                                    <BarChart2 size={16} />
-                                    <span>Performance Lab</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/student/planner" className="flex items-center gap-2 p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors">
-                                    <Calendar size={16} />
-                                    <span>Autopilot</span>
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <NavItem href="/student/dashboard" icon={Home} label="Home" active={pathname === "/student/dashboard"} />
+                    <NavItem href="/student/vault" icon={BookOpen} label="Library" active={isActive("/student/vault") || isActive("/student/study")} />
+                    <NavItem href="/student/performance" icon={BarChart2} label="Insights" active={isActive("/student/performance") || isActive("/student/analytics")} />
+                    <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={isActive("/student/flashcards")} />
                 </div>
 
                 {/* Right Actions */}
