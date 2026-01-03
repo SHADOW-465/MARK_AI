@@ -11,8 +11,15 @@ export async function uploadStudyMaterial(formData: FormData) {
     if (!user) return { error: "Unauthorized" }
 
     // Get student ID
-    const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).single()
-    if (!student) return { error: "Student not found" }
+    const { data: student, error: studentError } = await supabase
+        .from("students")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle()
+
+    if (studentError || !student) {
+        return { error: "Student profile not found. Please complete onboarding first." }
+    }
 
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
@@ -22,34 +29,37 @@ export async function uploadStudyMaterial(formData: FormData) {
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
     const filePath = `${student.id}/${fileName}`
 
+    const BUCKET_NAME = 'study_materials' // Using underscore as per schema comment
+
     const { error: uploadError } = await supabase.storage
-        .from('study_materials')
+        .from(BUCKET_NAME)
         .upload(filePath, file)
 
     if (uploadError) {
-        return { error: `Upload failed: ${uploadError.message}` }
+        console.error("Storage upload error:", uploadError)
+        return { error: `Upload failed: ${uploadError.message}. Ensure the '${BUCKET_NAME}' bucket exists and is public.` }
     }
 
-    const { data: publicUrlData } = supabase.storage.from('study_materials').getPublicUrl(filePath)
+    const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath)
 
     // 2. Text Extraction
     let extractedText = null
 
-    if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
-        // Plain text files
-        extractedText = await file.text()
-    } else if (isPDF(file.name, file.type)) {
-        // PDF files - extract text
-        try {
+    try {
+        if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+            // Plain text files
+            extractedText = await file.text()
+        } else if (isPDF(file.name, file.type)) {
+            // PDF files - extract text
             const arrayBuffer = await file.arrayBuffer()
             const buffer = Buffer.from(arrayBuffer)
             extractedText = await extractTextFromPDF(buffer)
-        } catch (error) {
-            console.error('PDF extraction error:', error)
-            extractedText = '[PDF text extraction failed]'
+        } else {
+            extractedText = `[Generic file: ${file.name}]`
         }
-    } else {
-        extractedText = '[Image/binary content - no text extracted]'
+    } catch (extractError) {
+        console.error('Extraction error:', extractError)
+        extractedText = `[Text extraction failed for ${file.name}]`
     }
 
     // 3. Insert Record
@@ -58,10 +68,13 @@ export async function uploadStudyMaterial(formData: FormData) {
         title: file.name,
         file_url: publicUrlData.publicUrl,
         file_type: fileExt,
-        extracted_text: extractedText
+        extracted_text: extractedText || `[No text content: ${file.name}]`
     })
 
-    if (dbError) return { error: dbError.message }
+    if (dbError) {
+        console.error("DB insert error:", dbError)
+        return { error: `Database error: ${dbError.message}` }
+    }
 
     revalidatePath("/student/study")
     return { success: true }

@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
-import { ArrowUpRight, Target, Brain, TrendingUp, Zap, ArrowRight, Play } from "lucide-react"
+import { ArrowUpRight, Target, Brain, TrendingUp, Zap, ArrowRight, Play, Flame, AlertCircle, FileText, Sparkles, Folder } from "lucide-react"
 import Link from "next/link"
 import { ChallengeModeToggle } from "@/components/dashboard/challenge-mode-toggle"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
 import { StreakReminder } from "@/components/student/streak-reminder"
+import { StudentTasksWidget } from "@/components/student/tasks-widget"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -160,40 +161,48 @@ export default async function StudentDashboard() {
         }
     }
 
+    // 6. Fetch all pending tasks for the widget
+    const { data: allTasks } = await supabase
+        .from("student_tasks")
+        .select("*")
+        .eq("student_id", student.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+
     return (
-        <div className="space-y-10 pb-20">
+        <div className="space-y-10 pb-20 mt-4 outline-none">
             {/* Streak Reminder (Client Component) */}
             <StreakReminder streak={student.streak || 0} lastActiveAt={student.last_active_at} />
 
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">
+                    <h1 className="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent">
                         {student.name.split(' ')[0]}&apos;s Mission Control
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Optimized for {student.challenge_mode ? "Mastery & Challenge" : "Efficiency & Growth"}.
+                    <p className="text-muted-foreground mt-1 font-medium italic">
+                        System Status: Optimized for {student.challenge_mode ? "Maximum Mastery" : "Peak Efficiency"}.
                     </p>
                 </div>
                 <div className="flex items-center gap-6">
                     {/* XP & Streak Display */}
-                    <div className="flex items-center gap-4 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl">
-                        <div className="flex items-center gap-2" title="Mastery Streak">
-                            <Flame size={20} className={cn(
-                                "transition-colors",
-                                (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500 animate-pulse" : "text-muted-foreground"
+                    <div className="flex items-center gap-4 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md shadow-xl">
+                        <div className="flex items-center gap-2.5" title="Mastery Streak">
+                            <Flame size={22} className={cn(
+                                "transition-all duration-500",
+                                (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] animate-pulse" : "text-muted-foreground opacity-50"
                             )} />
-                            <span className="font-bold font-display">{student.streak || 0}</span>
+                            <span className="text-xl font-bold font-display leading-none">{student.streak || 0}</span>
                         </div>
-                        <div className="h-6 w-px bg-white/10" />
-                        <div className="flex flex-col gap-0.5">
-                            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                                <span>Level {student.level || 1}</span>
+                        <div className="h-8 w-px bg-white/10 mx-1" />
+                        <div className="flex flex-col gap-1.5 min-w-[140px]">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
+                                <span>LVL {student.level || 1}</span>
                                 <span>{(student.xp || 0) % 1000}/1000 XP</span>
                             </div>
-                            <div className="h-1.5 w-32 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                                 <div
-                                    className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all duration-1000"
+                                    className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all duration-1000 shadow-[0_0_10px_rgba(0,243,255,0.3)]"
                                     style={{ width: `${((student.xp || 0) % 1000) / 10}%` }}
                                 />
                             </div>
@@ -324,6 +333,8 @@ export default async function StudentDashboard() {
 
                 {/* SIDEBAR (Right 1 col) */}
                 <div className="space-y-6">
+                    <StudentTasksWidget initialTasks={allTasks || []} />
+
                     <MarkRecoveryWidget stats={recoveryStats} />
 
                     <GlassCard className="p-6 flex flex-col relative overflow-hidden">
@@ -391,4 +402,3 @@ function ButtonAction({ href, label, icon, primary, className }: { href: string,
     )
 }
 
-import { AlertCircle, FileText, Sparkles, Flame, Folder } from "lucide-react"

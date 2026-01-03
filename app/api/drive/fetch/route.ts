@@ -63,24 +63,32 @@ export async function POST(req: Request) {
             // Study materials - just store the preview link (no AI grading needed)
             const previewUrl = getPreviewUrl(fileId)
 
-            const { data: student } = await supabase
+            const { data: student, error: studentError } = await supabase
                 .from('students')
                 .select('id')
                 .eq('user_id', user.id)
-                .single()
+                .maybeSingle()
 
-            if (student) {
-                const { error: dbError } = await supabase.from('study_materials').insert({
-                    student_id: student.id,
-                    title: metadata.name,
-                    file_url: previewUrl,
-                    file_type: fileExt,
-                    extracted_text: '[Google Drive link - content accessed on-demand]'
-                })
+            if (studentError) {
+                console.error('Student lookup error:', studentError)
+                return NextResponse.json({ error: "Failed to verify student record" }, { status: 500 })
+            }
 
-                if (dbError) {
-                    console.error('DB insert error:', dbError)
-                }
+            if (!student) {
+                return NextResponse.json({ error: "Student profile not found. Please complete onboarding." }, { status: 404 })
+            }
+
+            const { error: dbError } = await supabase.from('study_materials').insert({
+                student_id: student.id,
+                title: metadata.name,
+                file_url: previewUrl,
+                file_type: fileExt,
+                extracted_text: `[Google Drive Content: ${metadata.name}]`
+            })
+
+            if (dbError) {
+                console.error('DB insert error:', dbError)
+                return NextResponse.json({ error: `Database error: ${dbError.message}` }, { status: 500 })
             }
 
             return NextResponse.json({

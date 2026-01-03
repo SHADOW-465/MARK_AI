@@ -37,11 +37,19 @@ export function StreakReminder({ streak, lastActiveAt }: StreakReminderProps) {
             setHoursLeft(0)
         }
 
-        // Check for milestone celebrations
+        // Milestone celebration logic...
         const milestones = [7, 14, 30, 50, 100, 365]
         if (milestones.includes(streak)) {
             setIsCelebrating(true)
             setTimeout(() => setIsCelebrating(false), 5000)
+        }
+
+        // AUTO-FADE Logic: If it's just a general "Start your streak" reminder, fade after 5s
+        if (remaining > 24 || !lastActiveAt) {
+            const timer = setTimeout(() => {
+                setIsVisible(false)
+            }, 5000)
+            return () => clearTimeout(timer)
         }
     }, [lastActiveAt, streak])
 
@@ -57,10 +65,10 @@ export function StreakReminder({ streak, lastActiveAt }: StreakReminderProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full backdrop-blur-xl border shadow-lg ${hoursLeft === 0
-                                ? 'bg-red-500/20 border-red-500/30 text-red-300'
-                                : hoursLeft && hoursLeft <= 3
-                                    ? 'bg-orange-500/20 border-orange-500/30 text-orange-300'
-                                    : 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300'
+                            ? 'bg-red-500/20 border-red-500/30 text-red-300'
+                            : hoursLeft && hoursLeft <= 3
+                                ? 'bg-orange-500/20 border-orange-500/30 text-orange-300'
+                                : 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300'
                             }`}
                     >
                         <div className="flex items-center gap-3">

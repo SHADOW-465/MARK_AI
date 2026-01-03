@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
 import { FlashcardDeck } from "@/components/student/flashcard-deck"
 import { Brain, Zap, Clock, History, Plus } from "lucide-react"
+import { CustomCardDialog } from "@/components/student/custom-card-dialog"
 
 export default async function FlashcardStudio() {
     const supabase = await createClient()
@@ -32,10 +33,7 @@ export default async function FlashcardStudio() {
                     <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">Flashcard Studio</h1>
                     <p className="text-muted-foreground mt-1">AI-generated active recall tailored to your gaps.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-neon-cyan text-black rounded-xl font-bold text-sm hover:bg-neon-cyan/90 transition-all">
-                    <Plus size={18} />
-                    Custom Card
-                </button>
+                <CustomCardDialog studentId={student.id} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
