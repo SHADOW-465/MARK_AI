@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { GlassCard } from "@/components/ui/glass-card"
 import { KanbanBoard } from "@/components/student/kanban-board"
-import { FileText, Target, Brain, Sparkles, Send, Upload, Link2, Plus, LayoutGrid, MessageSquare } from "lucide-react"
+import { FileText, Target, Brain, Sparkles, Send, Upload, Link2, Plus, LayoutGrid, MessageSquare, Lightbulb } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -243,7 +243,10 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                 </div>
 
                 <GlassCard className="p-4 bg-neon-cyan/5 border-neon-cyan/20">
-                    <p className="text-[10px] text-neon-cyan font-mono uppercase tracking-tighter mb-1 font-bold">AI Tutor Tip</p>
+                    <p className="text-[10px] text-neon-cyan font-mono uppercase tracking-tighter mb-1 font-bold flex items-center gap-1.5">
+                        <Lightbulb size={12} />
+                        AI Tutor Tip
+                    </p>
                     <p className="text-[11px] text-muted-foreground leading-relaxed italic">
                         Selected sources (highlighted) are used by the AI to answer questions and synthesize new study guides.
                     </p>
