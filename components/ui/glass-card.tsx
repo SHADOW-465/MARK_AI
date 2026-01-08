@@ -18,7 +18,7 @@ export const GlassCard = ({ children, className = "", hoverEffect = false, onCli
     whileTap={hoverEffect ? { scale: 0.99 } : {}}
     onClick={onClick}
     className={cn(
-      "glass-panel rounded-2xl transition-all duration-500 relative z-10 h-full overflow-hidden",
+      "glass-panel rounded-2xl transition-all duration-500 relative z-10 overflow-hidden",
       hoverEffect ? "cursor-pointer" : "",
       className
     )}
