@@ -29,6 +29,8 @@ interface Evaluation {
   extracted_text?: string
   confidence: number
   root_cause?: string
+  is_review_requested?: boolean
+  student_comment?: string
 }
 
 interface GradingInterfaceProps {
@@ -38,6 +40,7 @@ interface GradingInterfaceProps {
     file_url?: string
     file_urls?: string[]
     total_score: number
+    review_status?: string
     gemini_response?: {
       overall_feedback?: string
       student_os_analysis?: {
@@ -166,6 +169,26 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
     setEvaluations(newEvaluations)
   }
 
+  const resolveDispute = async (evaluationId: string) => {
+    if (!confirm("Resolve this dispute? This will clear the student's request flag.")) return
+
+    const newEvaluations = evaluations.map(ev =>
+        ev.id === evaluationId
+        ? { ...ev, is_review_requested: false }
+        : ev
+    )
+    setEvaluations(newEvaluations)
+
+    // Save to DB immediately
+    await supabase.from("question_evaluations").update({ is_review_requested: false }).eq("id", evaluationId)
+
+    // Check if any disputes remain
+    const remainingDisputes = newEvaluations.filter(ev => ev.is_review_requested).length
+    if (remainingDisputes === 0) {
+        await supabase.from("answer_sheets").update({ review_status: 'resolved' }).eq("id", sheet.id)
+    }
+  }
+
   const saveChanges = async (silent = false) => {
     setIsSaving(true)
     try {
@@ -178,6 +201,8 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
             final_score: ev.final_score,
             teacher_score: ev.teacher_score,
             reasoning: ev.reasoning,
+            // also ensure is_review_requested is persisted if we changed it locally via bulk actions
+            is_review_requested: ev.is_review_requested
           })
           .eq("id", ev.id)
       }
@@ -395,13 +420,17 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                 {evaluations.map((ev, index) => {
                   const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
                   const isOverridden = ev.teacher_score !== null
+                  const isDisputed = ev.is_review_requested
 
                   return (
-                    <GlassCard key={ev.id} className={`p-4 border-l-4 ${isOverridden ? "border-l-amber-500" : "border-l-indigo-500"}`}>
+                    <GlassCard key={ev.id} className={`p-4 border-l-4 ${isDisputed ? "border-l-red-500 bg-red-900/10" : isOverridden ? "border-l-amber-500" : "border-l-indigo-500"}`}>
                       <div className="flex justify-between items-start mb-3">
-                        <div>
+                        <div className="flex-1 mr-2">
                           <span className="px-2 py-1 bg-white/5 rounded text-xs text-slate-400 font-mono mr-2">Q{ev.question_num}</span>
                           <span className="font-semibold text-white text-sm">{question?.question_text}</span>
+                          {isDisputed && (
+                              <Badge variant="destructive" className="ml-2 h-5 text-[10px]">Correction Requested</Badge>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 bg-black/20 rounded-lg p-1">
                           <Input
@@ -438,6 +467,25 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                             <AlertTriangle size={14} />
                             <span>Low confidence ({Math.round(ev.confidence * 100)}%). Verify manually.</span>
                           </div>
+                        )}
+
+                        {isDisputed && (
+                            <div className="mt-2 bg-red-500/10 border border-red-500/30 p-3 rounded-lg">
+                                <p className="text-xs font-bold text-red-400 mb-1 flex items-center gap-2">
+                                    <AlertCircle size={12} /> Student Comment:
+                                </p>
+                                <p className="text-sm text-slate-200 italic">"{ev.student_comment}"</p>
+                                <div className="mt-2 flex justify-end">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-7 text-xs hover:bg-red-500/20 text-red-300 hover:text-red-200"
+                                        onClick={() => resolveDispute(ev.id)}
+                                    >
+                                        Mark Resolved
+                                    </Button>
+                                </div>
+                            </div>
                         )}
                       </div>
                     </GlassCard>

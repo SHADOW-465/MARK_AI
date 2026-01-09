@@ -17,7 +17,7 @@ export default async function GradingPage() {
         .from("exams")
         .select(`
             *,
-            answer_sheets (id, status)
+            answer_sheets (id, status, review_status)
         `)
         .eq("teacher_id", user.id)
         .order("created_at", { ascending: false })
@@ -38,10 +38,16 @@ export default async function GradingPage() {
                     const totalSheets = exam.answer_sheets?.length || 0
                     const gradedSheets = exam.answer_sheets?.filter((s: any) => s.status === 'graded' || s.status === 'approved').length || 0
                     const progress = totalSheets > 0 ? (gradedSheets / totalSheets) * 100 : 0
+                    const disputeCount = exam.answer_sheets?.filter((s: any) => s.review_status === 'requested').length || 0
 
                     return (
                         <Link key={exam.id} href={`/dashboard/grading/${exam.id}`}>
                             <GlassCard className="h-full p-6 hover:border-cyan-500/50 transition-all group cursor-pointer relative overflow-hidden">
+                                {disputeCount > 0 && (
+                                    <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg shadow-lg animate-pulse z-20">
+                                        {disputeCount} Correction Request{disputeCount > 1 ? 's' : ''}
+                                    </div>
+                                )}
                                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                     <FileText size={64} />
                                 </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { Home, Folder, Brain, BookOpen, BarChart2, Calendar, LogOut, Bell, Menu, MoreHorizontal, TrendingUp } from "lucide-react"
+import { Home, Sparkles, GraduationCap, LogOut, Bell, Menu } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -9,12 +9,6 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 interface NavbarStudentProps {
     userName: string
@@ -66,9 +60,8 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
                                     </div>
                                     <div className="flex flex-col px-4 py-6 gap-2 font-display">
                                         <NavItem href="/student/dashboard" icon={Home} label="Home" active={pathname === "/student/dashboard"} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/vault" icon={BookOpen} label="Library" active={isActive("/student/vault") || isActive("/student/study")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/performance" icon={BarChart2} label="Insights" active={isActive("/student/performance") || isActive("/student/analytics")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={isActive("/student/flashcards")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/guide" icon={Sparkles} label="AI Guide" active={isActive("/student/guide")} onClick={() => setIsOpen(false)} />
+                                        <NavItem href="/student/grades" icon={GraduationCap} label="My Grades" active={isActive("/student/grades")} onClick={() => setIsOpen(false)} />
                                     </div>
 
                                     {/* Bottom Profile Section Mobile */}
@@ -101,9 +94,8 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
                 {/* Center Navigation - Desktop */}
                 <div className="hidden lg:flex items-center gap-1 p-1 bg-secondary/30 backdrop-blur-md rounded-full border border-white/5">
                     <NavItem href="/student/dashboard" icon={Home} label="Home" active={pathname === "/student/dashboard"} />
-                    <NavItem href="/student/vault" icon={BookOpen} label="Library" active={isActive("/student/vault") || isActive("/student/study")} />
-                    <NavItem href="/student/performance" icon={BarChart2} label="Insights" active={isActive("/student/performance") || isActive("/student/analytics")} />
-                    <NavItem href="/student/flashcards" icon={Brain} label="Flashcards" active={isActive("/student/flashcards")} />
+                    <NavItem href="/student/guide" icon={Sparkles} label="AI Guide" active={isActive("/student/guide")} />
+                    <NavItem href="/student/grades" icon={GraduationCap} label="My Grades" active={isActive("/student/grades")} />
                 </div>
 
                 {/* Right Actions */}
