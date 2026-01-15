@@ -25,7 +25,7 @@ export default async function GradingPage() {
     return (
         <div className="space-y-8 pb-20">
             <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-cyan-400 dark:to-purple-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground">
                     Grading
                 </h1>
                 <p className="text-muted-foreground mt-2">
@@ -41,14 +41,14 @@ export default async function GradingPage() {
 
                     return (
                         <Link key={exam.id} href={`/dashboard/grading/${exam.id}`}>
-                            <GlassCard className="h-full p-6 hover:border-cyan-500/50 transition-all group cursor-pointer relative overflow-hidden">
+                            <GlassCard className="h-full p-6 hover:border-primary/50 transition-all group cursor-pointer relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                     <FileText size={64} />
                                 </div>
 
                                 <div className="space-y-4 relative z-10">
                                     <div>
-                                        <h3 className="text-xl font-bold text-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-1">
+                                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                             {exam.exam_name}
                                         </h3>
                                         <p className="text-sm text-muted-foreground">
@@ -61,7 +61,7 @@ export default async function GradingPage() {
                                             <span>Grading Progress</span>
                                             <span>{Math.round(progress)}%</span>
                                         </div>
-                                        <Progress value={progress} className="h-2 bg-slate-200 dark:bg-slate-800" indicatorClassName="bg-gradient-to-r from-cyan-500 to-purple-500" />
+                                        <Progress value={progress} className="h-2" />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 pt-2">
@@ -80,7 +80,7 @@ export default async function GradingPage() {
                                             <Clock size={12} />
                                             {new Date(exam.exam_date).toLocaleDateString()}
                                         </span>
-                                        <span className="group-hover:translate-x-1 transition-transform text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+                                        <span className="group-hover:translate-x-1 transition-transform text-primary flex items-center gap-1">
                                             Open <ChevronRight size={12} />
                                         </span>
                                     </div>

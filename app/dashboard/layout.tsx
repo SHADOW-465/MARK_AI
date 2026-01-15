@@ -27,16 +27,13 @@ export default async function DashboardLayout({
   const userInitials = userEmail[0].toUpperCase()
 
   return (
-    <div className="h-screen overflow-hidden relative selection:bg-cyan-500/30">
-      {/* Background FX */}
-      <div className="absolute inset-0 grid-bg pointer-events-none z-0"></div>
-
-      {/* Top Navigation Bar (Handles both Desktop & Mobile) */}
+    <div className="min-h-screen bg-background">
+      {/* Top Navigation Bar */}
       <Navbar isTeacher={isTeacher} userName={userName} userEmail={userEmail} userInitials={userInitials} />
 
       {/* Main Content */}
-      <main className="h-full pt-20 overflow-y-auto relative z-10 custom-scrollbar transition-all duration-300">
-        <div className="p-4 lg:p-10 max-w-[1600px] mx-auto">
+      <main className="pt-24 pb-8 relative">
+        <div className="px-4 lg:px-8 max-w-[1600px] mx-auto">
           <BackButton />
           {children}
         </div>

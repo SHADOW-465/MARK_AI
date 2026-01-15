@@ -1,25 +1,19 @@
 import type React from "react"
-import { Rajdhani, Space_Grotesk } from "next/font/google"
+import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { VoiceAssistantWrapper } from "@/components/voice-assistant/voice-assistant-wrapper"
 import "./globals.css"
 
-const rajdhani = Rajdhani({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-})
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-body",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 })
 
 export const metadata = {
   title: "MARK AI - AI Grading System",
-  description: "Gemini-powered grading system for schools",
-  generator: 'v0.app'
+  description: "AI-powered grading system for K-12 schools in Tamil Nadu",
+  generator: 'Next.js'
 }
 
 export default function RootLayout({
@@ -29,10 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${rajdhani.variable} ${spaceGrotesk.variable} antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

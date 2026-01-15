@@ -28,28 +28,19 @@ export default async function StudentLayout({
     const userInitials = userName[0].toUpperCase()
 
     return (
-        <div className="min-h-screen bg-background text-foreground font-sans selection:bg-neon-purple/30">
-            {/* Background Gradients */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-neon-purple/5 blur-[120px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-neon-cyan/5 blur-[120px]" />
-                <div className="absolute inset-0 grid-bg pointer-events-none opacity-20" />
-            </div>
+        <div className="min-h-screen bg-background">
+            {/* Top Navigation Bar */}
+            <NavbarStudent
+                userName={userName}
+                userEmail={userEmail}
+                userInitials={userInitials}
+            />
 
-            <div className="relative z-10 flex flex-col min-h-screen">
-                {/* Top Navigation Bar */}
-                <NavbarStudent
-                    userName={userName}
-                    userEmail={userEmail}
-                    userInitials={userInitials}
-                />
-
-                {/* Main Content */}
-                <main className="flex-1 pt-28 p-6 md:p-10 max-w-[1600px] mx-auto w-full">
-                    <BackButton />
-                    {children}
-                </main>
-            </div>
+            {/* Main Content */}
+            <main className="pt-24 pb-8 px-4 md:px-8 max-w-[1600px] mx-auto w-full">
+                <BackButton />
+                {children}
+            </main>
         </div>
     )
 }

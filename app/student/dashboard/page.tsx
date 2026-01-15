@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
-import { ArrowUpRight, Target, Brain, TrendingUp, Zap, ArrowRight, Play, Flame, AlertCircle, FileText, Sparkles, Folder } from "lucide-react"
+import { Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle, Sparkles, Folder } from "lucide-react"
 import Link from "next/link"
-import { ChallengeModeToggle } from "@/components/dashboard/challenge-mode-toggle"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
 import { StreakReminder } from "@/components/student/streak-reminder"
 import { StudentTasksWidget } from "@/components/student/tasks-widget"
@@ -28,11 +27,11 @@ export default async function StudentDashboard() {
     if (!student) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-                <div className="h-20 w-20 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+                <div className="h-20 w-20 rounded-full bg-warning/10 flex items-center justify-center text-warning border border-warning/20">
                     <AlertCircle size={40} />
                 </div>
                 <div className="space-y-2">
-                    <h1 className="text-2xl font-bold font-display">Account Link Required</h1>
+                    <h1 className="text-2xl font-semibold">Account Link Required</h1>
                     <p className="text-muted-foreground max-w-sm">
                         We couldn&apos;t find a student record linked to your account. This happens if your teacher hasn&apos;t added you yet or if the roll number didn&apos;t match.
                     </p>
@@ -45,7 +44,7 @@ export default async function StudentDashboard() {
         )
     }
 
-    // 1. NBA Hero: Query Tasks sorted by impact (metadata->priority_weight)
+    // 1. NBA Hero: Query Tasks sorted by impact
     let nbaTask = null
     const { data: nbaTasks } = await supabase
         .from("student_tasks")
@@ -63,7 +62,7 @@ export default async function StudentDashboard() {
         })[0]
     }
 
-    // 2. Mark Recovery Stats (From latest APPROVED feedback)
+    // 2. Mark Recovery Stats
     let recoveryStats = { concept: 0, calculation: 0, keyword: 0 }
 
     const { data: latestSheet } = await supabase
@@ -83,7 +82,7 @@ export default async function StudentDashboard() {
             .single()
 
         if (feedback && feedback.root_cause_analysis) {
-            const r = feedback.root_cause_analysis as any
+            const r = feedback.root_cause_analysis as Record<string, unknown>
             recoveryStats = {
                 concept: Number(r.concept || 0),
                 calculation: Number(r.calculation || 0),
@@ -92,8 +91,7 @@ export default async function StudentDashboard() {
         }
     }
 
-    // 3. Why it Matters (From latest feedback, regardless of approved status for "context",
-    // but better to stick to approved or at least recent.)
+    // 3. Why it Matters
     let whyItem = null
     if (latestSheet) {
         const { data: feedback } = await supabase
@@ -110,10 +108,8 @@ export default async function StudentDashboard() {
         }
     }
 
-
-    // 4. Recent Graded Exams for Progress Tracking
-    // Use exams!inner or exams to control join behavior
-    const { data: recentExams, error: recentExamsError } = await supabase
+    // 4. Recent Graded Exams
+    const { data: recentExams } = await supabase
         .from("answer_sheets")
         .select(`
         id,
@@ -126,8 +122,8 @@ export default async function StudentDashboard() {
         .eq("status", "approved")
         .limit(3)
 
-    // 5. Improvement Path: Finding Specific Gaps (Questions where score < 70% of max)
-    let gaps: any[] = []
+    // 5. Improvement Path: Finding Specific Gaps
+    const gaps: Array<{ num: number; text: string; lost: number; feedback: string }> = []
     if (latestSheet) {
         const { data: evals } = await supabase
             .from("question_evaluations")
@@ -143,25 +139,26 @@ export default async function StudentDashboard() {
             .eq("answer_sheet_id", latestSheet.id)
 
         if (evals) {
-            evals.forEach((ev: any) => {
-                const sheetData = ev.exams as any
-                const scheme = sheetData?.exams?.marking_scheme || []
-                const qDetails = scheme.find((q: any) => q.question_num === ev.question_num)
+            evals.forEach((ev: Record<string, unknown>) => {
+                const sheetData = ev.exams as Record<string, unknown> | null
+                const examData = sheetData?.exams as Record<string, unknown> | null
+                const scheme = (examData?.marking_scheme || []) as Array<{ question_num: number; max_marks: number; question_text: string }>
+                const qDetails = scheme.find((q) => q.question_num === ev.question_num)
                 const maxMarks = qDetails?.max_marks || 0
 
-                if (maxMarks > 0 && (ev.final_score / maxMarks) < 0.7) {
+                if (maxMarks > 0 && ((ev.final_score as number) / maxMarks) < 0.7) {
                     gaps.push({
-                        num: ev.question_num,
-                        text: qDetails?.question_text,
-                        lost: maxMarks - ev.final_score,
-                        feedback: ev.reasoning
+                        num: ev.question_num as number,
+                        text: qDetails?.question_text || '',
+                        lost: maxMarks - (ev.final_score as number),
+                        feedback: ev.reasoning as string
                     })
                 }
             })
         }
     }
 
-    // 6. Fetch all pending tasks for the widget
+    // 6. Fetch all pending tasks
     const { data: allTasks } = await supabase
         .from("student_tasks")
         .select("*")
@@ -170,39 +167,39 @@ export default async function StudentDashboard() {
         .order("created_at", { ascending: false })
 
     return (
-        <div className="space-y-10 pb-20 mt-4 outline-none">
-            {/* Streak Reminder (Client Component) */}
+        <div className="space-y-8 pb-20">
+            {/* Streak Reminder */}
             <StreakReminder streak={student.streak || 0} lastActiveAt={student.last_active_at} />
 
             {/* Header & Controls */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent">
+                    <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                         Hey {student.name.split(' ')[0]},
                     </h1>
-                    <p className="text-muted-foreground mt-1 font-medium font-sans">
+                    <p className="text-muted-foreground mt-1">
                         How can I help you with your learning today?
                     </p>
                 </div>
                 <div className="flex items-center gap-6">
                     {/* XP & Streak Display */}
-                    <div className="flex items-center gap-4 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md shadow-xl">
-                        <div className="flex items-center gap-2.5" title="Learning Streak">
-                            <Flame size={22} className={cn(
-                                "transition-all duration-500",
-                                (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] animate-pulse" : "text-muted-foreground opacity-50"
+                    <div className="flex items-center gap-4 px-4 py-2 bg-card border border-border rounded-xl shadow-sm">
+                        <div className="flex items-center gap-2" title="Learning Streak">
+                            <Flame size={20} className={cn(
+                                "transition-all duration-300",
+                                (student.streak || 0) > 0 ? "text-orange-500 fill-orange-500" : "text-muted-foreground opacity-50"
                             )} />
-                            <span className="text-xl font-bold font-display leading-none">{student.streak || 0}</span>
+                            <span className="text-lg font-semibold">{student.streak || 0}</span>
                         </div>
-                        <div className="h-8 w-px bg-white/10 mx-1" />
-                        <div className="flex flex-col gap-1.5 min-w-[140px]">
-                            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-widest font-bold">
-                                <span>Mastery LVL {student.level || 1}</span>
+                        <div className="h-6 w-px bg-border" />
+                        <div className="flex flex-col gap-1 min-w-[120px]">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>Level {student.level || 1}</span>
                                 <span>{(student.xp || 0) % 1000}/1000 XP</span>
                             </div>
-                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all duration-1000 shadow-[0_0_10px_rgba(0,243,255,0.3)]"
+                                    className="h-full bg-primary transition-all duration-500"
                                     style={{ width: `${((student.xp || 0) % 1000) / 10}%` }}
                                 />
                             </div>
@@ -211,47 +208,47 @@ export default async function StudentDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
                 {/* MAIN FEED (Left 3 cols) */}
-                <div className="lg:col-span-3 space-y-10">
+                <div className="lg:col-span-3 space-y-6">
 
                     {/* AI GUIDANCE HERO */}
-                    <GlassCard className="p-0 overflow-hidden border-neon-cyan/20 relative group hover:border-neon-cyan/40 transition-colors">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-cyan to-neon-purple" />
-                        <div className="p-8">
+                    <GlassCard className="p-0 overflow-hidden relative">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/50" />
+                        <div className="p-6">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="space-y-1">
-                                    <span className="text-[10px] font-mono text-neon-cyan uppercase tracking-widest flex items-center gap-2 font-bold">
+                                    <span className="text-xs text-primary font-medium flex items-center gap-2">
                                         <Sparkles size={14} /> AI Recommendation
                                     </span>
-                                    <h2 className="text-2xl font-bold font-display text-foreground mt-2">
+                                    <h2 className="text-xl font-semibold text-foreground mt-2">
                                         {nbaTask ? `Your next milestone: ${nbaTask.title}` : "Your dashboard is clear. What's next?"}
                                     </h2>
                                 </div>
                                 {nbaTask && (
                                     <span className={cn(
-                                        "text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-wider",
-                                        (nbaTask.metadata?.effort_score || 0) <= 3 ? "bg-green-500/10 border-green-500/20 text-green-400" :
-                                            (nbaTask.metadata?.effort_score || 0) >= 8 ? "bg-red-500/10 border-red-500/20 text-red-400" :
-                                                "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                                        "text-xs font-medium px-3 py-1 rounded-full border",
+                                        (nbaTask.metadata?.effort_score || 0) <= 3 ? "bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400" :
+                                            (nbaTask.metadata?.effort_score || 0) >= 8 ? "bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400" :
+                                                "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
                                     )}>
                                         {nbaTask.metadata?.effort_score ? `Approx. ${nbaTask.metadata.effort_score * 10} min` : "Top Priority"}
                                     </span>
                                 )}
                             </div>
 
-                            <p className="text-muted-foreground mb-8 max-w-2xl leading-relaxed text-sm">
+                            <p className="text-muted-foreground mb-6 max-w-2xl text-sm">
                                 {nbaTask?.why || "You've handled your active missions! Take a moment to review your progress or dive into the library to explore new topics."}
                             </p>
 
                             {nbaTask ? (
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     <ButtonAction href="/student/vault?tab=missions" label="Start Mission" icon={<Play size={16} />} primary />
                                     <ButtonAction href={`/student/vault?tab=ai_studio&examId=${latestSheet?.id}`} label="AI Deep Dive" icon={<Brain size={16} />} />
                                 </div>
                             ) : (
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     <ButtonAction href="/student/vault" label="Go to Library" icon={<Folder size={16} />} primary />
                                     <ButtonAction href="/student/performance" label="Insights" icon={<TrendingUp size={16} />} />
                                 </div>
@@ -259,35 +256,38 @@ export default async function StudentDashboard() {
                         </div>
                     </GlassCard>
 
-                    {/* RECENT FEEDBACK (Graded Exams) */}
+                    {/* RECENT FEEDBACK */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-bold flex items-center gap-2">
-                                <TrendingUp size={18} className="text-neon-cyan" />
+                            <h3 className="text-lg font-semibold flex items-center gap-2">
+                                <TrendingUp size={18} className="text-primary" />
                                 Latest Insights
                             </h3>
-                            <Link href="/student/performance" className="text-xs text-muted-foreground hover:text-foreground">View all progress &rarr;</Link>
+                            <Link href="/student/performance" className="text-xs text-muted-foreground hover:text-foreground transition-colors">View all progress &rarr;</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {recentExams && recentExams.length > 0 ? recentExams.map((exam: any) => (
-                                <Link key={exam.id} href={`/student/performance/${exam.id}`}>
-                                    <GlassCard className="p-4 hover:border-neon-cyan/50 transition-all group overflow-hidden h-full">
-                                        <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-neon-cyan transition-colors">
-                                            {exam.exams?.subject || 'General'}
-                                        </div>
-                                        <h4 className="font-bold text-sm truncate mb-3 group-hover:text-foreground">
-                                            {exam.exams?.exam_name || 'Evaluation'}
-                                        </h4>
-                                        <div className="flex items-end justify-between">
-                                            <div className="text-2xl font-bold font-display">
-                                                {exam.total_score} <span className="text-[10px] text-muted-foreground font-sans font-normal">/ {exam.exams?.total_marks || '?'}</span>
+                            {recentExams && recentExams.length > 0 ? recentExams.map((exam: Record<string, unknown>) => {
+                                const examData = exam.exams as Record<string, unknown> | null
+                                return (
+                                    <Link key={exam.id as string} href={`/student/performance/${exam.id}`}>
+                                        <GlassCard className="p-4 hover:border-primary/30 transition-all group h-full">
+                                            <div className="text-xs text-muted-foreground mb-1 group-hover:text-primary transition-colors">
+                                                {(examData?.subject as string) || 'General'}
                                             </div>
-                                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                        </div>
-                                    </GlassCard>
-                                </Link>
-                            )) : (
-                                <div className="md:col-span-3 p-8 border-dashed border border-white/5 rounded-xl text-center text-muted-foreground text-sm italic">
+                                            <h4 className="font-medium text-sm truncate mb-3">
+                                                {(examData?.exam_name as string) || 'Evaluation'}
+                                            </h4>
+                                            <div className="flex items-end justify-between">
+                                                <div className="text-2xl font-semibold">
+                                                    {exam.total_score as number} <span className="text-xs text-muted-foreground font-normal">/ {(examData?.total_marks as number) || '?'}</span>
+                                                </div>
+                                                <div className="h-2 w-2 rounded-full bg-green-500" />
+                                            </div>
+                                        </GlassCard>
+                                    </Link>
+                                )
+                            }) : (
+                                <div className="md:col-span-3 p-8 border-dashed border border-border rounded-xl text-center text-muted-foreground text-sm">
                                     No graded results yet.
                                 </div>
                             )}
@@ -297,7 +297,7 @@ export default async function StudentDashboard() {
                     {/* URGENT GAPS */}
                     {gaps.length > 0 && (
                         <div className="space-y-4">
-                            <h3 className="text-lg font-bold flex items-center gap-2">
+                            <h3 className="text-lg font-semibold flex items-center gap-2">
                                 <AlertCircle size={18} className="text-amber-500" />
                                 Knowledge Gaps
                             </h3>
@@ -305,14 +305,14 @@ export default async function StudentDashboard() {
                                 {gaps.slice(0, 3).map((gap, i) => (
                                     <GlassCard key={i} className="p-4 border-l-2 border-amber-500/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="flex gap-4">
-                                            <div className="h-10 w-10 shrink-0 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold border border-amber-500/20">
+                                            <div className="h-10 w-10 shrink-0 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/20">
                                                 Q{gap.num}
                                             </div>
                                             <div>
-                                                <p className="text-xs font-medium text-foreground leading-relaxed italic mb-1">
+                                                <p className="text-sm font-medium text-foreground mb-1">
                                                     &quot;{gap.text?.substring(0, 100)}...&quot;
                                                 </p>
-                                                <p className="text-[10px] text-muted-foreground line-clamp-1">
+                                                <p className="text-xs text-muted-foreground line-clamp-1">
                                                     AI Tip: {gap.feedback}
                                                 </p>
                                             </div>
@@ -321,7 +321,7 @@ export default async function StudentDashboard() {
                                             href={`/student/flashcards`}
                                             label="Practice Recall"
                                             icon={<Brain size={12} />}
-                                            className="text-[10px] h-8 px-4 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+                                            className="text-xs h-8 px-4 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
                                         />
                                     </GlassCard>
                                 ))}
@@ -336,32 +336,31 @@ export default async function StudentDashboard() {
 
                     <MarkRecoveryWidget stats={recoveryStats} />
 
-                    <GlassCard className="p-6 flex flex-col relative overflow-hidden bg-neon-purple/5">
-                        <div className="absolute top-0 right-0 p-32 bg-neon-purple/10 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <Sparkles className="text-neon-purple" size={18} />
+                    <GlassCard className="p-5 flex flex-col relative overflow-hidden">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
+                            <Sparkles className="text-primary" size={18} />
                             AI Insight
                         </h3>
                         {whyItem ? (
-                            <div className="space-y-4 relative z-10">
-                                <span className="text-[10px] font-mono px-2 py-0.5 bg-neon-purple/20 text-neon-purple border border-neon-purple/20 rounded uppercase tracking-widest font-bold">
+                            <div className="space-y-3">
+                                <span className="text-xs font-medium px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded">
                                     {whyItem.topic}
                                 </span>
-                                <p className="text-xs text-foreground/80 leading-relaxed font-medium italic">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     &quot;{whyItem.desc}&quot;
                                 </p>
-                                <p className="text-[10px] text-muted-foreground pt-2 border-t border-white/5">
+                                <p className="text-xs text-muted-foreground pt-2 border-t border-border">
                                     This concept is vital for real-world applications in this field.
                                 </p>
                             </div>
                         ) : (
-                            <p className="text-xs text-muted-foreground italic">Analyze an exam to reveal specialized learning insights.</p>
+                            <p className="text-sm text-muted-foreground">Analyze an exam to reveal specialized learning insights.</p>
                         )}
 
-                        <div className="mt-8 pt-6 border-t border-white/5">
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <p className="text-[10px] font-bold text-neon-cyan uppercase tracking-tighter mb-1">Pro Tip</p>
-                                <p className="text-xs text-muted-foreground leading-snug">
+                        <div className="mt-6 pt-4 border-t border-border">
+                            <div className="p-4 rounded-lg bg-muted">
+                                <p className="text-xs font-medium text-primary mb-1">Pro Tip</p>
+                                <p className="text-sm text-muted-foreground leading-snug">
                                     Consistency beats intensity. Even 15 minutes of <b>Active Recall</b> daily will yield 2x better retention.
                                 </p>
                             </div>
@@ -373,15 +372,15 @@ export default async function StudentDashboard() {
     )
 }
 
-function ButtonAction({ href, label, icon, primary, className }: { href: string, label: string, icon: any, primary?: boolean, className?: string }) {
+function ButtonAction({ href, label, icon, primary, className }: { href: string, label: string, icon: React.ReactNode, primary?: boolean, className?: string }) {
     return (
         <Link
             href={href}
             className={cn(
-                "flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
                 primary
-                    ? "bg-neon-cyan text-black hover:bg-neon-cyan/90 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-                    : "bg-white/5 hover:bg-white/10 text-foreground border border-white/10",
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                    : "bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border",
                 className
             )}
         >
@@ -390,4 +389,3 @@ function ButtonAction({ href, label, icon, primary, className }: { href: string,
         </Link>
     )
 }
-

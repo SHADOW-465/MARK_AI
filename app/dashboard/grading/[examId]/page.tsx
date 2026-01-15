@@ -67,8 +67,8 @@ export default async function ExamGradingPage({
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white">{exam.exam_name}</h1>
-                    <p className="text-slate-400">
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">{exam.exam_name}</h1>
+                    <p className="text-muted-foreground">
                         {exam.subject} • Class {exam.class} • {new Date(exam.exam_date).toLocaleDateString()}
                     </p>
                 </div>
@@ -76,8 +76,8 @@ export default async function ExamGradingPage({
 
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-white">Student List</h2>
-                    <div className="text-sm text-slate-400">
+                    <h2 className="text-xl font-semibold text-foreground">Student List</h2>
+                    <div className="text-sm text-muted-foreground">
                         Total Students: {students?.length || 0}
                     </div>
                 </div>

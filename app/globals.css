@@ -4,11 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-display: 'Rajdhani', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Inter', system-ui, sans-serif;
 
-  --color-neon-cyan: #00f3ff;
-  --color-neon-purple: #bc13fe;
+  /* Professional Indigo/Teal Palette */
+  --color-brand-indigo: #6366F1;
+  --color-brand-indigo-dark: #4F46E5;
+  --color-brand-teal: #14B8A6;
+  --color-brand-teal-dark: #0D9488;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -50,90 +53,119 @@
 
 @layer base {
   :root {
-    --font-display: 'Rajdhani', sans-serif;
-    --font-body: 'Space Grotesk', sans-serif;
-    --neon-cyan: #00f3ff;
-    --neon-purple: #bc13fe;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Inter', system-ui, sans-serif;
 
-    /* Light Mode: Soft gradients, white glass */
-    --background: 210 40% 98%; /* Very light gray/white */
-    --foreground: 222 47% 11%; /* Dark text */
+    /* Professional Premium Color System - Light Mode */
+    --background: 210 40% 98%; /* #F8FAFC */
+    --foreground: 222 47% 11%; /* #1E293B */
 
-    --card: 0 0% 100%;
+    --card: 0 0% 100%; /* White */
     --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 180 100% 40%; /* Darker cyan for contrast on light */
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Indigo */
+    --primary: 239 84% 67%; /* #6366F1 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
+    /* Secondary: Light slate */
+    --secondary: 210 40% 96%; /* #F1F5F9 */
     --secondary-foreground: 222 47% 11%;
 
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 16% 47%; /* #64748B */
 
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    /* Status Colors */
+    --success: 142 71% 45%; /* #22C55E */
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%; /* #F59E0B */
+    --warning-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%; /* #E2E8F0 */
     --input: 214 32% 91%;
-    --ring: 222 47% 11%;
+    --ring: 239 84% 67%; /* Indigo ring */
 
     --radius: 0.5rem;
 
+    /* Chart colors - professional palette */
+    --chart-1: 239 84% 67%; /* Indigo */
+    --chart-2: 172 66% 50%; /* Teal */
+    --chart-3: 142 71% 45%; /* Green */
+    --chart-4: 38 92% 50%; /* Amber */
+    --chart-5: 280 65% 60%; /* Purple */
+
     --sidebar: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 239 84% 67%;
   }
 
   .dark {
-    /* Dark Mode: Deep dark background, dark glass */
-    --background: 224 71% 4%; /* #020617 */
-    --foreground: 210 40% 98%;
+    /* Professional Premium Color System - Dark Mode */
+    --background: 222 47% 11%; /* #1E293B - Slate 800 */
+    --foreground: 210 40% 98%; /* #F8FAFC */
 
-    --card: 222 47% 11%;
+    --card: 217 33% 17%; /* #334155 - Slate 700 */
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 11%;
+    --popover: 217 33% 17%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 180 100% 50%; /* Cyan */
-    --primary-foreground: 222 47% 11%;
+    /* Primary: Indigo (slightly brighter for dark mode) */
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 32% 17%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%; /* #94A3B8 */
 
-    --accent: 217 32% 17%;
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62% 30%;
+    /* Status Colors */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 180 100% 50%;
+    --border: 217 33% 25%; /* Lighter border for dark mode */
+    --input: 217 33% 25%;
+    --ring: 239 84% 67%;
+
+    /* Chart colors - brighter for dark mode */
+    --chart-1: 239 84% 70%;
+    --chart-2: 172 66% 55%;
+    --chart-3: 142 71% 50%;
+    --chart-4: 38 92% 55%;
+    --chart-5: 280 65% 65%;
 
     --sidebar: 222 47% 11%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 180 100% 50%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 32% 17%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 32% 17%;
-    --sidebar-ring: 180 100% 50%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 239 84% 67%;
   }
 
   * {
@@ -141,61 +173,38 @@
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
-    font-family: var(--font-body);
-    /* Default background handling is done via Tailwind classes now */
+    @apply bg-background text-foreground antialiased transition-colors duration-200;
+    font-family: var(--font-sans);
   }
 
-  /* Specific background logic for modes */
-  .dark body {
-    background-color: #020617;
-    background-image:
-      radial-gradient(circle at 50% 0%, rgba(120, 119, 198, 0.15) 0%, transparent 60%),
-      radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, transparent 50%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-    background-attachment: fixed;
-  }
-
-  /* Light mode background */
+  /* Clean backgrounds for both modes */
   body {
-    background-color: #f8fafc;
+    background-color: #F8FAFC;
     background-image:
-        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+      radial-gradient(ellipse at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(20, 184, 166, 0.03) 0%, transparent 50%);
     background-attachment: fixed;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  .font-display {
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .dark body {
+    background-color: #0F172A;
+    background-image:
+      radial-gradient(ellipse at top, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(20, 184, 166, 0.05) 0%, transparent 50%);
+  }
+
+  /* Professional Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 }
 
-/* Subtle Pulse for Background */
-@keyframes gradient-pulse {
-  0% {
-    opacity: 0.8;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.8;
-  }
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbar - Subtle */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -203,139 +212,69 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.2); /* Adapted for light mode visibility */
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 10px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-cyan);
+  background: hsl(var(--primary));
 }
 
-/* Utilities */
+/* Professional Glass Panel */
 .glass-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   position: relative;
 }
 
 .dark .glass-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* Premium Wave Gradient Animation */
-@keyframes gradient-wave {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient-text {
-  background: linear-gradient(to right, #000, #22d3ee, #000); /* Adapted for light */
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-wave 6s linear infinite;
-}
-
-.dark .animate-gradient-text {
-    background: linear-gradient(to right, #fff, #a5f3fc, #22d3ee, #fff);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-
-/* Background Pattern */
-.grid-bg {
-  background-size: 60px 60px;
-  background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  opacity: 0.3;
-}
-
-.dark .grid-bg {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-}
-
-/* DIAGONAL BORDER BEAM ANIMATION */
-@keyframes diagonal-beam {
-  0% {
-    background-position: 0% 0%;
-  }
-
-  100% {
-    background-position: 200% 200%;
-  }
-}
-
-.card-border-beam {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: linear-gradient(135deg, transparent 40%, rgba(0, 243, 255, 0.6) 50%, transparent 60%);
-  background-size: 300% 300%;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: diagonal-beam 3s linear 1 forwards;
-  pointer-events: none;
-  z-index: 2;
-}
-
+/* Subtle card border */
 .card-border-static {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   pointer-events: none;
   z-index: 1;
 }
 
 .dark .card-border-static {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.holographic-active {
-  background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.1));
-  background-size: 200% 200%;
-  animation: gradient-wave 4s ease infinite;
+/* Minimal grid background (optional) */
+.grid-bg {
+  background-size: 48px 48px;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
+  opacity: 0.5;
 }
 
-/* Toggle Switch Styling */
-.toggle-checkbox:checked {
-  right: 0;
-  border-color: #22d3ee;
+.dark .grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
-.toggle-checkbox:checked+.toggle-label {
-  background-color: #22d3ee;
+/* Gradient text utility */
+.text-gradient {
+  background: linear-gradient(135deg, #6366F1 0%, #14B8A6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Focus ring styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
 }
