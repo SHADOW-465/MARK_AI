@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
-import { FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles, Activity, Zap, Layers } from "lucide-react"
+import { 
+  FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles, 
+  Activity, Zap, Layers, AlertTriangle, TrendingUp, TrendingDown,
+  Calendar, GraduationCap
+} from "lucide-react"
 import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
@@ -12,34 +16,62 @@ export const dynamic = 'force-dynamic'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  // Fetch real stats
+  // 1. Fetch Key Stats
   const { count: examCount } = await supabase.from("exams").select("*", { count: "exact", head: true })
   const { count: studentCount } = await supabase.from("students").select("*", { count: "exact", head: true })
-  const { count: gradedCount } = await supabase
-    .from("answer_sheets")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "graded")
+  
+  // Pending Reviews
   const { count: pendingCount } = await supabase
     .from("answer_sheets")
     .select("*", { count: "exact", head: true })
-    .eq("status", "pending")
+    .in("status", ["pending", "graded"])
 
-  // Fetch recent activity (latest exams)
-  const { data: recentExams } = await supabase
-    .from("exams")
-    .select("exam_name, created_at")
+  // At Risk Students (Approximate)
+  const { data: lowScores } = await supabase
+    .from("answer_sheets")
+    .select("student_id, total_score, exams(total_marks)")
+    .eq("status", "approved")
     .order("created_at", { ascending: false })
-    .limit(3)
+    .limit(50)
 
-  // Fetch upcoming exams
-  const { data: upcomingExams } = await supabase
-    .from("exams")
-    .select("id, exam_name, exam_date, class")
-    .gte("exam_date", new Date().toISOString().split('T')[0])
-    .order("exam_date", { ascending: true })
-    .limit(3)
+  let atRiskCount = 0
+  if (lowScores) {
+    const uniqueStudents = new Set()
+    lowScores.forEach(s => {
+      const examsData = s.exams as any
+      const total = examsData?.total_marks || 100
+      if ((s.total_score || 0) / total < 0.6) {
+        uniqueStudents.add(s.student_id)
+      }
+    })
+    atRiskCount = uniqueStudents.size
+  }
 
-  // Fetch data for analytics (Last 5 exams)
+  // 2. Priority Queue: Exams needing grading
+  const { data: priorityQueue } = await supabase
+    .from("answer_sheets")
+    .select(`
+      id, created_at, status, confidence,
+      exams!inner (exam_name, class, subject),
+      students!inner (name, roll_number)
+    `)
+    .in("status", ["pending", "graded"])
+    .order("created_at", { ascending: true }) // Oldest first
+    .limit(5)
+
+  // 3. Recent Activity
+  const { data: recentActivity } = await supabase
+    .from("answer_sheets")
+    .select(`
+      id, updated_at, total_score, status,
+      exams!inner (exam_name),
+      students!inner (name)
+    `)
+    .eq("status", "approved")
+    .order("updated_at", { ascending: false })
+    .limit(5)
+
+  // 4. Analytics Data
   const { data: analyticsExams } = await supabase
     .from("exams")
     .select("id, exam_name, passing_marks")
@@ -68,223 +100,240 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8 pb-24 lg:pb-0">
+      
+      {/* Header Section */}
       <div className="flex items-end justify-between">
         <div>
           <h2 className="text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
             Dashboard
             <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse-glow shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
           </h2>
-          <p className="text-muted-foreground font-medium mt-2 text-lg">Mission Control for AI Grading</p>
+          <p className="text-muted-foreground font-medium mt-2 text-lg">
+            Good Morning, Professor. You have <span className="text-foreground font-bold">{pendingCount} items</span> requiring attention.
+          </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full bg-white/50 dark:bg-slate-900/50 border border-white/20 dark:border-white/10 backdrop-blur-xl shadow-lg shadow-indigo-500/5">
-          <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
-          <span className="text-sm font-semibold text-foreground">
-            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
-          </span>
+        
+        {/* Quick Action Button Group */}
+        <div className="hidden md:flex gap-3">
+          <Link href="/dashboard/exams/create">
+            <div className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer">
+              <FileText size={18} />
+              <span>Create Exam</span>
+            </div>
+          </Link>
+          <Link href="/dashboard/grading">
+            <div className="px-5 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-border font-semibold hover:bg-secondary transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+              <CheckCircle size={18} className="text-emerald-500" />
+              <span>Grade All</span>
+            </div>
+          </Link>
         </div>
       </div>
 
-      {/* Premium Bento Grid Layout */}
+      {/* 1. Key Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        {/* Stat Cards - LIQUID & SOFT UI */}
         {[
           {
-            label: "Total Exams",
-            val: examCount || 0,
-            sub: "Active Assessments",
-            icon: FileText,
-            color: "primary",
-            gradient: "from-indigo-500 to-blue-600"
+            label: "Needs Review",
+            val: pendingCount || 0,
+            icon: Clock,
+            color: "amber",
+            trend: "+12%",
+            trendUp: true
           },
           {
-            label: "Enrolled Students",
+            label: "Total Students",
             val: studentCount || 0,
-            sub: "Learning Tracked",
             icon: Users,
             color: "purple",
-            gradient: "from-purple-500 to-pink-600"
+            trend: "+5 new",
+            trendUp: true
           },
           {
-            label: "Pending Review",
-            val: pendingCount || 0,
-            sub: "Action Required",
-            icon: Clock,
+            label: "At Risk",
+            val: atRiskCount || 0,
+            icon: AlertTriangle,
+            color: "red",
+            trend: "-2%",
+            trendUp: false 
+          },
+          {
+            label: "Avg. Performance",
+            val: "78%",
+            icon: Activity,
             color: "teal",
-            gradient: "from-teal-400 to-emerald-500"
-          },
-          {
-            label: "Graded Sheets",
-            val: gradedCount || 0,
-            sub: "Completed",
-            icon: CheckCircle,
-            color: "primary", // Fallback
-            gradient: "from-blue-500 to-cyan-500"
+            trend: "+4%",
+            trendUp: true
           },
         ].map((s, i) => (
-          <GlassCard 
-            key={i} 
-            variant="liquid" // New Liquid Variant
-            hoverEffect 
-            shimmer
-            gradientColor={s.color as any}
-            className="p-6 overflow-hidden relative group"
-          >
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                {/* Neumorphic Icon Container */}
-                <div className={`h-14 w-14 rounded-full flex items-center justify-center bg-gradient-to-br ${s.gradient} text-white shadow-xl shadow-indigo-500/20 ring-4 ring-white/10 dark:ring-black/10`}>
-                  <s.icon size={24} strokeWidth={2.5} />
-                </div>
-                
-                <div className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/20 shadow-sm`}>
-                  Real-time
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-5xl font-display font-extrabold text-foreground mb-1 group-hover:scale-105 transition-transform origin-left drop-shadow-sm">
-                  {s.val}
-                </h3>
-                <p className="text-sm font-semibold text-muted-foreground/80 tracking-wide">{s.label}</p>
+          <GlassCard key={i} variant="neu" hoverEffect className="p-5 flex items-center justify-between group">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">{s.label}</p>
+              <h3 className="text-3xl font-display font-bold text-foreground">{s.val}</h3>
+              <div className={cn(
+                "flex items-center gap-1 text-xs font-semibold mt-2",
+                s.trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+              )}>
+                {s.trendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                {s.trend} <span className="text-muted-foreground font-normal ml-1">vs last week</span>
               </div>
             </div>
-            
-            {/* Liquid Background Blob */}
-            <div className={`absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-gradient-to-br ${s.gradient} opacity-20 blur-3xl group-hover:scale-125 transition-transform duration-1000`} />
+            <div className={cn(
+              "h-12 w-12 rounded-full flex items-center justify-center shadow-inner",
+              s.color === 'amber' && "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
+              s.color === 'purple' && "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
+              s.color === 'red' && "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
+              s.color === 'teal' && "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400",
+            )}>
+              <s.icon size={24} />
+            </div>
           </GlassCard>
         ))}
+      </div>
 
-        {/* Analytics Chart - Large Block */}
-        <div className="md:col-span-2 lg:col-span-2 row-span-2">
-          <GlassCard className="p-0 h-full flex flex-col overflow-hidden" hoverEffect variant="neu">
-            <div className="p-8 border-b border-border/10 bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/5">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-                  <Activity className="w-5 h-5" />
-                </div>
-                <h3 className="text-2xl font-display font-bold text-foreground">
-                  Performance Trends
-                </h3>
-              </div>
-              <p className="text-sm font-medium text-muted-foreground ml-11">Average scores across recent exams</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* 2. Priority Queue (Left 2 cols) */}
+        <div className="lg:col-span-2 space-y-6">
+          <GlassCard variant="liquid" className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+                <Zap className="text-amber-500 fill-amber-500" size={20} />
+                Priority Queue
+              </h3>
+              <Link href="/dashboard/grading" className="text-sm font-medium text-primary hover:underline">
+                View Grading Queue &rarr;
+              </Link>
             </div>
-            <div className="flex-1 p-6 w-full bg-gradient-to-b from-transparent to-indigo-50/30 dark:to-indigo-900/10">
+
+            <div className="space-y-3">
+              {priorityQueue && priorityQueue.length > 0 ? (
+                priorityQueue.map((item: any, i) => (
+                  <div key={item.id} className="group flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 hover:bg-white hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                        {item.students?.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {item.students?.name}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">
+                          {item.exams?.subject} • {item.exams?.exam_name}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right hidden sm:block">
+                        <span className={cn(
+                          "px-2 py-1 rounded text-xs font-bold uppercase tracking-wider",
+                          item.status === 'graded' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                        )}>
+                          {item.status === 'graded' ? 'Review' : 'Grade'}
+                        </span>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="h-8 w-8 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+                        <ArrowUpRight size={16} />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CheckCircle size={48} className="mx-auto mb-3 text-emerald-500 opacity-50" />
+                  <p>All caught up! No pending items.</p>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+
+          {/* Performance Chart */}
+          <GlassCard variant="neu" className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+                <Activity className="text-indigo-500" size={20} />
+                Class Performance
+              </h3>
+            </div>
+            <div className="h-[300px] w-full">
               <AnalyticsChart data={analyticsData} />
             </div>
           </GlassCard>
         </div>
 
-        {/* Upcoming Exams */}
-        <div className="md:col-span-1 lg:col-span-1 row-span-2">
-          <GlassCard className="p-0 h-full flex flex-col" hoverEffect variant="neu">
-             <div className="p-8 border-b border-border/10">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <h3 className="text-2xl font-display font-bold text-foreground">
-                  Upcoming
-                </h3>
+        {/* 3. Sidebar (Right 1 col) */}
+        <div className="space-y-6">
+          
+          {/* Quick Actions Card */}
+          <GlassCard variant="liquid" gradientColor="purple" className="p-6 text-white relative overflow-hidden">
+            <div className="relative z-10">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Sparkles size={18} className="fill-white/20" /> Quick Actions
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/dashboard/exams/create" className="col-span-2">
+                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex items-center gap-3 border border-white/10">
+                    <FileText size={18} />
+                    <span className="font-semibold text-sm">New Exam</span>
+                  </div>
+                </Link>
+                <Link href="/dashboard/students/add">
+                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex flex-col items-center gap-2 border border-white/10 text-center">
+                    <Users size={18} />
+                    <span className="font-semibold text-xs">Add Student</span>
+                  </div>
+                </Link>
+                <Link href="/dashboard/settings">
+                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex flex-col items-center gap-2 border border-white/10 text-center">
+                    <Layers size={18} />
+                    <span className="font-semibold text-xs">Manage</span>
+                  </div>
+                </Link>
               </div>
-              <p className="text-sm font-medium text-muted-foreground ml-11">Next assessments</p>
             </div>
-            <div className="p-6 flex-1">
-              <UpcomingExams exams={upcomingExams || []} />
-            </div>
+            {/* Decorative background */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
           </GlassCard>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="md:col-span-1 lg:col-span-1">
-          <GlassCard className="p-6 h-full flex flex-col justify-center gap-4 relative overflow-hidden group" variant="liquid" hoverEffect>
-             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-             
-             <h3 className="text-lg font-display font-bold text-foreground flex items-center gap-2 z-10 pl-1">
-               <Zap className="w-5 h-5 text-amber-500 fill-amber-500 drop-shadow-md" />
-               Quick Actions
-             </h3>
-             
-             <div className="grid gap-3 z-10">
-               <Link href="/dashboard/exams/create">
-                 <div className="p-3 pl-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-white/20 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all flex items-center justify-between group/item cursor-pointer shadow-sm hover:shadow-md">
-                   <div className="flex items-center gap-3">
-                     <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300">
-                       <FileText size={16} />
-                     </div>
-                     <span className="text-sm font-semibold">New Exam</span>
-                   </div>
-                   <div className="h-6 w-6 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all transform translate-x-2 group-hover/item:translate-x-0">
-                     <ArrowUpRight size={12} className="text-indigo-500" />
-                   </div>
-                 </div>
-               </Link>
-               
-               <Link href="/dashboard/students/add">
-                 <div className="p-3 pl-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-white/20 hover:border-purple-300 dark:hover:border-purple-700 transition-all flex items-center justify-between group/item cursor-pointer shadow-sm hover:shadow-md">
-                   <div className="flex items-center gap-3">
-                     <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
-                       <Users size={16} />
-                     </div>
-                     <span className="text-sm font-semibold">Add Student</span>
-                   </div>
-                   <div className="h-6 w-6 rounded-full bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all transform translate-x-2 group-hover/item:translate-x-0">
-                     <ArrowUpRight size={12} className="text-purple-500" />
-                   </div>
-                 </div>
-               </Link>
-             </div>
-          </GlassCard>
-        </div>
-
-        {/* System Status */}
-        <div className="md:col-span-1 lg:col-span-1">
-           <GlassCard className="p-6 h-full flex flex-col" hoverEffect variant="neu">
-            <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
-               <Layers className="w-5 h-5 text-emerald-500" />
-               System Health
+          {/* Recent Activity Feed */}
+          <GlassCard variant="neu" className="p-6">
+            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+              <Clock size={18} className="text-muted-foreground" />
+              Recent Activity
             </h3>
-            <div className="flex-1 flex flex-col justify-center">
-              <SystemStatus />
-            </div>
-          </GlassCard>
-        </div>
-
-        {/* Recent Activity - Full Width Bottom */}
-        <div className="md:col-span-2 lg:col-span-4">
-          <GlassCard className="p-0" hoverEffect variant="neu">
-            <div className="p-8 border-b border-border/10 flex justify-between items-center">
-              <div>
-                <h3 className="text-2xl font-display font-bold text-foreground">Recent Activity</h3>
-                <p className="text-sm font-medium text-muted-foreground">Latest actions across the platform</p>
-              </div>
-              <Link href="/dashboard/exams" className="px-5 py-2 rounded-full bg-white dark:bg-slate-800 border border-border shadow-sm text-sm font-semibold text-primary hover:text-primary/80 hover:shadow-md transition-all">
-                View All
-              </Link>
-            </div>
-            
-            <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-               {recentExams && recentExams.length > 0 ? (
-                recentExams.map((exam, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-3xl bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-border transition-all shadow-sm hover:shadow-lg group">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
-                      <FileText size={20} />
-                    </div>
+            <div className="relative pl-4 space-y-6 border-l border-border/50">
+              {recentActivity && recentActivity.length > 0 ? (
+                recentActivity.map((activity: any) => (
+                  <div key={activity.id} className="relative">
+                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-emerald-500 border-2 border-background" />
                     <div>
-                      <p className="text-base font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{exam.exam_name}</p>
-                      <p className="text-xs font-medium text-muted-foreground/80">Created on {new Date(exam.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        Graded <span className="font-bold text-primary">{activity.students?.name}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {activity.exams?.exam_name} • Score: {activity.total_score}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-wide font-semibold">
+                        {new Date(activity.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
                     </div>
                   </div>
                 ))
-               ) : (
-                 <div className="col-span-3 text-center py-8 text-muted-foreground">
-                   No recent activity to show
-                 </div>
-               )}
+              ) : (
+                <p className="text-sm text-muted-foreground">No recent activity.</p>
+              )}
             </div>
           </GlassCard>
-        </div>
 
+          {/* System Status */}
+          <GlassCard className="p-6">
+            <SystemStatus />
+          </GlassCard>
+
+        </div>
       </div>
     </div>
   )
