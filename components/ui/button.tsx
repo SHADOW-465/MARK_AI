@@ -5,11 +5,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30 active:scale-[0.98]',
+        default: 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]',
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -19,17 +19,24 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         
-        // Premium Variants
+        // Premium / Soft UI Variants
         glow: "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_rgba(99,102,241,0.7)] hover:scale-[1.02] border border-primary/50",
-        gradient: "bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_auto] text-white shadow-lg shadow-indigo-500/30 hover:bg-[position:right_center] transition-all duration-500 hover:shadow-indigo-500/50",
+        
+        gradient: "bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_auto] text-white shadow-lg shadow-indigo-500/30 hover:bg-[position:right_center] transition-all duration-500 hover:shadow-indigo-500/50 hover:-translate-y-0.5",
+        
         soft: "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/10",
-        neo: "bg-white dark:bg-slate-900 border border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] active:translate-y-[4px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]",
+        
+        // Neumorphic Button
+        neu: "bg-secondary dark:bg-slate-800 text-foreground neu-flat hover:neu-pressed active:scale-[0.98] border border-white/20 dark:border-white/5",
+        
+        // Liquid Gem Button
+        liquid: "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_12px_24px_rgba(99,102,241,0.4)] hover:-translate-y-1 active:translate-y-0 border border-white/20",
       },
       size: {
-        default: "h-11 px-6 py-2", // Slightly larger for premium feel
-        sm: "h-9 rounded-lg px-4 text-xs",
-        lg: "h-12 rounded-xl px-8 text-base",
-        icon: "h-10 w-10 rounded-xl",
+        default: "h-11 px-6 py-2",
+        sm: "h-9 rounded-full px-4 text-xs",
+        lg: "h-14 rounded-full px-10 text-base font-semibold",
+        icon: "h-11 w-11 rounded-full",
       },
     },
     defaultVariants: {
