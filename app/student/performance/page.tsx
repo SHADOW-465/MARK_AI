@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
 import { cn } from "@/lib/utils"
-import { CheckCircle, AlertCircle, Clock, ArrowRight, TrendingUp } from "lucide-react"
+import { CheckCircle, AlertCircle, Clock, ArrowRight, TrendingUp, BarChart2 } from "lucide-react"
 import Link from "next/link"
 import { PredictiveGradeSandbox } from "@/components/performance/predictive-grade-sandbox"
 import { AnalyticsCharts } from "@/components/student/analytics-charts"
@@ -71,18 +71,22 @@ export default async function ProgressInsights() {
         return { ...d, totalXp: cumulativeXP }
     })
 
-    const examScoreData = approvedExams.map((sheet: any) => ({
-        name: sheet.exams?.exam_name || 'Exam',
-        score: sheet.total_score,
-        total: sheet.exams?.total_marks || 100,
-        percentage: Math.round((sheet.total_score / (sheet.exams?.total_marks || 100)) * 100),
-        subject: sheet.exams?.subject || 'General'
-    })).reverse()
+    const examScoreData = approvedExams.map((sheet: any) => {
+        const examData = sheet.exams as any
+        return {
+            name: examData?.exam_name || 'Exam',
+            score: sheet.total_score,
+            total: examData?.total_marks || 100,
+            percentage: Math.round((sheet.total_score / (examData?.total_marks || 100)) * 100),
+            subject: examData?.subject || 'General'
+        }
+    }).reverse()
 
     const subjectPerformance: Record<string, { scores: number[], total: number }> = {}
     approvedExams.forEach((sheet: any) => {
-        const subject = sheet.exams?.subject || 'General'
-        const percentage = (sheet.total_score / (sheet.exams?.total_marks || 100)) * 100
+        const examData = sheet.exams as any
+        const subject = examData?.subject || 'General'
+        const percentage = (sheet.total_score / (examData?.total_marks || 100)) * 100
         if (!subjectPerformance[subject]) {
             subjectPerformance[subject] = { scores: [], total: 0 }
         }
@@ -116,6 +120,7 @@ export default async function ProgressInsights() {
     }
     const latestApproved = approvedExams[0]
     if (latestApproved) {
+        const examData = latestApproved.exams as any
         const feedback = feedbackList?.find((f: any) => f.answer_sheet_id === latestApproved.id)
         if (feedback && feedback.root_cause_analysis) {
             const r = feedback.root_cause_analysis
@@ -124,7 +129,7 @@ export default async function ProgressInsights() {
                 calculation: Number(r.calculation || 0),
                 keyword: Number(r.keyword || 0),
                 currentGrade: latestApproved.total_score,
-                maxScore: latestApproved.exams?.total_marks || 100
+                maxScore: examData?.total_marks || 100
             }
         }
     }
@@ -134,13 +139,13 @@ export default async function ProgressInsights() {
     return (
         <div className="space-y-12 pb-20">
             <div>
-                <h1 className="text-3xl font-display font-bold">Progress & Insights</h1>
-                <p className="text-muted-foreground mt-1">Diagnostic view of your academic growth and areas for adjustment.</p>
+                <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">Progress & Insights</h1>
+                <p className="text-muted-foreground mt-2 font-medium text-lg">Diagnostic view of your academic growth.</p>
             </div>
 
             {/* Pillar 1: Growth Analytics */}
             <section className="space-y-6">
-                <div className="flex items-center gap-2 text-neon-cyan uppercase tracking-widest text-[10px] font-mono">
+                <div className="flex items-center gap-2 text-primary uppercase tracking-widest text-[10px] font-mono font-bold">
                     <TrendingUp size={14} /> 01. Growth Analytics
                 </div>
                 <AnalyticsCharts
@@ -159,24 +164,27 @@ export default async function ProgressInsights() {
             {/* Pillar 2: Problem Areas & Simulation */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center gap-2 text-amber-500 uppercase tracking-widest text-[10px] font-mono">
+                    <div className="flex items-center gap-2 text-amber-500 uppercase tracking-widest text-[10px] font-mono font-bold">
                         <AlertCircle size={14} /> 02. Grade Simulation
                     </div>
                     {lastExamStats.maxScore > 0 ? (
                         <PredictiveGradeSandbox initialStats={lastExamStats} />
                     ) : (
-                        <GlassCard className="p-8 text-center text-muted-foreground italic border-dashed">
+                        <GlassCard variant="neu" className="p-8 text-center text-muted-foreground italic border-dashed">
                             No approved exam data to simulate. Complete an exam to unlock the sandbox.
                         </GlassCard>
                     )}
                 </div>
 
                 <div className="space-y-6">
-                    <div className="flex items-center gap-2 text-red-500 uppercase tracking-widest text-[10px] font-mono">
+                    <div className="flex items-center gap-2 text-destructive uppercase tracking-widest text-[10px] font-mono font-bold">
                         <AlertCircle size={14} /> 03. Global Gaps
                     </div>
-                    <GlassCard className="h-full p-6">
-                        <h3 className="text-lg font-bold mb-6">Gap Diagnostic</h3>
+                    <GlassCard variant="neu" className="h-full p-6">
+                        <h3 className="text-lg font-bold mb-6 text-foreground flex items-center gap-2">
+                            <BarChart2 size={18} className="text-muted-foreground" />
+                            Gap Diagnostic
+                        </h3>
                         {gapStats.total > 0 ? (
                             <div className="space-y-6">
                                 <GapMetric label="Concept Errors" pct={getPct(gapStats.concept)} color="red" />
@@ -184,8 +192,8 @@ export default async function ProgressInsights() {
                                 <GapMetric label="Keywords Missed" pct={getPct(gapStats.keyword)} color="blue" />
 
                                 {getPct(gapStats.concept) > 40 && (
-                                    <div className="mt-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                                        <h4 className="font-bold text-red-400 text-sm mb-1">AI Recommendation</h4>
+                                    <div className="mt-8 p-4 rounded-2xl bg-destructive/10 border border-destructive/20 shadow-sm">
+                                        <h4 className="font-bold text-destructive text-sm mb-1">AI Recommendation</h4>
                                         <p className="text-xs text-foreground/80 leading-relaxed">
                                             Your concept error rate is high. Focus on "Explain like I'm 5" sessions in the <strong>Library</strong>.
                                         </p>
@@ -203,7 +211,7 @@ export default async function ProgressInsights() {
 
             {/* Pillar 3: Detailed History */}
             <section className="space-y-6">
-                <div className="flex items-center gap-2 text-neon-purple uppercase tracking-widest text-[10px] font-mono">
+                <div className="flex items-center gap-2 text-purple-500 uppercase tracking-widest text-[10px] font-mono font-bold">
                     <CheckCircle size={14} /> 04. Exam Archive
                 </div>
                 <div className="grid grid-cols-1 gap-4">
@@ -212,7 +220,7 @@ export default async function ProgressInsights() {
                             <ExamCard key={i} sheet={sheet} />
                         ))
                     ) : (
-                        <div className="text-center py-20 bg-white/5 rounded-xl border border-white/5 border-dashed">
+                        <div className="text-center py-20 bg-secondary/30 rounded-3xl border border-dashed border-border">
                             <p className="text-muted-foreground italic">No exams found in archive.</p>
                         </div>
                     )}
@@ -224,42 +232,44 @@ export default async function ProgressInsights() {
 
 function GapMetric({ label, pct, color }: { label: string, pct: number, color: string }) {
     const colorClasses: any = {
-        red: "bg-red-500 text-red-400",
-        amber: "bg-amber-500 text-amber-400",
-        blue: "bg-blue-500 text-blue-400"
+        red: "bg-red-500 text-red-600 dark:text-red-400",
+        amber: "bg-amber-500 text-amber-600 dark:text-amber-400",
+        blue: "bg-blue-500 text-blue-600 dark:text-blue-400"
     }
+    
     return (
         <div>
-            <div className="flex justify-between text-sm mb-2">
-                <span>{label}</span>
+            <div className="flex justify-between text-sm mb-2 font-medium">
+                <span className="text-foreground/80">{label}</span>
                 <span className={cn("font-bold", colorClasses[color].split(' ')[1])}>{pct}%</span>
             </div>
-            <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div className={cn("h-full transition-all duration-1000", colorClasses[color].split(' ')[0])} style={{ width: `${pct}%` }} />
+            <div className="h-2.5 bg-secondary rounded-full overflow-hidden shadow-inner">
+                <div className={cn("h-full transition-all duration-1000 rounded-full", colorClasses[color].split(' ')[0])} style={{ width: `${pct}%` }} />
             </div>
         </div>
     )
 }
 
 function ExamCard({ sheet }: { sheet: any }) {
+    const examData = sheet.exams as any
     return (
-        <GlassCard className="p-0 overflow-hidden hover:border-neon-cyan/30 transition-all group">
+        <GlassCard variant="neu" className="p-0 overflow-hidden hover:border-primary/30 transition-all group rounded-3xl">
             <div className="p-6 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                     <div className={cn(
-                        "h-12 w-12 rounded-full flex items-center justify-center border",
+                        "h-14 w-14 rounded-full flex items-center justify-center border-2 shadow-sm transition-transform group-hover:scale-105",
                         sheet.status === 'approved'
-                            ? "bg-green-500/10 border-green-500/20 text-green-500 shadow-[0_0_10px_rgba(34,197,94,0.1)]"
-                            : "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400"
+                            : "bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400"
                     )}>
-                        {sheet.status === 'approved' ? <CheckCircle size={20} /> : <Clock size={20} />}
+                        {sheet.status === 'approved' ? <CheckCircle size={24} /> : <Clock size={24} />}
                     </div>
                     <div>
-                        <h4 className="font-bold text-foreground text-lg group-hover:text-neon-cyan transition-colors">
-                            {sheet.exams?.exam_name || "Unknown Exam"}
+                        <h4 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                            {examData?.exam_name || "Unknown Exam"}
                         </h4>
-                        <p className="text-sm text-muted-foreground">
-                            {sheet.exams?.subject || 'General'}
+                        <p className="text-sm text-muted-foreground font-medium">
+                            {examData?.subject || 'General'}
                         </p>
                     </div>
                 </div>
@@ -267,13 +277,13 @@ function ExamCard({ sheet }: { sheet: any }) {
                 <div className="text-right">
                     {sheet.status === 'approved' ? (
                         <>
-                            <div className="text-2xl font-bold font-display">
-                                {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-normal">/ {sheet.exams?.total_marks || '?'}</span>
+                            <div className="text-3xl font-display font-bold text-foreground">
+                                {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-medium">/ {examData?.total_marks || '?'}</span>
                             </div>
-                            <div className="text-[10px] font-mono text-muted-foreground">FINAL SCORE</div>
+                            <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-bold mt-1">FINAL SCORE</div>
                         </>
                     ) : (
-                        <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-widest">
+                        <span className="px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-widest shadow-sm">
                             Grading in Progress
                         </span>
                     )}
@@ -282,9 +292,9 @@ function ExamCard({ sheet }: { sheet: any }) {
 
             {sheet.status === 'approved' && (
                 <Link href={`/student/performance/${sheet.id}`}>
-                    <div className="bg-white/5 border-t border-white/5 p-4 flex justify-between items-center group-hover:bg-neon-cyan/5 transition-colors cursor-pointer">
-                        <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">Detailed Diagnostic Report</span>
-                        <ArrowRight size={16} className="text-muted-foreground group-hover:text-neon-cyan transition-all transform group-hover:translate-x-1" />
+                    <div className="bg-secondary/30 border-t border-border/50 p-4 flex justify-between items-center group-hover:bg-primary/5 transition-colors cursor-pointer">
+                        <span className="text-sm font-semibold text-muted-foreground group-hover:text-primary transition-colors">Detailed Diagnostic Report</span>
+                        <ArrowRight size={18} className="text-muted-foreground group-hover:text-primary transition-all transform group-hover:translate-x-1" />
                     </div>
                 </Link>
             )}

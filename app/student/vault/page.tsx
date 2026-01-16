@@ -45,10 +45,10 @@ export default async function LearningLibrary() {
         .order("created_at", { ascending: false })
 
     return (
-        <div className="space-y-6">
-            <header>
-                <h1 className="text-3xl font-display font-bold text-foreground">Learning Library</h1>
-                <p className="text-muted-foreground mt-1">Organize your missions and synthesize knowledge with AI.</p>
+        <div className="space-y-8 pb-24">
+            <header className="flex flex-col gap-2">
+                <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">Learning Library</h1>
+                <p className="text-muted-foreground font-medium text-lg">Organize your missions and synthesize knowledge with AI.</p>
             </header>
 
             <LibraryClient

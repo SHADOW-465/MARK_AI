@@ -79,42 +79,39 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-6 md:p-10">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/5" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
-
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-mesh-light dark:bg-mesh-dark p-6 md:p-10 transition-colors duration-500">
+      
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="z-10 w-full max-w-sm"
+        transition={{ duration: 0.6, type: "spring" }}
+        className="z-10 w-full max-w-md"
       >
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-center mb-4">
-            <Logo />
-          </div>
-          <GlassCard className="p-6 bg-card border-border shadow-lg">
-            <div className="flex flex-col space-y-2 text-center mb-6">
-              <h1 className="text-2xl font-semibold tracking-tight">Welcome Back</h1>
-              <p className="text-sm text-muted-foreground">
-                Enter your credentials to access the system
-              </p>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="mb-6 p-4 rounded-[2rem] bg-white/50 dark:bg-slate-800/50 shadow-xl backdrop-blur-xl border border-white/20">
+              <Logo />
             </div>
+            <h1 className="text-4xl font-display font-bold tracking-tight text-foreground">Welcome Back</h1>
+            <p className="text-muted-foreground mt-2 text-lg">
+              Sign in to continue your journey
+            </p>
+          </div>
 
-            <Tabs defaultValue="admin" className="w-full mb-6" onValueChange={(val) => setRole(val as "admin" | "student")}>
-              <TabsList className="grid w-full grid-cols-2 p-1 bg-muted rounded-lg">
+          <GlassCard variant="liquid" className="p-8 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl">
+            
+            <Tabs defaultValue="admin" className="w-full mb-8" onValueChange={(val) => setRole(val as "admin" | "student")}>
+              <TabsList className="grid w-full grid-cols-2 p-1.5 bg-secondary/50 rounded-full h-auto">
                 <TabsTrigger
                   value="admin"
-                  className="rounded-md transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+                  className="rounded-full py-2.5 transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-md"
                 >
                   <LayoutDashboard className="w-4 h-4 mr-2" />
                   Teacher
                 </TabsTrigger>
                 <TabsTrigger
                   value="student"
-                  className="rounded-md transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+                  className="rounded-full py-2.5 transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-md"
                 >
                   <GraduationCap className="w-4 h-4 mr-2" />
                   Student
@@ -122,23 +119,24 @@ export default function LoginPage() {
               </TabsList>
             </Tabs>
 
-            <form onSubmit={handleLogin}>
-              <div className="flex flex-col gap-5">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="pl-1">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="name@school.edu"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background border-input focus:border-primary focus:ring-primary/20"
+                    className="h-12 rounded-xl bg-white/50 dark:bg-slate-900/50 border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-inner"
                   />
                 </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="pl-1">Password</Label>
+                    <Link href="#" className="text-xs text-primary hover:underline">Forgot?</Link>
                   </div>
                   <Input
                     id="password"
@@ -146,32 +144,43 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background border-input focus:border-primary focus:ring-primary/20"
+                    className="h-12 rounded-xl bg-white/50 dark:bg-slate-900/50 border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-inner"
                   />
                 </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    `Sign in as ${role === 'admin' ? 'Teacher' : 'Student'}`
-                  )}
-                </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/auth/sign-up" className="text-primary hover:underline underline-offset-4">
-                  Sign up
-                </Link>
-              </div>
+
+              {error && (
+                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 text-sm text-center font-medium">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                variant="gradient"
+                size="lg"
+                className="w-full text-lg shadow-xl shadow-primary/20"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  `Sign In`
+                )}
+              </Button>
             </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Don&apos;t have an account?{" "}
+                <Link href="/auth/sign-up" className="text-primary font-semibold hover:underline underline-offset-4">
+                  Create Account
+                </Link>
+              </p>
+            </div>
           </GlassCard>
         </div>
       </motion.div>

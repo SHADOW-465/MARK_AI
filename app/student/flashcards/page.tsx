@@ -31,7 +31,7 @@ export default async function FlashcardStudio() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">Flashcard Studio</h1>
-                    <p className="text-muted-foreground mt-1">AI-generated active recall tailored to your gaps.</p>
+                    <p className="text-muted-foreground mt-1 font-medium">AI-generated active recall tailored to your gaps.</p>
                 </div>
                 <CustomCardDialog studentId={student.id} />
             </div>
@@ -39,23 +39,23 @@ export default async function FlashcardStudio() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Stats Sidebar */}
                 <div className="space-y-6">
-                    <GlassCard className="p-6">
-                        <h3 className="text-sm font-bold flex items-center gap-2 mb-4">
-                            <Brain size={16} className="text-neon-cyan" />
+                    <GlassCard variant="neu" className="p-6">
+                        <h3 className="text-sm font-bold flex items-center gap-2 mb-4 text-foreground">
+                            <Brain size={16} className="text-primary" />
                             Studio Stats
                         </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">Cards in Vault</span>
-                                <span className="text-sm font-bold font-mono">{cards?.length || 0}</span>
+                                <span className="text-xs text-muted-foreground font-medium">Cards in Vault</span>
+                                <span className="text-sm font-bold font-mono text-foreground">{cards?.length || 0}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">Ready for Review</span>
-                                <span className="text-sm font-bold font-mono text-neon-cyan">{dueCount}</span>
+                                <span className="text-xs text-muted-foreground font-medium">Ready for Review</span>
+                                <span className="text-sm font-bold font-mono text-primary">{dueCount}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">Mastered (L5)</span>
-                                <span className="text-sm font-bold font-mono text-emerald-400">
+                                <span className="text-xs text-muted-foreground font-medium">Mastered (L5)</span>
+                                <span className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400">
                                     {cards?.filter(c => c.level === 5).length || 0}
                                 </span>
                             </div>
@@ -63,15 +63,15 @@ export default async function FlashcardStudio() {
                     </GlassCard>
 
                     <div className="space-y-3">
-                        <button className="w-full flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group">
+                        <button className="w-full flex items-center justify-between p-4 rounded-2xl bg-secondary/50 hover:bg-secondary border border-transparent hover:border-border transition-all group shadow-sm">
                             <div className="flex items-center gap-3">
-                                <Zap size={18} className="text-amber-500 group-hover:scale-110 transition-transform" />
+                                <Zap size={20} className="text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform" />
                                 <div className="text-left">
-                                    <p className="text-sm font-bold">Power Sprint</p>
-                                    <p className="text-[10px] text-muted-foreground">Timed mode for rapid recall</p>
+                                    <p className="text-sm font-bold text-foreground">Power Sprint</p>
+                                    <p className="text-[10px] text-muted-foreground font-medium">Timed mode for rapid recall</p>
                                 </div>
                             </div>
-                            <span className="text-[10px] font-mono bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded">NEW</span>
+                            <span className="text-[10px] font-bold font-mono bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-full">NEW</span>
                         </button>
                     </div>
                 </div>
