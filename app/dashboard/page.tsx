@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { FileText, Users, CheckCircle, Clock, ArrowUpRight } from "lucide-react"
+import { FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles, Activity, Zap } from "lucide-react"
 import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
@@ -68,200 +68,202 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8 pb-24 lg:pb-0">
-      <div className="flex items-center justify-between">
+      <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-3xl font-display font-bold text-foreground tracking-tight">Dashboard Overview</h2>
-          <p className="text-muted-foreground font-light mt-1">Welcome back! Here's your grading activity summary.</p>
+          <h2 className="text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
+            Dashboard
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse-glow" />
+          </h2>
+          <p className="text-muted-foreground font-light mt-2 text-lg">Mission Control for AI Grading</p>
         </div>
-        <div className="hidden md:block">
-          <span className="px-3 py-1 rounded-full bg-secondary border border-border text-xs font-mono text-muted-foreground">
-            {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-slate-900/50 border border-white/20 dark:border-white/10 backdrop-blur-md shadow-sm">
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span className="text-sm font-medium text-foreground">
+            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
           </span>
         </div>
       </div>
 
-      {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      {/* Premium Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* Stat Cards - Refactored to use GlassCard and semantic colors */}
+        {/* Stat Cards */}
         {[
           {
             label: "Total Exams",
             val: examCount || 0,
-            sub: "Exams Created",
+            sub: "Active Assessments",
             icon: FileText,
-            colorClass: "text-cyan-500",
-            bgClass: "bg-cyan-500/10",
-            borderColor: "border-cyan-500/20"
+            color: "primary",
+            gradient: "from-indigo-500 to-blue-600"
           },
           {
-            label: "Active Students",
+            label: "Enrolled Students",
             val: studentCount || 0,
-            sub: "Total Enrolled",
+            sub: "Learning Tracked",
             icon: Users,
-            colorClass: "text-purple-500",
-            bgClass: "bg-purple-500/10",
-            borderColor: "border-purple-500/20"
+            color: "purple",
+            gradient: "from-purple-500 to-pink-600"
           },
           {
             label: "Pending Review",
             val: pendingCount || 0,
-            sub: "Needs Grading",
+            sub: "Action Required",
             icon: Clock,
-            colorClass: "text-amber-500",
-            bgClass: "bg-amber-500/10",
-            borderColor: "border-amber-500/20"
+            color: "teal",
+            gradient: "from-teal-400 to-emerald-500"
           },
           {
             label: "Graded Sheets",
             val: gradedCount || 0,
             sub: "Completed",
             icon: CheckCircle,
-            colorClass: "text-emerald-500",
-            bgClass: "bg-emerald-500/10",
-            borderColor: "border-emerald-500/20"
+            color: "primary", // Fallback
+            gradient: "from-blue-500 to-cyan-500"
           },
         ].map((s, i) => (
-          <GlassCard key={i} hoverEffect className="p-6">
-            <div className="flex flex-col h-full justify-between">
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className={cn("p-2 rounded-full border", s.bgClass, s.borderColor, s.colorClass)}>
-                  <s.icon size={16} />
+          <GlassCard 
+            key={i} 
+            variant="gradient" 
+            hoverEffect 
+            shimmer
+            gradientColor={s.color as any}
+            className="p-6 overflow-hidden relative group"
+          >
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${s.gradient} text-white shadow-lg`}>
+                  <s.icon size={20} />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">{s.label}</span>
-                <ArrowUpRight className={cn("ml-auto w-4 h-4 opacity-50 transition-opacity group-hover:opacity-100", s.colorClass)} />
+                <div className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/50 dark:bg-black/20 backdrop-blur-md border border-white/10`}>
+                  Real-time
+                </div>
               </div>
-
-              {/* Main Value */}
-              <div className="mb-2">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Count</span>
-                <h3 className="text-4xl font-display font-bold text-foreground tracking-tight mt-1">{s.val}</h3>
-              </div>
-
-              {/* Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-                <span className="text-xs text-muted-foreground">{s.sub}</span>
-                <span className={cn("text-xs font-bold px-2 py-1 rounded", s.bgClass, s.colorClass)}>
-                  View Details
-                </span>
+              
+              <div>
+                <h3 className="text-4xl font-display font-bold text-foreground mb-1 group-hover:scale-105 transition-transform origin-left">
+                  {s.val}
+                </h3>
+                <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
               </div>
             </div>
+            
+            {/* Background Decoration */}
+            <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-gradient-to-br ${s.gradient} opacity-10 blur-2xl group-hover:scale-150 transition-transform duration-700`} />
           </GlassCard>
         ))}
 
-        {/* Analytics Chart - Spans 2 columns */}
-        <div className="md:col-span-2 lg:col-span-2">
-          <GlassCard className="p-6 flex flex-col min-h-[350px]">
-            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
-              Performance Analytics
-            </h3>
-            <div className="flex-1 w-full">
+        {/* Analytics Chart - Large Block */}
+        <div className="md:col-span-2 lg:col-span-2 row-span-2">
+          <GlassCard className="p-0 h-full flex flex-col overflow-hidden" hoverEffect>
+            <div className="p-6 border-b border-border/50 bg-white/30 dark:bg-slate-900/30">
+              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+                <Activity className="w-5 h-5 text-indigo-500" />
+                Performance Trends
+              </h3>
+              <p className="text-sm text-muted-foreground">Average scores across recent exams</p>
+            </div>
+            <div className="flex-1 p-6 w-full bg-gradient-to-b from-transparent to-indigo-50/30 dark:to-indigo-900/10">
               <AnalyticsChart data={analyticsData} />
             </div>
           </GlassCard>
         </div>
 
-        {/* Upcoming Exams - Spans 1 column */}
-        <div className="md:col-span-1 lg:col-span-1">
-          <GlassCard className="p-6 flex flex-col h-full">
-            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-              Upcoming Exams
-            </h3>
-            <UpcomingExams exams={upcomingExams || []} />
+        {/* Upcoming Exams */}
+        <div className="md:col-span-1 lg:col-span-1 row-span-2">
+          <GlassCard className="p-0 h-full flex flex-col" hoverEffect>
+             <div className="p-6 border-b border-border/50 bg-white/30 dark:bg-slate-900/30">
+              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+                <Clock className="w-5 h-5 text-purple-500" />
+                Upcoming
+              </h3>
+              <p className="text-sm text-muted-foreground">Next scheduled assessments</p>
+            </div>
+            <div className="p-4 flex-1">
+              <UpcomingExams exams={upcomingExams || []} />
+            </div>
           </GlassCard>
         </div>
 
-        {/* System Status - Spans 1 column */}
+        {/* Quick Actions */}
         <div className="md:col-span-1 lg:col-span-1">
-          <GlassCard className="p-6 flex flex-col h-full">
-            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-emerald-500 rounded-full"></span>
-              System Health
+          <GlassCard className="p-6 h-full flex flex-col justify-center gap-3 relative overflow-hidden group" variant="neo" hoverEffect>
+             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+             
+             <h3 className="text-lg font-display font-bold text-foreground mb-2 flex items-center gap-2 z-10">
+               <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+               Quick Actions
+             </h3>
+             
+             <div className="grid gap-2 z-10">
+               <Link href="/dashboard/exams/create">
+                 <div className="p-3 rounded-lg bg-secondary/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800 transition-all flex items-center justify-between group/item cursor-pointer">
+                   <div className="flex items-center gap-3">
+                     <div className="p-1.5 rounded-md bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300">
+                       <FileText size={16} />
+                     </div>
+                     <span className="text-sm font-medium">New Exam</span>
+                   </div>
+                   <ArrowUpRight size={14} className="opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                 </div>
+               </Link>
+               
+               <Link href="/dashboard/students/add">
+                 <div className="p-3 rounded-lg bg-secondary/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-purple-200 dark:hover:border-purple-800 transition-all flex items-center justify-between group/item cursor-pointer">
+                   <div className="flex items-center gap-3">
+                     <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
+                       <Users size={16} />
+                     </div>
+                     <span className="text-sm font-medium">Add Student</span>
+                   </div>
+                   <ArrowUpRight size={14} className="opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                 </div>
+               </Link>
+             </div>
+          </GlassCard>
+        </div>
+
+        {/* System Status */}
+        <div className="md:col-span-1 lg:col-span-1">
+           <GlassCard className="p-6 h-full flex flex-col" hoverEffect>
+            <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+               System Health
             </h3>
             <SystemStatus />
           </GlassCard>
         </div>
 
-        {/* Quick Actions - Spans 2 columns */}
-        <div className="md:col-span-2 lg:col-span-2">
-          <GlassCard className="p-6 flex flex-col h-full">
-            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-cyan-500 rounded-full"></span>
-              Quick Actions
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
-              <Link href="/dashboard/exams/create" className="group">
-                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all">
-                  <div className="p-3 rounded-lg bg-blue-500/20 text-blue-400 w-fit mb-3">
-                    <FileText size={20} />
-                  </div>
-                  <div>
-                    <span className="block text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">Create New Exam</span>
-                    <span className="text-xs text-muted-foreground">Set up a new test paper</span>
-                  </div>
-                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-cyan-400 transition-colors self-end mt-2" />
-                </div>
-              </Link>
-              <Link href="/dashboard/students/add" className="group">
-                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-purple-500/10 hover:border-purple-500/30 transition-all">
-                  <div className="p-3 rounded-lg bg-purple-500/20 text-purple-400 w-fit mb-3">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <span className="block text-sm font-bold text-foreground group-hover:text-purple-500 transition-colors">Add Student</span>
-                    <span className="text-xs text-muted-foreground">Register new students</span>
-                  </div>
-                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-purple-400 transition-colors self-end mt-2" />
-                </div>
-              </Link>
-              <Link href="/dashboard/grading" className="group">
-                <div className="h-full flex flex-col justify-between p-4 rounded-xl bg-secondary/50 border border-border hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all">
-                  <div className="p-3 rounded-lg bg-emerald-500/20 text-emerald-400 w-fit mb-3">
-                    <CheckCircle size={20} />
-                  </div>
-                  <div>
-                    <span className="block text-sm font-bold text-foreground group-hover:text-emerald-500 transition-colors">Review Pending Grades</span>
-                    <span className="text-xs text-muted-foreground">Check ungraded sheets</span>
-                  </div>
-                  <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-emerald-400 transition-colors self-end mt-2" />
-                </div>
+        {/* Recent Activity - Full Width Bottom */}
+        <div className="md:col-span-2 lg:col-span-4">
+          <GlassCard className="p-0" hoverEffect>
+            <div className="p-6 border-b border-border/50 flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-display font-bold text-foreground">Recent Activity</h3>
+                <p className="text-sm text-muted-foreground">Latest actions across the platform</p>
+              </div>
+              <Link href="/dashboard/exams" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                View All
               </Link>
             </div>
-          </GlassCard>
-        </div>
-
-        {/* Recent Activity - Spans 2 columns */}
-        <div className="md:col-span-2 lg:col-span-2">
-          <GlassCard className="p-6 flex flex-col h-full">
-            <h3 className="text-xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-              Recent Activity
-            </h3>
-            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-              {recentExams && recentExams.length > 0 ? (
+            
+            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+               {recentExams && recentExams.length > 0 ? (
                 recentExams.map((exam, i) => (
-                  <div className="flex items-center p-4 rounded-xl bg-secondary/30 border border-border hover:bg-secondary/50 transition-colors group" key={i}>
-                    <div className="h-12 w-12 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 group-hover:scale-110 transition-transform">
-                      <FileText className="h-5 w-5 text-cyan-500" />
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-secondary/30 hover:bg-secondary/60 border border-transparent hover:border-border transition-all">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+                      <FileText size={18} />
                     </div>
-                    <div className="ml-4 space-y-1">
-                      <p className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">New Exam Created</p>
-                      <p className="text-xs text-muted-foreground font-mono">{exam.exam_name}</p>
-                    </div>
-                    <div className="ml-auto font-mono text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">
-                      {new Date(exam.created_at).toLocaleDateString()}
+                    <div>
+                      <p className="text-sm font-bold text-foreground line-clamp-1">{exam.exam_name}</p>
+                      <p className="text-xs text-muted-foreground">Created on {new Date(exam.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                  <Clock className="h-8 w-8 mb-2 opacity-50" />
-                  <p className="text-sm font-mono">No recent activity</p>
-                </div>
-              )}
+               ) : (
+                 <div className="col-span-3 text-center py-8 text-muted-foreground">
+                   No recent activity to show
+                 </div>
+               )}
             </div>
           </GlassCard>
         </div>
