@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   const userInitials = userEmail[0].toUpperCase()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background light">
       {/* Top Navigation Bar */}
       <Navbar isTeacher={isTeacher} userName={userName} userEmail={userEmail} userInitials={userInitials} />
 

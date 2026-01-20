@@ -5,7 +5,7 @@ import { LayoutDashboard, FileText, Users, Settings, LogOut, CheckCircle, Bell, 
 import { Logo } from "@/components/ui/logo"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { ThemeToggle } from "@/components/theme-toggle"
+
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -104,7 +104,6 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-4">
-                    <ThemeToggle />
 
                     <button className="relative p-2.5 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
                         <Bell size={22} />

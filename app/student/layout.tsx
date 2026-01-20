@@ -28,7 +28,7 @@ export default async function StudentLayout({
     const userInitials = userName[0].toUpperCase()
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background dark">
             {/* Top Navigation Bar */}
             <NavbarStudent
                 userName={userName}
