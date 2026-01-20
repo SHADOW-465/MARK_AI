@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
-import { 
-  Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle, 
-  Sparkles, Folder, Calendar, BookOpen, Star, Trophy, Clock
+import {
+    Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle,
+    Sparkles, Folder, Calendar, BookOpen, Star, Trophy, Clock
 } from "lucide-react"
 import Link from "next/link"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
@@ -119,7 +119,7 @@ export default async function StudentDashboard() {
 
     return (
         <div className="space-y-8 pb-24">
-            
+
             {/* Header with Performance Summary */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div>
@@ -137,9 +137,9 @@ export default async function StudentDashboard() {
                 </div>
 
                 {/* Performance Pill */}
-                <GlassCard className="px-6 py-3 flex items-center gap-6 rounded-full" variant="neu">
+                <GlassCard className="px-6 py-4 flex items-center gap-6 rounded-2xl border border-border" variant="neu">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                        <div className="p-2.5 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
                             <Trophy size={20} />
                         </div>
                         <div>
@@ -147,9 +147,9 @@ export default async function StudentDashboard() {
                             <p className="text-2xl font-display font-bold text-foreground">{averageScore}%</p>
                         </div>
                     </div>
-                    <div className="h-8 w-px bg-border" />
+                    <div className="h-10 w-px bg-border" />
                     <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                        <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400">
                             <Flame size={20} />
                         </div>
                         <div>
@@ -161,10 +161,10 @@ export default async function StudentDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
+
                 {/* Main Content (Left 2 cols) */}
                 <div className="lg:col-span-2 space-y-8">
-                    
+
                     {/* Hero Action Card */}
                     <GlassCard variant="liquid" gradientColor="purple" className="p-8 relative overflow-hidden group">
                         <div className="relative z-10">
@@ -190,22 +190,22 @@ export default async function StudentDashboard() {
                             </div>
 
                             <div className="flex gap-4">
-                                <Link 
-                                    href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"} 
+                                <Link
+                                    href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}
                                     className="px-6 py-3 rounded-full bg-white text-indigo-600 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                                 >
                                     {nbaTask ? <Play size={18} fill="currentColor" /> : <Folder size={18} />}
                                     {nbaTask ? "Start Mission" : "Open Vault"}
                                 </Link>
-                                <Link 
-                                    href="/student/performance" 
+                                <Link
+                                    href="/student/performance"
                                     className="px-6 py-3 rounded-full bg-indigo-800/30 text-white font-semibold border border-white/10 hover:bg-indigo-800/50 transition-all flex items-center gap-2 backdrop-blur-md"
                                 >
                                     <TrendingUp size={18} /> View Analytics
                                 </Link>
                             </div>
                         </div>
-                        
+
                         {/* Abstract Background Shapes */}
                         <div className="absolute -right-20 -bottom-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-purple-400/30 transition-colors duration-1000" />
                         <div className="absolute -left-20 -top-40 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl group-hover:bg-indigo-400/30 transition-colors duration-1000" />
@@ -239,8 +239,8 @@ export default async function StudentDashboard() {
                                                 <div className={cn(
                                                     "px-2 py-1 rounded-lg text-xs font-bold",
                                                     percentage >= 80 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
-                                                    percentage >= 60 ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
-                                                    "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                                        percentage >= 60 ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
+                                                            "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                                 )}>
                                                     {percentage}%
                                                 </div>
@@ -266,7 +266,7 @@ export default async function StudentDashboard() {
 
                 {/* Right Sidebar (1 col) */}
                 <div className="space-y-8">
-                    
+
                     {/* Upcoming Schedule */}
                     <GlassCard variant="neu" className="p-6">
                         <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
@@ -275,8 +275,8 @@ export default async function StudentDashboard() {
                         </h3>
                         <div className="space-y-4">
                             {upcomingExams && upcomingExams.length > 0 ? upcomingExams.map((exam: any) => (
-                                <div key={exam.id} className="flex items-center gap-4 p-3 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 shadow-sm">
-                                    <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800">
+                                <div key={exam.id} className="flex items-center gap-4 p-3 rounded-xl bg-secondary/50 border border-border shadow-sm">
+                                    <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-500/30">
                                         <span className="text-xs uppercase">{new Date(exam.exam_date).toLocaleString('default', { month: 'short' })}</span>
                                         <span className="text-lg leading-none">{new Date(exam.exam_date).getDate()}</span>
                                     </div>
@@ -293,7 +293,7 @@ export default async function StudentDashboard() {
 
                     {/* Widgets */}
                     <MarkRecoveryWidget stats={recoveryStats} />
-                    
+
                     {/* Quick Access */}
                     <GlassCard className="p-6">
                         <h3 className="text-lg font-display font-bold text-foreground mb-4">Quick Study</h3>

@@ -33,42 +33,42 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
   const overallFeedback = sheet.gemini_response?.overall_feedback || "No feedback provided."
 
   return (
-    <div className="flex-1 flex overflow-hidden bg-[#0f172a] text-slate-100 h-full">
+    <div className="flex-1 flex overflow-hidden bg-background text-foreground h-full">
       {/* Left Panel: Image Viewer */}
       <div className="flex-1 bg-black/40 relative border-r border-white/10 flex flex-col">
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-black/60 backdrop-blur-md p-1 rounded-full shadow-xl border border-white/10">
-          <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white rounded-full" onClick={() => setZoom((z) => Math.max(50, z - 10))}>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-1 rounded-full shadow-xl border border-border">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground rounded-full" onClick={() => setZoom((z) => Math.max(50, z - 10))}>
             <ZoomOut className="h-4 w-4" />
           </Button>
-          <span className="flex items-center text-xs font-medium w-12 justify-center text-white">{zoom}%</span>
-          <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white rounded-full" onClick={() => setZoom((z) => Math.min(200, z + 10))}>
+          <span className="flex items-center text-xs font-medium w-12 justify-center text-foreground">{zoom}%</span>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground rounded-full" onClick={() => setZoom((z) => Math.min(200, z + 10))}>
             <ZoomIn className="h-4 w-4" />
           </Button>
-          <Separator orientation="vertical" className="h-6 bg-white/10" />
-          <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white rounded-full" onClick={() => setRotation((r) => (r + 90) % 360)}>
+          <Separator orientation="vertical" className="h-6 bg-border" />
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground rounded-full" onClick={() => setRotation((r) => (r + 90) % 360)}>
             <RotateCw className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Page Navigation */}
         {fileUrls.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-4 items-center bg-black/60 backdrop-blur-md px-4 py-2 rounded-full shadow-xl border border-white/10">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-4 items-center bg-background/80 backdrop-blur-md px-4 py-2 rounded-full shadow-xl border border-border">
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-300 hover:text-white rounded-full"
+              className="text-muted-foreground hover:text-foreground rounded-full"
               onClick={() => setCurrentPageIndex(prev => Math.max(0, prev - 1))}
               disabled={currentPageIndex === 0}
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-medium text-white">
+            <span className="text-sm font-medium text-foreground">
               Page {currentPageIndex + 1} of {fileUrls.length}
             </span>
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-300 hover:text-white rounded-full"
+              className="text-muted-foreground hover:text-foreground rounded-full"
               onClick={() => setCurrentPageIndex(prev => Math.min(fileUrls.length - 1, prev + 1))}
               disabled={currentPageIndex === fileUrls.length - 1}
             >
@@ -77,39 +77,39 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
           </div>
         )}
 
-        <div className="flex-1 overflow-auto p-8 flex items-center justify-center bg-[url('/grid.svg')] bg-repeat opacity-80">
+        <div className="flex-1 overflow-auto p-8 flex items-center justify-center bg-muted/30">
           <div
             style={{
               transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
               transition: "transform 0.2s ease-out",
             }}
-            className="origin-center shadow-2xl shadow-black/50"
+            className="origin-center shadow-2xl shadow-muted/20"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={currentFileUrl}
               alt={`Answer Sheet Page ${currentPageIndex + 1}`}
-              className="max-w-full rounded-sm border border-white/10"
+              className="max-w-full rounded-sm border border-border"
             />
           </div>
         </div>
       </div>
 
       {/* Right Panel: Grading & Feedback */}
-      <div className="w-[450px] border-l border-white/10 flex flex-col bg-slate-900/50 backdrop-blur-xl">
+      <div className="w-[450px] border-l border-border flex flex-col bg-card/50 backdrop-blur-xl">
 
         {/* Tabs */}
         <div className="p-4 border-b border-white/10">
-          <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+          <div className="flex bg-muted/40 p-1 rounded-xl border border-border/50">
             <button
               onClick={() => setActiveTab('grading')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'grading' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'grading' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Exam Results
             </button>
             <button
               onClick={() => setActiveTab('feedback')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'feedback' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'feedback' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Coach Feedback
             </button>
@@ -131,30 +131,30 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                   const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
 
                   return (
-                    <GlassCard key={ev.id} className="p-4 border-l-4 border-l-indigo-500">
+                    <GlassCard key={ev.id} className="p-4 border-l-4 border-l-primary">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <span className="px-2 py-1 bg-secondary/50 rounded text-xs text-muted-foreground font-mono mr-2">Q{ev.question_num}</span>
-                          <span className="font-semibold text-white text-sm">{question?.question_text}</span>
+                          <span className="font-semibold text-foreground text-sm">{question?.question_text}</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-black/20 rounded-lg p-2 min-w-[60px] justify-center">
-                          <span className="text-lg font-bold text-white">{ev.final_score}</span>
-                          <span className="text-xs text-slate-500">/{question?.max_marks}</span>
+                        <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2 min-w-[60px] justify-center">
+                          <span className="text-lg font-bold text-foreground">{ev.final_score}</span>
+                          <span className="text-xs text-muted-foreground">/{question?.max_marks}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         {ev.extracted_text && (
-                          <div className="bg-black/20 p-3 rounded-lg text-xs font-mono text-slate-300 border border-white/5 max-h-[100px] overflow-y-auto">
-                            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Your Answer</p>
+                          <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border max-h-[100px] overflow-y-auto">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Your Answer</p>
                             {ev.extracted_text}
                           </div>
                         )}
 
                         {ev.reasoning && (
-                          <div className="flex gap-2 items-start bg-indigo-500/5 p-3 rounded-lg border border-indigo-500/10">
-                            <CheckCircle size={16} className="text-indigo-400 mt-0.5 shrink-0" />
-                            <p className="text-sm text-slate-300 leading-relaxed">{ev.reasoning}</p>
+                          <div className="flex gap-2 items-start bg-primary/5 p-3 rounded-lg border border-primary/10">
+                            <CheckCircle size={16} className="text-primary mt-0.5 shrink-0" />
+                            <p className="text-sm text-muted-foreground leading-relaxed">{ev.reasoning}</p>
                           </div>
                         )}
                       </div>
@@ -171,12 +171,12 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                 transition={{ duration: 0.2 }}
                 className="space-y-4"
               >
-                <GlassCard className="p-6 bg-gradient-to-br from-indigo-900/20 to-purple-900/20">
-                  <div className="flex items-center gap-3 mb-4 text-emerald-400">
+                <GlassCard className="p-6 bg-gradient-to-br from-primary/10 to-accent/10">
+                  <div className="flex items-center gap-3 mb-4 text-emerald-600 dark:text-emerald-400">
                     <Sparkles size={20} />
                     <h3 className="font-bold">Personalized Growth Plan</h3>
                   </div>
-                  <div className="min-h-[150px] text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                  <div className="min-h-[150px] text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
                     {overallFeedback}
                   </div>
                 </GlassCard>
@@ -186,12 +186,12 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">
+        <div className="p-4 border-t border-border bg-muted/20 backdrop-blur-md">
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground text-sm">Total Score</span>
             <div className="text-right">
-              <span className="text-3xl font-bold text-white">{totalScore}</span>
-              <span className="text-slate-500 text-sm"> / {maxScore}</span>
+              <span className="text-3xl font-bold text-foreground">{totalScore}</span>
+              <span className="text-muted-foreground text-sm"> / {maxScore}</span>
             </div>
           </div>
         </div>

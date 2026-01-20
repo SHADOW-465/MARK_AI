@@ -200,8 +200,8 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                     className={cn(
                                         "p-3 rounded-xl text-xs cursor-pointer transition-all border",
                                         selectedFileIds.includes(f.id)
-                                            ? "bg-neon-cyan/10 border-neon-cyan/30 text-foreground ring-1 ring-neon-cyan/50 shadow-[0_0_10px_rgba(6,182,212,0.1)]"
-                                            : "bg-white/5 border-transparent hover:bg-white/10 text-muted-foreground"
+                                            ? "bg-cyan-100 dark:bg-cyan-500/10 border-cyan-300 dark:border-cyan-500/30 text-foreground ring-1 ring-cyan-400/50 shadow-sm"
+                                            : "bg-secondary/50 border-border hover:bg-secondary text-muted-foreground"
                                     )}
                                 >
                                     <div className="flex items-center gap-2">
@@ -224,8 +224,8 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                     className={cn(
                                         "p-3 rounded-xl text-xs cursor-pointer transition-all border",
                                         selectedExamIds.includes(s.id)
-                                            ? "bg-neon-purple/10 border-neon-purple/30 text-foreground ring-1 ring-neon-purple/50 shadow-[0_0_10px_rgba(168,85,247,0.1)]"
-                                            : "bg-white/5 border-transparent hover:bg-white/10 text-muted-foreground"
+                                            ? "bg-purple-100 dark:bg-purple-500/10 border-purple-300 dark:border-purple-500/30 text-foreground ring-1 ring-purple-400/50 shadow-sm"
+                                            : "bg-secondary/50 border-border hover:bg-secondary text-muted-foreground"
                                     )}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
@@ -256,12 +256,12 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
             {/* Main Content: Tabs */}
             <div className="lg:col-span-9 flex flex-col gap-6 overflow-hidden">
                 <div className="flex items-center justify-between">
-                    <div className="flex p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
+                    <div className="flex p-1 bg-secondary/50 rounded-xl border border-border w-fit">
                         <button
                             onClick={() => setActiveTab('missions')}
                             className={cn(
                                 "flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all",
-                                activeTab === 'missions' ? "bg-neon-cyan text-black" : "text-muted-foreground hover:text-foreground"
+                                activeTab === 'missions' ? "bg-cyan-500 text-white" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <LayoutGrid size={14} /> Mission Board
@@ -270,7 +270,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                             onClick={() => setActiveTab('ai_studio')}
                             className={cn(
                                 "flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all",
-                                activeTab === 'ai_studio' ? "bg-neon-purple text-white shadow-[0_0_15px_rgba(168,85,247,0.3)]" : "text-muted-foreground hover:text-foreground"
+                                activeTab === 'ai_studio' ? "bg-purple-600 text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <Brain size={14} /> AI Synthesis
@@ -281,24 +281,24 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                         {activeTab === 'missions' && (
                             <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
                                 <DialogTrigger asChild>
-                                    <Button size="sm" className="bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] h-9 gap-1.5 uppercase tracking-widest font-bold">
+                                    <Button size="sm" className="bg-secondary/50 hover:bg-secondary border border-border text-[10px] h-9 gap-1.5 uppercase tracking-widest font-bold text-foreground">
                                         <Plus size={14} /> New Mission
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="bg-black/90 border-white/10 backdrop-blur-xl text-foreground">
+                                <DialogContent className="bg-background border-border backdrop-blur-xl text-foreground">
                                     <DialogHeader>
                                         <DialogTitle>Add New Learning Mission</DialogTitle>
                                     </DialogHeader>
                                     <form onSubmit={handleAddTask} className="space-y-4">
                                         <div className="grid gap-2">
                                             <Label>Mission Title</Label>
-                                            <Input name="title" required className="bg-white/5 border-white/10" placeholder="e.g. Master Optics Laws" />
+                                            <Input name="title" required className="bg-secondary/50 border-border" placeholder="e.g. Master Optics Laws" />
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="grid gap-2">
                                                 <Label>Priority</Label>
                                                 <Select name="priority" defaultValue="Medium">
-                                                    <SelectTrigger className="bg-white/5 border-white/10">
+                                                    <SelectTrigger className="bg-secondary/50 border-border">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -310,10 +310,10 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                             </div>
                                             <div className="grid gap-2">
                                                 <Label>Target Date</Label>
-                                                <Input name="due_date" type="date" className="bg-white/5 border-white/10" />
+                                                <Input name="due_date" type="date" className="bg-secondary/50 border-border" />
                                             </div>
                                         </div>
-                                        <Button type="submit" disabled={isTaskLoading} className="w-full bg-neon-cyan text-black font-bold uppercase tracking-wider">
+                                        <Button type="submit" disabled={isTaskLoading} className="w-full bg-cyan-500 text-white font-bold uppercase tracking-wider hover:bg-cyan-600">
                                             {isTaskLoading ? "Initiating..." : "Create Mission"}
                                         </Button>
                                     </form>
@@ -342,7 +342,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                             <KanbanBoard initialTasks={initialTasks} studentId={studentId} />
                         </div>
                     ) : (
-                        <GlassCard className="h-full p-0 flex flex-col overflow-hidden relative border-neon-purple/20 shadow-[0_0_30px_rgba(168,85,247,0.05)]">
+                        <GlassCard className="h-full p-0 flex flex-col overflow-hidden relative border-purple-300 dark:border-purple-500/20 shadow-lg">
                             {/* Chat Area */}
                             <div className="flex-1 overflow-y-auto p-8 space-y-6">
                                 {messages.map((m, i) => (
@@ -350,8 +350,8 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                         <div className={cn(
                                             "max-w-[85%] p-5 rounded-3xl text-sm leading-relaxed",
                                             m.role === 'user'
-                                                ? "bg-neon-purple/20 text-foreground rounded-br-none border border-neon-purple/30 shadow-lg"
-                                                : "bg-white/5 text-muted-foreground rounded-bl-none shadow-inner border border-white/10"
+                                                ? "bg-purple-100 dark:bg-purple-500/20 text-foreground rounded-br-none border border-purple-300 dark:border-purple-500/30 shadow-lg"
+                                                : "bg-secondary/50 text-muted-foreground rounded-bl-none shadow-inner border border-border"
                                         )}>
                                             <p className="whitespace-pre-wrap">{m.text}</p>
                                         </div>
@@ -359,7 +359,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                 ))}
                                 {isChatting && (
                                     <div className="flex justify-start">
-                                        <div className="bg-white/5 p-5 rounded-3xl rounded-bl-none animate-pulse text-neon-cyan flex items-center gap-2 text-xs font-bold tracking-widest">
+                                        <div className="bg-secondary/50 p-5 rounded-3xl rounded-bl-none animate-pulse text-cyan-600 dark:text-cyan-400 flex items-center gap-2 text-xs font-bold tracking-widest">
                                             <Brain size={16} className="animate-bounce" /> ANALYZING CONTEXT...
                                         </div>
                                     </div>
@@ -367,19 +367,19 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                             </div>
 
                             {/* Input Area */}
-                            <div className="p-6 border-t border-white/5 bg-black/60 backdrop-blur-xl">
+                            <div className="p-6 border-t border-border bg-secondary/30 backdrop-blur-xl">
                                 <div className="flex gap-3 max-w-4xl mx-auto">
                                     <Input
                                         placeholder={(selectedFileIds.length + selectedExamIds.length) > 0
                                             ? `Analyzing ${(selectedFileIds.length + selectedExamIds.length)} sources...`
                                             : "Select sources from the sidebar to start deep work..."
                                         }
-                                        className="bg-white/5 border-white/10 h-12 rounded-2xl focus:border-neon-purple/50 transition-all px-6 text-sm"
+                                        className="bg-secondary/50 border-border h-12 rounded-2xl focus:border-purple-500/50 transition-all px-6 text-sm"
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                     />
-                                    <Button size="icon" className="h-12 w-12 rounded-2xl bg-neon-purple hover:bg-neon-purple/80 text-white shrink-0 shadow-lg" onClick={handleSend} disabled={isChatting}>
+                                    <Button size="icon" className="h-12 w-12 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white shrink-0 shadow-lg" onClick={handleSend} disabled={isChatting}>
                                         <Send size={20} />
                                     </Button>
                                 </div>
@@ -390,29 +390,31 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
             </div>
 
             {/* Drive Dialog */}
-            {showDriveDialog && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-                    <GlassCard className="w-full max-w-md p-8 space-y-6 border-neon-purple/30">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xl font-bold font-display flex items-center gap-3">
-                                <Link2 className="text-neon-purple" size={24} />
-                                Drive Link Sync
-                            </h3>
-                            <button onClick={() => setShowDriveDialog(false)} className="text-muted-foreground hover:text-foreground text-2xl">&times;</button>
-                        </div>
-                        <p className="text-xs text-muted-foreground">Paste any Google Drive share link. We'll extract the content and add it to your library context.</p>
-                        <Input
-                            placeholder="https://drive.google.com/..."
-                            value={driveUrl}
-                            onChange={(e) => setDriveUrl(e.target.value)}
-                            className="bg-white/5 border-white/10 h-11"
-                        />
-                        <Button className="w-full bg-neon-purple text-white hover:bg-neon-purple/90 h-11 font-bold uppercase tracking-widest" onClick={handleDriveImport} disabled={isDriveImporting}>
-                            {isDriveImporting ? "SYNCING..." : "ADD TO LIBRARY"}
-                        </Button>
-                    </GlassCard>
-                </div>
-            )}
-        </div>
+            {
+                showDriveDialog && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+                        <GlassCard className="w-full max-w-md p-8 space-y-6 border-neon-purple/30">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold font-display flex items-center gap-3">
+                                    <Link2 className="text-neon-purple" size={24} />
+                                    Drive Link Sync
+                                </h3>
+                                <button onClick={() => setShowDriveDialog(false)} className="text-muted-foreground hover:text-foreground text-2xl">&times;</button>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Paste any Google Drive share link. We'll extract the content and add it to your library context.</p>
+                            <Input
+                                placeholder="https://drive.google.com/..."
+                                value={driveUrl}
+                                onChange={(e) => setDriveUrl(e.target.value)}
+                                className="bg-white/5 border-white/10 h-11"
+                            />
+                            <Button className="w-full bg-neon-purple text-white hover:bg-neon-purple/90 h-11 font-bold uppercase tracking-widest" onClick={handleDriveImport} disabled={isDriveImporting}>
+                                {isDriveImporting ? "SYNCING..." : "ADD TO LIBRARY"}
+                            </Button>
+                        </GlassCard>
+                    </div>
+                )
+            }
+        </div >
     )
 }

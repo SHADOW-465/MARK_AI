@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut, CheckCircle, Bell, Menu } from "lucide-react"
+import { LayoutDashboard, FileText, Users, Settings, LogOut, CheckCircle, Bell, Menu } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -63,7 +63,6 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
                                         <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} onClick={() => setIsOpen(false)} />
                                         <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} onClick={() => setIsOpen(false)} />
                                         <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} onClick={() => setIsOpen(false)} />
-                                        <NavItem href="/dashboard/messages" icon={MessageSquare} label="Messages" active={pathname.includes("/messages")} onClick={() => setIsOpen(false)} />
                                         <NavItem href="/dashboard/settings" icon={Settings} label="Settings" active={pathname.includes("/settings")} onClick={() => setIsOpen(false)} />
                                     </div>
 
@@ -100,7 +99,6 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
                     <NavItem href="/dashboard/exams" icon={FileText} label="Exams" active={pathname.includes("/exams")} />
                     <NavItem href="/dashboard/grading" icon={CheckCircle} label="Grading" active={pathname.includes("/grading")} />
                     <NavItem href="/dashboard/students" icon={Users} label="Students" active={pathname.includes("/students")} />
-                    <NavItem href="/dashboard/messages" icon={MessageSquare} label="Messages" active={pathname.includes("/messages")} />
                     <NavItem href="/dashboard/settings" icon={Settings} label="Settings" active={pathname.includes("/settings")} />
                 </div>
 
