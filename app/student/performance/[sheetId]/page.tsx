@@ -42,17 +42,17 @@ export default async function StudentExamReviewPage({
   // If not approved, student shouldn't see details yet (unless you want to allow it?)
   // The user requirement says "after finalizing and sending the report", so likely valid only if approved.
   if (sheet.status !== "approved") {
-      return (
-          <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-              <div className="text-center space-y-4">
-                  <h1 className="text-2xl font-bold">Report Not Ready</h1>
-                  <p className="text-muted-foreground">This exam is still being graded. Check back later.</p>
-                  <Link href="/student/performance">
-                    <Button variant="outline">Go Back</Button>
-                  </Link>
-              </div>
-          </div>
-      )
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Report Not Ready</h1>
+          <p className="text-muted-foreground">This exam is still being graded. Check back later.</p>
+          <Link href="/student/performance">
+            <Button variant="outline">Go Back</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   const { data: evaluations } = await supabase
@@ -71,14 +71,14 @@ export default async function StudentExamReviewPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-lg font-semibold flex items-center gap-2">
-              {sheet.exams.exam_name}
+            <h1 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+              {sheet.exams?.exam_name || 'Exam Review'}
               <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
-                {sheet.total_score} / {sheet.exams.total_marks}
+                {sheet.total_score} / {sheet.exams?.total_marks || '?'}
               </Badge>
             </h1>
             <p className="text-sm text-muted-foreground">
-              {sheet.exams.subject} • {new Date(sheet.created_at).toLocaleDateString()}
+              {sheet.exams?.subject || 'General'} • {new Date(sheet.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>

@@ -55,7 +55,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
 
             {/* XP Progress Chart */}
             <GlassCard className="p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-foreground">
                     <TrendingUp className="text-cyan-500" size={20} />
                     XP Progress Over Time
                 </h3>
@@ -93,7 +93,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Exam Scores Chart */}
                 <GlassCard className="p-6">
-                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-foreground">
                         <Target className="text-purple-500" size={20} />
                         Exam Score Trends
                     </h3>
@@ -124,7 +124,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
 
                 {/* Subject Performance */}
                 <GlassCard className="p-6">
-                    <h3 className="text-lg font-bold mb-4">Subject Performance</h3>
+                    <h3 className="text-lg font-bold mb-4 text-foreground">Subject Performance</h3>
                     {subjectData.length > 0 ? (
                         <div className="space-y-4">
                             {subjectData.map((subject, index) => (

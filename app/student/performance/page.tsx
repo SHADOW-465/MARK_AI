@@ -39,13 +39,21 @@ export default async function ProgressInsights() {
             total_score,
             status,
             exam_id,
-            exams!left (exam_name, total_marks, subject)
+            created_at,
+            exams (
+                id,
+                exam_name,
+                total_marks,
+                subject,
+                marking_scheme
+            )
         `)
         .eq("student_id", student.id)
         .order("created_at", { ascending: false })
 
-    const exams = sheets || []
-    const approvedExams = exams.filter(e => e.status === 'approved')
+    // Filter out sheets without exam data and prepare lists
+    const exams = (sheets || []).filter((s: any) => s.exams !== null)
+    const approvedExams = exams.filter((e: any) => e.status === 'approved')
 
     // 3. Fetch Feedback Analysis for Gap Stats
     const { data: feedbackList } = await supabase
@@ -236,7 +244,7 @@ function GapMetric({ label, pct, color }: { label: string, pct: number, color: s
         amber: "bg-amber-500 text-amber-600 dark:text-amber-400",
         blue: "bg-blue-500 text-blue-600 dark:text-blue-400"
     }
-    
+
     return (
         <div>
             <div className="flex justify-between text-sm mb-2 font-medium">

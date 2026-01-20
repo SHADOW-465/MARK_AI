@@ -128,7 +128,8 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                 className="space-y-4"
               >
                 {evaluations.map((ev) => {
-                  const question = sheet.exams.marking_scheme.find((q: any) => q.question_num === ev.question_num)
+                  const markingScheme = sheet.exams?.marking_scheme || []
+                  const question = markingScheme.find((q: any) => q.question_num === ev.question_num)
 
                   return (
                     <GlassCard key={ev.id} className="p-4 border-l-4 border-l-primary">
