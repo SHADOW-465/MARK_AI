@@ -27,32 +27,36 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                     icon={<Zap className="text-yellow-400" />}
                     label="Total XP"
                     value={currentStats.xp.toLocaleString()}
-                    color="yellow"
+                    bgColor="bg-yellow-500/10"
+                    borderColor="border-yellow-500/20"
                 />
                 <StatCard
                     icon={<Flame className="text-orange-400" />}
                     label="Streak"
                     value={`${currentStats.streak} days`}
-                    color="orange"
+                    bgColor="bg-orange-500/10"
+                    borderColor="border-orange-500/20"
                 />
                 <StatCard
                     icon={<Award className="text-purple-400" />}
                     label="Level"
                     value={currentStats.level.toString()}
-                    color="purple"
+                    bgColor="bg-purple-500/10"
+                    borderColor="border-purple-500/20"
                 />
                 <StatCard
                     icon={<FileText className="text-cyan-400" />}
                     label="Exams Graded"
                     value={currentStats.totalExams.toString()}
-                    color="cyan"
+                    bgColor="bg-cyan-500/10"
+                    borderColor="border-cyan-500/20"
                 />
             </div>
 
             {/* XP Progress Chart */}
             <GlassCard className="p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <TrendingUp className="text-neon-cyan" size={20} />
+                    <TrendingUp className="text-cyan-500" size={20} />
                     XP Progress Over Time
                 </h3>
                 {xpData.length > 0 ? (
@@ -90,7 +94,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                 {/* Exam Scores Chart */}
                 <GlassCard className="p-6">
                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                        <Target className="text-neon-purple" size={20} />
+                        <Target className="text-purple-500" size={20} />
                         Exam Score Trends
                     </h3>
                     {examScoreData.length > 0 ? (
@@ -131,7 +135,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                                             {subject.avgScore}% avg ({subject.examsCount} exams)
                                         </span>
                                     </div>
-                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-500"
                                             style={{
@@ -154,16 +158,16 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
     )
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
+function StatCard({ icon, label, value, bgColor, borderColor }: { icon: React.ReactNode; label: string; value: string; bgColor: string; borderColor: string }) {
     return (
-        <GlassCard className={`p-4 border-${color}-500/20`}>
+        <GlassCard className={`p-4 ${borderColor}`}>
             <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-lg bg-${color}-500/10 flex items-center justify-center`}>
+                <div className={`h-10 w-10 rounded-lg ${bgColor} flex items-center justify-center`}>
                     {icon}
                 </div>
                 <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">{label}</p>
-                    <p className="text-xl font-bold font-display">{value}</p>
+                    <p className="text-xl font-bold font-display text-foreground">{value}</p>
                 </div>
             </div>
         </GlassCard>

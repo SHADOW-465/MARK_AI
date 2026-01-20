@@ -16,7 +16,7 @@ type Task = {
 
 const COLUMNS = [
     { id: "pending", label: "To-Do", color: "text-muted-foreground" },
-    { id: "in_progress", label: "In Progress", color: "text-neon-cyan" },
+    { id: "in_progress", label: "In Progress", color: "text-cyan-500" },
     { id: "completed", label: "Mastered", color: "text-emerald-400" }
 ]
 
@@ -60,14 +60,14 @@ export function KanbanBoard({ initialTasks, studentId }: { initialTasks: any[], 
             {COLUMNS.map(col => (
                 <div key={col.id} className="space-y-4">
                     <div className="flex items-center gap-2 px-2">
-                        <div className={cn("h-2 w-2 rounded-full", col.id === 'pending' ? 'bg-muted-foreground/30' : col.id === 'in_progress' ? 'bg-neon-cyan shadow-[0_0_8px_rgba(6,182,212,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]')} />
+                        <div className={cn("h-2 w-2 rounded-full", col.id === 'pending' ? 'bg-muted-foreground/30' : col.id === 'in_progress' ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]')} />
                         <h4 className={cn("text-xs font-bold uppercase tracking-widest", col.color)}>{col.label}</h4>
                         <span className="ml-auto text-[10px] text-muted-foreground font-mono">
                             {tasks.filter(t => t.status === col.id).length}
                         </span>
                     </div>
 
-                    <div className="space-y-3 min-h-[400px] p-2 rounded-2xl bg-white/[0.02] border border-dashed border-white/5">
+                    <div className="space-y-3 min-h-[400px] p-2 rounded-2xl bg-secondary/30 border border-dashed border-border">
                         {tasks.filter(t => t.status === col.id).map(task => (
                             <motion.div
                                 key={task.id}
@@ -90,7 +90,7 @@ export function KanbanBoard({ initialTasks, studentId }: { initialTasks: any[], 
                                         {col.id !== 'completed' && (
                                             <button
                                                 onClick={() => moveTask(task.id, col.id === 'pending' ? 'in_progress' : 'completed')}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/10 rounded-md text-neon-cyan"
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-secondary rounded-md text-cyan-500"
                                             >
                                                 <CheckCircle2 size={14} />
                                             </button>

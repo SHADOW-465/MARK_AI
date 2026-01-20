@@ -178,11 +178,11 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                 <div className="flex items-center justify-between px-2">
                     <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest font-bold">Context Library</h3>
                     <div className="flex gap-3">
-                        <label className="cursor-pointer text-muted-foreground hover:text-neon-cyan transition-colors" title="Upload Note">
+                        <label className="cursor-pointer text-muted-foreground hover:text-cyan-500 transition-colors" title="Upload Note">
                             <Upload size={14} />
                             <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
                         </label>
-                        <button onClick={() => setShowDriveDialog(true)} className="text-muted-foreground hover:text-neon-purple transition-colors" title="Import Drive">
+                        <button onClick={() => setShowDriveDialog(true)} className="text-muted-foreground hover:text-purple-500 transition-colors" title="Import Drive">
                             <Link2 size={14} />
                         </button>
                     </div>
@@ -205,7 +205,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                     )}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <FileText size={14} className={selectedFileIds.includes(f.id) ? "text-neon-cyan" : "opacity-50"} />
+                                        <FileText size={14} className={selectedFileIds.includes(f.id) ? "text-cyan-500" : "opacity-50"} />
                                         <span className="truncate flex-1">{f.title}</span>
                                     </div>
                                 </div>
@@ -229,7 +229,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                                     )}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Target size={14} className={selectedExamIds.includes(s.id) ? "text-neon-purple" : "opacity-50"} />
+                                        <Target size={14} className={selectedExamIds.includes(s.id) ? "text-purple-500" : "opacity-50"} />
                                         <span className="truncate flex-1 font-bold">{s.exams?.exam_name}</span>
                                     </div>
                                     <div className="text-[10px] opacity-60 ml-5 flex justify-between">
@@ -242,8 +242,8 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                     </section>
                 </div>
 
-                <GlassCard className="p-4 bg-neon-cyan/5 border-neon-cyan/20">
-                    <p className="text-[10px] text-neon-cyan font-mono uppercase tracking-tighter mb-1 font-bold flex items-center gap-1.5">
+                <GlassCard className="p-4 bg-cyan-500/10 border-cyan-500/20">
+                    <p className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono uppercase tracking-tighter mb-1 font-bold flex items-center gap-1.5">
                         <Lightbulb size={12} />
                         AI Tutor Tip
                     </p>
@@ -322,10 +322,10 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                         )}
                         {activeTab === 'ai_studio' && (
                             <div className="flex gap-2">
-                                <Button size="sm" variant="outline" className="text-[10px] h-9 gap-1.5 border-neon-purple/30 text-neon-purple hover:bg-neon-purple/10 font-bold" onClick={() => handleSynthesis('faq')} disabled={isChatting}>
+                                <Button size="sm" variant="outline" className="text-[10px] h-9 gap-1.5 border-purple-500/30 text-purple-500 hover:bg-purple-500/10 font-bold" onClick={() => handleSynthesis('faq')} disabled={isChatting}>
                                     <MessageSquare size={14} /> FAQs
                                 </Button>
-                                <Button size="sm" variant="outline" className="text-[10px] h-9 gap-1.5 border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/10 font-bold" onClick={() => handleSynthesis('glossary')} disabled={isChatting}>
+                                <Button size="sm" variant="outline" className="text-[10px] h-9 gap-1.5 border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10 font-bold" onClick={() => handleSynthesis('glossary')} disabled={isChatting}>
                                     <Sparkles size={14} /> GLOSSARY
                                 </Button>
                                 <Button size="sm" variant="outline" className="text-[10px] h-9 gap-1.5 border-amber-500/30 text-amber-500 hover:bg-amber-500/10 font-bold" onClick={() => handleSynthesis('guide')} disabled={isChatting}>
@@ -396,7 +396,7 @@ export function LibraryClient({ studentId, initialTasks, initialMaterials, initi
                         <GlassCard className="w-full max-w-md p-8 space-y-6 border-neon-purple/30">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold font-display flex items-center gap-3">
-                                    <Link2 className="text-neon-purple" size={24} />
+                                    <Link2 className="text-purple-500" size={24} />
                                     Drive Link Sync
                                 </h3>
                                 <button onClick={() => setShowDriveDialog(false)} className="text-muted-foreground hover:text-foreground text-2xl">&times;</button>
