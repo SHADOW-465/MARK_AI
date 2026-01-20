@@ -151,6 +151,29 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                           </div>
                         )}
 
+                        {/* Answer Key / Marking Scheme */}
+                        {question?.expected_answer && (
+                          <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[100px] overflow-y-auto">
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">Answer Key</p>
+                            <p className="text-foreground leading-relaxed">{question.expected_answer}</p>
+                          </div>
+                        )}
+
+                        {/* Key Points if available */}
+                        {question?.key_points && question.key_points.length > 0 && (
+                          <div className="bg-amber-500/10 p-3 rounded-lg text-xs border border-amber-500/20">
+                            <p className="text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 font-bold">Key Points</p>
+                            <ul className="space-y-1">
+                              {question.key_points.map((point: string, idx: number) => (
+                                <li key={idx} className="flex items-start gap-2 text-foreground">
+                                  <span className="text-amber-500 mt-0.5">•</span>
+                                  <span>{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
                         {ev.reasoning && (
                           <div className="flex gap-2 items-start bg-primary/5 p-3 rounded-lg border border-primary/10">
                             <CheckCircle size={16} className="text-primary mt-0.5 shrink-0" />
