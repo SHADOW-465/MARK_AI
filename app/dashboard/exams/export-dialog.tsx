@@ -173,7 +173,7 @@ export function ExportDialog({ exam }: ExportDialogProps) {
             <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-[400px]">
                 <DialogHeader>
                     <DialogTitle>Export Exam</DialogTitle>
-                    <DialogDescription className="text-slate-400">
+                    <DialogDescription className="text-muted-foreground">
                         Choose a format to export <span className="text-white font-medium">{exam.exam_name}</span>.
                     </DialogDescription>
                 </DialogHeader>
@@ -224,7 +224,7 @@ export function ExportDialog({ exam }: ExportDialogProps) {
                     </Button>
                 </div>
                 {isExporting && (
-                    <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Generating your file...
                     </div>

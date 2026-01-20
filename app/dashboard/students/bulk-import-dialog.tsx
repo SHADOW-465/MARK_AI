@@ -100,7 +100,7 @@ export function BulkImportDialog() {
             <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Bulk Import Students</DialogTitle>
-                    <DialogDescription className="text-slate-400">
+                    <DialogDescription className="text-muted-foreground">
                         Upload a CSV or Excel file containing student details.
                         Required columns: <code className="text-cyan-400">Name</code>, <code className="text-cyan-400">Roll No</code>, <code className="text-cyan-400">Class</code>.
                         Optional: <code className="text-cyan-400">Section</code>.
@@ -129,7 +129,7 @@ export function BulkImportDialog() {
                     {file && (
                         <div className="bg-slate-800/50 p-3 rounded flex items-center gap-3">
                             <AlertCircle className="h-4 w-4 text-cyan-500" />
-                            <span className="text-xs text-slate-400">Ready to import students from {file.name}</span>
+                            <span className="text-xs text-muted-foreground">Ready to import students from {file.name}</span>
                         </div>
                     )}
                 </div>

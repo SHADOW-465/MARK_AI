@@ -103,13 +103,13 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
           <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
             <button
               onClick={() => setActiveTab('grading')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'grading' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-white'}`}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'grading' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Exam Results
             </button>
             <button
               onClick={() => setActiveTab('feedback')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'feedback' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-white'}`}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'feedback' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Coach Feedback
             </button>
@@ -134,7 +134,7 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                     <GlassCard key={ev.id} className="p-4 border-l-4 border-l-indigo-500">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <span className="px-2 py-1 bg-white/5 rounded text-xs text-slate-400 font-mono mr-2">Q{ev.question_num}</span>
+                          <span className="px-2 py-1 bg-secondary/50 rounded text-xs text-muted-foreground font-mono mr-2">Q{ev.question_num}</span>
                           <span className="font-semibold text-white text-sm">{question?.question_text}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-black/20 rounded-lg p-2 min-w-[60px] justify-center">
@@ -188,7 +188,7 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
         {/* Footer */}
         <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">
           <div className="flex justify-between items-center">
-            <span className="text-slate-400 text-sm">Total Score</span>
+            <span className="text-muted-foreground text-sm">Total Score</span>
             <div className="text-right">
               <span className="text-3xl font-bold text-white">{totalScore}</span>
               <span className="text-slate-500 text-sm"> / {maxScore}</span>

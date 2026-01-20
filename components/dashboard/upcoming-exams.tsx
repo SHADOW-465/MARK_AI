@@ -41,7 +41,7 @@ export function UpcomingExams({ exams }: UpcomingExamsProps) {
                             </div>
                             <div>
                                 <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors">{exam.exam_name}</h4>
-                                <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                                     <span className="flex items-center gap-1">
                                         <Clock size={12} />
                                         10:00 AM
@@ -59,7 +59,7 @@ export function UpcomingExams({ exams }: UpcomingExamsProps) {
                     </div>
                 )
             })}
-            <Link href="/dashboard/exams" className="block w-full py-2 text-center text-xs text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
+            <Link href="/dashboard/exams" className="block w-full py-2 text-center text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-lg transition-colors border border-transparent hover:border-border">
                 View Full Schedule <ArrowRight className="inline h-3 w-3 ml-1" />
             </Link>
         </div>

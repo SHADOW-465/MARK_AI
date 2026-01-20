@@ -23,7 +23,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
         <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
                     <XAxis
                         dataKey="name"
                         stroke="#94a3b8"

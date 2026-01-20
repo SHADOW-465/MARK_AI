@@ -13,7 +13,7 @@ export default async function MessagesPage() {
         <h1 className="text-3xl font-display font-bold tracking-tight text-white">
           Messages
         </h1>
-        <p className="text-slate-400">Communicate with students.</p>
+        <p className="text-muted-foreground">Communicate with students.</p>
       </div>
 
       <ChatInterface currentUserId={user.id} />

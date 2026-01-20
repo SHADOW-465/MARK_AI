@@ -38,14 +38,14 @@ export default function SettingsPage() {
 
             <div className="w-full space-y-4">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 text-left">
-                <Mail size={18} className="text-slate-400" />
+                <Mail size={18} className="text-muted-foreground" />
                 <div className="flex flex-col overflow-hidden">
                   <span className="text-[10px] text-slate-500 uppercase tracking-wider">Email</span>
                   <span className="text-sm text-slate-200 truncate">kumaarsk465@gmail.com</span>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 text-left">
-                <Shield size={18} className="text-slate-400" />
+                <Shield size={18} className="text-muted-foreground" />
                 <div className="flex flex-col">
                   <span className="text-[10px] text-slate-500 uppercase tracking-wider">Role</span>
                   <span className="text-sm text-slate-200">Super Admin</span>
@@ -97,7 +97,7 @@ export default function SettingsPage() {
 
             <div className="space-y-6">
               <div className="space-y-4">
-                <label className="text-xs text-slate-400 uppercase tracking-wider font-bold">Gemini API Key</label>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Gemini API Key</label>
                 <div className="flex gap-2">
                   <div className="flex-1 relative">
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                       type="password"
                       value="AIzaSy...XyZ"
                       disabled
-                      className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-slate-400 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                      className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-muted-foreground text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
                     />
                   </div>
                   <button className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-medium transition-colors">

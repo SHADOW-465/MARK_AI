@@ -58,7 +58,7 @@ export const NavButton = ({ id, activeId, icon: Icon, label, onClick, href, isMo
         </>
     )
 
-    const className = `relative flex flex-row items-center justify-start rounded-xl transition-all duration-300 w-full h-14 mb-1 overflow-hidden group/btn ${isActive ? "text-white" : "text-slate-400 hover:text-white"}`
+    const className = `relative flex flex-row items-center justify-start rounded-xl transition-all duration-300 w-full h-14 mb-1 overflow-hidden group/btn ${isActive ? "text-white" : "text-muted-foreground hover:text-white"}`
 
     if (href) {
         return (

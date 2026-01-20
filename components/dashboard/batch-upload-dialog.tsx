@@ -191,8 +191,8 @@ export function BatchUploadDialog({ examId, students, isOpen, onClose }: BatchUp
                     <button
                         onClick={() => setUploadMode('file')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${uploadMode === 'file'
-                                ? 'bg-cyan-500/20 text-cyan-400'
-                                : 'text-slate-400 hover:text-white'
+                            ? 'bg-cyan-500/20 text-cyan-400'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         <UploadCloud className="w-4 h-4" />
@@ -201,8 +201,8 @@ export function BatchUploadDialog({ examId, students, isOpen, onClose }: BatchUp
                     <button
                         onClick={() => setUploadMode('drive')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${uploadMode === 'drive'
-                                ? 'bg-purple-500/20 text-purple-400'
-                                : 'text-slate-400 hover:text-white'
+                            ? 'bg-purple-500/20 text-purple-400'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         <Link2 className="w-4 h-4" />

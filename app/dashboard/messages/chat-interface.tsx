@@ -136,7 +136,7 @@ export function ChatInterface({ currentUserId }: { currentUserId: string }) {
             <div className="w-80 border-r border-white/10 flex flex-col bg-white/5">
                 <div className="p-4 border-b border-white/10">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search messages..."
                             className="pl-9 bg-black/20 border-white/10 focus:border-cyan-500/50"
@@ -150,8 +150,8 @@ export function ChatInterface({ currentUserId }: { currentUserId: string }) {
                                 key={contact.id}
                                 onClick={() => setSelectedContact(contact)}
                                 className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${selectedContact?.id === contact.id
-                                        ? "bg-cyan-500/20 border border-cyan-500/30"
-                                        : "hover:bg-white/5 border border-transparent"
+                                    ? "bg-cyan-500/20 border border-cyan-500/30"
+                                    : "hover:bg-white/5 border border-transparent"
                                     }`}
                             >
                                 <div className="relative">
@@ -169,7 +169,7 @@ export function ChatInterface({ currentUserId }: { currentUserId: string }) {
                                         </span>
                                         <span className="text-[10px] text-slate-500">12:30 PM</span>
                                     </div>
-                                    <p className="text-xs text-slate-400 truncate">{contact.role}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{contact.role}</p>
                                 </div>
                             </button>
                         ))}
@@ -197,13 +197,13 @@ export function ChatInterface({ currentUserId }: { currentUserId: string }) {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                     <Phone className="h-5 w-5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                     <Video className="h-5 w-5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                     <MoreVertical className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -221,12 +221,12 @@ export function ChatInterface({ currentUserId }: { currentUserId: string }) {
                                         >
                                             <div
                                                 className={`max-w-[70%] p-3 rounded-2xl ${isMe
-                                                        ? "bg-cyan-600 text-white rounded-tr-none shadow-lg shadow-cyan-500/20"
-                                                        : "bg-white/10 text-slate-200 rounded-tl-none border border-white/10"
+                                                    ? "bg-cyan-600 text-white rounded-tr-none shadow-lg shadow-cyan-500/20"
+                                                    : "bg-white/10 text-slate-200 rounded-tl-none border border-white/10"
                                                     }`}
                                             >
                                                 <p className="text-sm">{msg.content}</p>
-                                                <p className={`text-[10px] mt-1 text-right ${isMe ? "text-cyan-200" : "text-slate-400"}`}>
+                                                <p className={`text-[10px] mt-1 text-right ${isMe ? "text-cyan-200" : "text-muted-foreground"}`}>
                                                     {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>

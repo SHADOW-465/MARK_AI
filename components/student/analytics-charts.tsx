@@ -58,14 +58,15 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                 {xpData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={250}>
                         <LineChart data={xpData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                            <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
-                            <YAxis stroke="#64748b" fontSize={12} />
+                            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                            <XAxis dataKey="date" className="stroke-muted-foreground" fontSize={12} />
+                            <YAxis className="stroke-muted-foreground" fontSize={12} />
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: '#0f172a',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '8px'
+                                    backgroundColor: 'hsl(var(--popover))',
+                                    border: '1px solid hsl(var(--border))',
+                                    borderRadius: '8px',
+                                    color: 'hsl(var(--popover-foreground))'
                                 }}
                             />
                             <Line
@@ -95,14 +96,15 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                     {examScoreData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={250}>
                             <BarChart data={examScoreData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-                                <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} />
+                                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                                <XAxis dataKey="name" className="stroke-muted-foreground" fontSize={12} />
+                                <YAxis className="stroke-muted-foreground" fontSize={12} domain={[0, 100]} />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#0f172a',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '8px'
+                                        backgroundColor: 'hsl(var(--popover))',
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '8px',
+                                        color: 'hsl(var(--popover-foreground))'
                                     }}
                                     formatter={(value: number) => [`${value}%`, 'Score']}
                                 />
