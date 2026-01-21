@@ -35,6 +35,7 @@ interface GradingInterfaceProps {
   sheet: {
     id: string
     student_id: string
+    exam_id: string
     file_url?: string
     file_urls?: string[]
     total_score: number
@@ -47,6 +48,9 @@ interface GradingInterfaceProps {
       }
     }
     exams: {
+      id: string
+      exam_name: string
+      subject: string
       total_marks: number
       marking_scheme: MarkingSchemeQuestion[]
     }
@@ -228,12 +232,20 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         }
       })
 
-      // 2. Upsert Feedback Analysis (create if doesn't exist)
+      // 2. Upsert Feedback Analysis WITH EXAM METADATA (for student access)
       const { error: feedbackError } = await supabase
         .from("feedback_analysis")
         .upsert({
           answer_sheet_id: sheet.id,
           student_id: sheet.student_id,
+          
+          // Exam metadata for student view (denormalized snapshot)
+          exam_name: sheet.exams.exam_name || 'Exam',
+          exam_subject: sheet.exams.subject || '',
+          exam_total_marks: sheet.exams.total_marks,
+          exam_marking_scheme: sheet.exams.marking_scheme,
+          
+          // Feedback data
           overall_feedback: overallFeedback,
           root_cause_analysis: rcSummary,
           focus_areas: sheet.gemini_response?.student_os_analysis?.focus_areas || [],

@@ -9,12 +9,21 @@ import { motion, AnimatePresence } from "framer-motion"
 import { GlassCard } from "@/components/ui/glass-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
+interface FeedbackData {
+  exam_name?: string
+  exam_subject?: string
+  exam_total_marks?: number
+  exam_marking_scheme?: any[]
+  overall_feedback?: string
+}
+
 interface StudentResultViewerProps {
   sheet: any
   evaluations: any[]
+  feedbackData?: FeedbackData
 }
 
-export default function StudentResultViewer({ sheet, evaluations }: StudentResultViewerProps) {
+export default function StudentResultViewer({ sheet, evaluations, feedbackData }: StudentResultViewerProps) {
   const [zoom, setZoom] = useState(100)
   const [rotation, setRotation] = useState(0)
   const [activeTab, setActiveTab] = useState<'grading' | 'feedback'>('grading')
@@ -29,8 +38,10 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
 
   // Calculate totals
   const totalScore = sheet.total_score || 0
-  const maxScore = sheet.exams.total_marks
-  const overallFeedback = sheet.gemini_response?.overall_feedback || "No feedback provided."
+  const maxScore = feedbackData?.exam_total_marks || sheet.exams?.total_marks || 0
+  const overallFeedback = feedbackData?.overall_feedback || sheet.gemini_response?.overall_feedback || "No feedback provided."
+  const examName = feedbackData?.exam_name || sheet.exams?.exam_name || 'Exam Results'
+  const examSubject = feedbackData?.exam_subject || sheet.exams?.subject || ''
 
   return (
     <div className="flex-1 flex overflow-hidden bg-background text-foreground h-full">
@@ -98,6 +109,20 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
       {/* Right Panel: Grading & Feedback */}
       <div className="w-[450px] border-l border-border flex flex-col bg-card/50 backdrop-blur-xl">
 
+        {/* Exam Name Header */}
+        <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-purple-500/10">
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-foreground">
+              {examName}
+            </h2>
+            {examSubject && (
+              <p className="text-sm text-muted-foreground">
+                Subject: {examSubject}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Tabs */}
         <div className="p-4 border-b border-white/10">
           <div className="flex bg-muted/40 p-1 rounded-xl border border-border/50">
@@ -128,7 +153,8 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                 className="space-y-4"
               >
                 {evaluations.map((ev) => {
-                  const markingScheme = sheet.exams?.marking_scheme || []
+                  // Use feedbackData's marking scheme first (snapshot from approval), fallback to exams
+                  const markingScheme = feedbackData?.exam_marking_scheme || sheet.exams?.marking_scheme || []
                   const question = markingScheme.find((q: any) => q.question_num === ev.question_num)
 
                   return (
@@ -152,11 +178,19 @@ export default function StudentResultViewer({ sheet, evaluations }: StudentResul
                           </div>
                         )}
 
-                        {/* Answer Key / Marking Scheme */}
-                        {question?.expected_answer && (
-                          <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[100px] overflow-y-auto">
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">Answer Key</p>
-                            <p className="text-foreground leading-relaxed">{question.expected_answer}</p>
+                        {/* Answer Key / Model Answer */}
+                        {question?.model_answer && (
+                          <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[150px] overflow-y-auto">
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">📝 Answer Key</p>
+                            <p className="text-foreground leading-relaxed">{question.model_answer}</p>
+                            
+                            {/* Rubric/Marking Scheme */}
+                            {question.rubric && (
+                              <div className="mt-2 pt-2 border-t border-emerald-500/20">
+                                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">✓ Marking Rubric</p>
+                                <p className="text-muted-foreground leading-relaxed text-[11px]">{question.rubric}</p>
+                              </div>
+                            )}
                           </div>
                         )}
 

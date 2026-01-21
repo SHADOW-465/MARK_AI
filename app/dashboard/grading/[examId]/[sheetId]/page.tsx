@@ -19,7 +19,7 @@ export default async function GradingReviewPage({
     .select(`
       *,
       students (name, roll_number),
-      exams (exam_name, subject, total_marks, marking_scheme)
+      exams (id, exam_name, subject, total_marks, marking_scheme)
     `)
     .eq("id", sheetId)
     .single()

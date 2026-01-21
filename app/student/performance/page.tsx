@@ -31,7 +31,7 @@ export default async function ProgressInsights() {
         .order("created_at", { ascending: true })
         .limit(50)
 
-    // 2. Fetch Answer Sheets with Exam details
+    // 2. Fetch Answer Sheets with Exam details and Feedback Analysis
     const { data: sheets } = await supabase
         .from("answer_sheets")
         .select(`
@@ -46,6 +46,11 @@ export default async function ProgressInsights() {
                 total_marks,
                 subject,
                 marking_scheme
+            ),
+            feedback_analysis (
+                exam_name,
+                exam_subject,
+                exam_total_marks
             )
         `)
         .eq("student_id", student.id)
@@ -260,6 +265,12 @@ function GapMetric({ label, pct, color }: { label: string, pct: number, color: s
 
 function ExamCard({ sheet }: { sheet: any }) {
     const examData = sheet.exams as any
+    // Use feedbackData (snapshot from approval) first, fallback to exams table
+    const feedbackAnalysis = sheet.feedback_analysis?.[0]
+    const displayName = feedbackAnalysis?.exam_name || examData?.exam_name || "Unknown Exam"
+    const displaySubject = feedbackAnalysis?.exam_subject || examData?.subject || 'General'
+    const displayTotalMarks = feedbackAnalysis?.exam_total_marks || examData?.total_marks || '?'
+    
     return (
         <GlassCard variant="neu" className="p-0 overflow-hidden hover:border-primary/30 transition-all group rounded-3xl">
             <div className="p-6 flex items-center justify-between">
@@ -274,10 +285,10 @@ function ExamCard({ sheet }: { sheet: any }) {
                     </div>
                     <div>
                         <h4 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
-                            {examData?.exam_name || "Unknown Exam"}
+                            {displayName}
                         </h4>
                         <p className="text-sm text-muted-foreground font-medium">
-                            {examData?.subject || 'General'}
+                            {displaySubject}
                         </p>
                     </div>
                 </div>
@@ -286,7 +297,7 @@ function ExamCard({ sheet }: { sheet: any }) {
                     {sheet.status === 'approved' ? (
                         <>
                             <div className="text-3xl font-display font-bold text-foreground">
-                                {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-medium">/ {examData?.total_marks || '?'}</span>
+                                {sheet.total_score} <span className="text-sm text-muted-foreground font-sans font-medium">/ {displayTotalMarks}</span>
                             </div>
                             <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-bold mt-1">FINAL SCORE</div>
                         </>

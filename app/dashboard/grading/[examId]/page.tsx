@@ -84,6 +84,12 @@ export default async function ExamGradingPage({
 
                 <StudentList
                     examId={examId}
+                    examData={{
+                        exam_name: exam.exam_name,
+                        subject: exam.subject,
+                        total_marks: exam.total_marks,
+                        marking_scheme: exam.marking_scheme
+                    }}
                     students={students || []}
                     answerSheets={answerSheets || []}
                 />

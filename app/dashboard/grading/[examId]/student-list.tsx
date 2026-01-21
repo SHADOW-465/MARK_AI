@@ -45,15 +45,23 @@ interface AnswerSheet {
     confidence: number | null
 }
 
+interface ExamData {
+    exam_name: string
+    subject: string
+    total_marks: number
+    marking_scheme: any[]
+}
+
 interface StudentListProps {
     examId: string
+    examData: ExamData
     students: Student[]
     answerSheets: AnswerSheet[]
 }
 
 type ConfidenceFilter = 'all' | 'high' | 'medium' | 'low' | 'pending'
 
-export default function StudentList({ examId, students, answerSheets }: StudentListProps) {
+export default function StudentList({ examId, examData, students, answerSheets }: StudentListProps) {
     const router = useRouter()
     const [uploadingFor, setUploadingFor] = useState<string | null>(null)
     const [files, setFiles] = useState<File[]>([])
@@ -163,12 +171,25 @@ export default function StudentList({ examId, students, answerSheets }: StudentL
                 // Get sheet details for feedback analysis
                 const sheet = answerSheets.find(s => s.id === sheetId)
                 if (sheet) {
-                    // Upsert feedback analysis
+                    // Upsert feedback analysis WITH EXAM METADATA
                     await supabase
                         .from('feedback_analysis')
                         .upsert({
                             answer_sheet_id: sheetId,
                             student_id: sheet.student_id,
+                            
+                            // Exam metadata for student view (denormalized snapshot)
+                            exam_name: examData.exam_name || 'Exam',
+                            exam_subject: examData.subject || '',
+                            exam_total_marks: examData.total_marks,
+                            exam_marking_scheme: examData.marking_scheme,
+                            
+                            // Batch approvals don't have individual feedback
+                            overall_feedback: null,
+                            root_cause_analysis: null,
+                            focus_areas: [],
+                            real_world_application: '',
+                            roi_analysis: []
                         }, {
                             onConflict: 'answer_sheet_id'
                         })

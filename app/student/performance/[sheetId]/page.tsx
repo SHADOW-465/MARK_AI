@@ -61,6 +61,13 @@ export default async function StudentExamReviewPage({
     .eq("answer_sheet_id", sheetId)
     .order("question_num", { ascending: true })
 
+  // Fetch feedback_analysis data with exam metadata snapshot
+  const { data: feedbackData } = await supabase
+    .from("feedback_analysis")
+    .select("exam_name, exam_subject, exam_total_marks, exam_marking_scheme, overall_feedback")
+    .eq("answer_sheet_id", sheetId)
+    .single()
+
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
       <header className="flex items-center justify-between px-6 py-3 border-b bg-background shrink-0">
@@ -72,19 +79,19 @@ export default async function StudentExamReviewPage({
           </Link>
           <div>
             <h1 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-              {sheet.exams?.exam_name || 'Exam Review'}
+              {feedbackData?.exam_name || sheet.exams?.exam_name || 'Exam Review'}
               <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
-                {sheet.total_score} / {sheet.exams?.total_marks || '?'}
+                {sheet.total_score} / {feedbackData?.exam_total_marks || sheet.exams?.total_marks || '?'}
               </Badge>
             </h1>
             <p className="text-sm text-muted-foreground">
-              {sheet.exams?.subject || 'General'} • {new Date(sheet.created_at).toLocaleDateString()}
+              {feedbackData?.exam_subject || sheet.exams?.subject || 'General'} • {new Date(sheet.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>
       </header>
 
-      <StudentResultViewer sheet={sheet} evaluations={evaluations || []} />
+      <StudentResultViewer sheet={sheet} evaluations={evaluations || []} feedbackData={feedbackData || undefined} />
     </div>
   )
 }

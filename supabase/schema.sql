@@ -98,6 +98,12 @@ CREATE TABLE IF NOT EXISTS feedback_analysis (
     answer_sheet_id UUID REFERENCES answer_sheets(id) ON DELETE CASCADE,
     student_id UUID REFERENCES students(id) ON DELETE CASCADE,
     
+    -- Exam Metadata (Denormalized for student access after approval)
+    exam_name TEXT,
+    exam_subject TEXT,
+    exam_total_marks INTEGER,
+    exam_marking_scheme JSONB, -- Snapshot of marking scheme with model answers at time of approval
+    
     -- Overall Feedback
     overall_feedback TEXT,
     
