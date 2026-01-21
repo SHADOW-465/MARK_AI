@@ -69,7 +69,7 @@ export default async function StudentExamReviewPage({
     .single()
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col">
+    <div className="h-[calc(100vh-6rem)] flex flex-col">
       <header className="flex items-center justify-between px-6 py-3 border-b bg-background shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/student/performance">

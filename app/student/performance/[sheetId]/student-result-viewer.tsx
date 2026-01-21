@@ -141,7 +141,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <AnimatePresence mode="wait">
             {activeTab === 'grading' ? (
               <motion.div
@@ -183,7 +183,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                           <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[150px] overflow-y-auto">
                             <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">📝 Answer Key</p>
                             <p className="text-foreground leading-relaxed">{question.model_answer}</p>
-                            
+
                             {/* Rubric/Marking Scheme */}
                             {question.rubric && (
                               <div className="mt-2 pt-2 border-t border-emerald-500/20">
@@ -241,7 +241,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <div className="p-4 border-t border-border bg-muted/20 backdrop-blur-md">
