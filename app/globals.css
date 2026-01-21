@@ -10,7 +10,7 @@
   --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
 
   /* --- PREMIUM COLOR PALETTE --- */
-  
+
   /* Primary: Deep Indigo (Trust & Intelligence) */
   --color-brand-indigo-50: #EEF2FF;
   --color-brand-indigo-100: #E0E7FF;
@@ -67,43 +67,81 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.15);
-  
+
   --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.5);
   --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.5);
-  
+
   /* Neumorphic Shadows */
   --shadow-neu-flat-light: -6px -6px 12px #ffffff, 6px 6px 12px #d1d5db;
-  --shadow-neu-flat-dark: -5px -5px 10px rgba(255,255,255,0.05), 5px 5px 15px rgba(0,0,0,0.3);
-  
+  --shadow-neu-flat-dark: -5px -5px 10px rgba(255, 255, 255, 0.05), 5px 5px 15px rgba(0, 0, 0, 0.3);
+
   --shadow-neu-pressed-light: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
-  --shadow-neu-pressed-dark: inset 4px 4px 8px rgba(0,0,0,0.3), inset -4px -4px 8px rgba(255,255,255,0.05);
-  
+  --shadow-neu-pressed-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+
   --shadow-liquid: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
 
-  --radius-lg: 1.5rem; /* Increased radius for Pillbox feel */
+  --radius-lg: 1.5rem;
+  /* Increased radius for Pillbox feel */
   --radius-md: 1rem;
   --radius-sm: 0.5rem;
 
   /* --- ANIMATION KEYFRAMES --- */
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
+
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
   }
+
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
-    50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
+
+    0%,
+    100% {
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    }
   }
+
   @keyframes scale-in {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
+
   @keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   --animate-float: float 6s ease-in-out infinite;
@@ -119,8 +157,10 @@
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
 
     /* --- LIGHT MODE TOKENS --- */
-    --background: 220 33% 98%; /* #F8FAFC (Slate 50) */
-    --foreground: 224 71% 4%; /* #020617 */
+    --background: 220 33% 98%;
+    /* #F8FAFC (Slate 50) */
+    --foreground: 224 71% 4%;
+    /* #020617 */
 
     --card: 0 0% 100%;
     --card-foreground: 224 71% 4%;
@@ -128,16 +168,19 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
 
-    /* Primary: Deep Indigo */
-    --primary: 239 84% 67%; /* #6366F1 */
+    /* Primary: Pro Max Blue (Trust & Clarity) */
+    --primary: 217 91% 60%;
+    /* #3B82F6 */
     --primary-foreground: 0 0% 100%;
 
     /* Secondary: Soft Slate */
-    --secondary: 220 14% 96%; /* #F1F5F9 */
-    --secondary-foreground: 224 71% 4%;
+    --secondary: 210 40% 96%;
+    /* #F1F5F9 */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%; /* #64748B */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    /* #64748B */
 
     --accent: 220 14% 96%;
     --accent-foreground: 224 71% 4%;
@@ -145,32 +188,41 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%; /* #E2E8F0 */
+    --border: 220 13% 91%;
+    /* #E2E8F0 */
     --input: 220 13% 91%;
     --ring: 239 84% 67%;
 
-    --radius: 1.5rem; /* 24px - Pillbox Rounded */
+    --radius: 1.5rem;
+    /* 24px - Pillbox Rounded */
 
     /* Chart Colors */
-    --chart-1: 239 84% 67%; /* Indigo */
-    --chart-2: 172 66% 50%; /* Teal */
-    --chart-3: 142 71% 45%; /* Emerald */
-    --chart-4: 38 92% 50%;  /* Amber */
-    --chart-5: 262 83% 58%; /* Purple */
+    --chart-1: 239 84% 67%;
+    /* Indigo */
+    --chart-2: 172 66% 50%;
+    /* Teal */
+    --chart-3: 142 71% 45%;
+    /* Emerald */
+    --chart-4: 38 92% 50%;
+    /* Amber */
+    --chart-5: 262 83% 58%;
+    /* Purple */
   }
 
   .dark {
     /* --- DARK MODE TOKENS --- */
-    --background: 224 71% 4%; /* #020617 - Deepest Navy (Rich Black) */
+    --background: 224 71% 4%;
+    /* #020617 - Deepest Navy (Rich Black) */
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 11%; /* #1E293B */
+    --card: 222 47% 11%;
+    /* #1E293B */
     --card-foreground: 210 40% 98%;
 
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 239 84% 67%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 33% 17%;
@@ -187,10 +239,10 @@
 
     --border: 217 33% 20%;
     --input: 217 33% 20%;
-    --ring: 239 84% 67%;
+    --ring: 217 91% 60%;
 
     /* Chart Colors - Brighter for dark mode */
-    --chart-1: 239 84% 70%;
+    --chart-1: 217 91% 65%;
     --chart-2: 172 66% 55%;
     --chart-3: 142 71% 50%;
     --chart-4: 38 92% 55%;
@@ -202,12 +254,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-family: var(--font-sans);
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply font-semibold tracking-tight;
   }
@@ -239,6 +297,7 @@
 .neu-flat {
   box-shadow: var(--shadow-neu-flat-light);
 }
+
 .dark .neu-flat {
   box-shadow: var(--shadow-neu-flat-dark);
 }
@@ -246,13 +305,14 @@
 .neu-pressed {
   box-shadow: var(--shadow-neu-pressed-light);
 }
+
 .dark .neu-pressed {
   box-shadow: var(--shadow-neu-pressed-dark);
 }
 
 /* Text Gradients */
 .text-gradient-primary {
-  @apply bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent;
 }
 
 .text-gradient-success {
@@ -265,7 +325,7 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -275,26 +335,28 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
 }
 
 /* Mesh Gradients for Backgrounds */
 .bg-mesh-light {
-  background-color: hsla(0,0%,100%,1);
+  background-color: hsla(0, 0%, 100%, 1);
   background-image:
-    radial-gradient(at 0% 0%, hsla(239,84%,67%,0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(172,66%,50%,0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(262,83%,58%,0.05) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(172, 66%, 50%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(25, 95%, 53%, 0.05) 0px, transparent 50%);
 }
 
 .bg-mesh-dark {
-  background-color: hsla(222,47%,11%,1);
+  background-color: hsla(222, 47%, 11%, 1);
   background-image:
-    radial-gradient(at 0% 0%, hsla(239,84%,67%,0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(172,66%,50%,0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(262,83%,58%,0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(172, 66%, 50%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(25, 95%, 53%, 0.1) 0px, transparent 50%);
 }

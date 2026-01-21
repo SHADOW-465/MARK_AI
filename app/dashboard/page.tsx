@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { 
-  FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles, 
+import {
+  FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles,
   Activity, Zap, Layers, AlertTriangle, TrendingUp, TrendingDown,
   Calendar, GraduationCap
 } from "lucide-react"
@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   // 1. Fetch Key Stats
   const { count: examCount } = await supabase.from("exams").select("*", { count: "exact", head: true })
   const { count: studentCount } = await supabase.from("students").select("*", { count: "exact", head: true })
-  
+
   // Pending Reviews
   const { count: pendingCount } = await supabase
     .from("answer_sheets")
@@ -99,8 +99,8 @@ export default async function DashboardPage() {
   )
 
   return (
-    <div className="space-y-8 pb-24 lg:pb-0">
-      
+    <div className="space-y-8 pb-24 lg:pb-0 animate-fade-in-up">
+
       {/* Header Section */}
       <div className="flex items-end justify-between">
         <div>
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
             Good Morning, Professor. You have <span className="text-foreground font-bold">{pendingCount} items</span> requiring attention.
           </p>
         </div>
-        
+
         {/* Quick Action Button Group */}
         <div className="hidden md:flex gap-3">
           <Link href="/dashboard/exams/create">
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
             icon: AlertTriangle,
             color: "red",
             trend: "-2%",
-            trendUp: false 
+            trendUp: false
           },
           {
             label: "Avg. Performance",
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* 2. Priority Queue (Left 2 cols) */}
         <div className="lg:col-span-2 space-y-6">
           <GlassCard variant="liquid" className="p-6">
@@ -266,7 +266,7 @@ export default async function DashboardPage() {
 
         {/* 3. Sidebar (Right 1 col) */}
         <div className="space-y-6">
-          
+
           {/* Quick Actions Card */}
           <GlassCard variant="liquid" gradientColor="purple" className="p-6 text-white relative overflow-hidden">
             <div className="relative z-10">

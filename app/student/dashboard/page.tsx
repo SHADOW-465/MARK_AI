@@ -118,7 +118,7 @@ export default async function StudentDashboard() {
         .limit(3)
 
     return (
-        <div className="space-y-8 pb-24">
+        <div className="space-y-8 pb-24 animate-fade-in-up">
 
             {/* Header with Performance Summary */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
