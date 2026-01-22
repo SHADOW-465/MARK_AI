@@ -41,7 +41,7 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-center pointer-events-none">
-            <nav className="pointer-events-auto flex items-center justify-between w-full max-w-[1600px] h-20 px-6 rounded-full liquid-glass transition-all duration-300">
+            <nav className="pointer-events-auto flex items-center justify-between w-full max-w-container-2xl h-16 md:h-20 px-6 rounded-full liquid-glass transition-all duration-300">
 
                 {/* Left Section: Mobile Menu + Logo */}
                 <div className="flex items-center gap-6">

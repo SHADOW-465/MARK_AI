@@ -107,7 +107,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
       </div>
 
       {/* Right Panel: Grading & Feedback */}
-      <div className="w-[450px] border-l border-border flex flex-col bg-card/50 backdrop-blur-xl">
+      <div className="w-panel-narrow border-l border-border flex flex-col bg-card/50 backdrop-blur-xl">
 
         {/* Exam Name Header */}
         <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-purple-500/10">
@@ -173,7 +173,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                       <div className="space-y-3">
                         {ev.extracted_text && (
                           <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border max-h-[100px] overflow-y-auto">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Your Answer</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your Answer</p>
                             {ev.extracted_text}
                           </div>
                         )}
@@ -181,14 +181,14 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                         {/* Answer Key / Model Answer */}
                         {question?.model_answer && (
                           <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[150px] overflow-y-auto">
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">📝 Answer Key</p>
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">📝 Answer Key</p>
                             <p className="text-foreground leading-relaxed">{question.model_answer}</p>
 
                             {/* Rubric/Marking Scheme */}
                             {question.rubric && (
                               <div className="mt-2 pt-2 border-t border-emerald-500/20">
-                                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">✓ Marking Rubric</p>
-                                <p className="text-muted-foreground leading-relaxed text-[11px]">{question.rubric}</p>
+                                <p className="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">✓ Marking Rubric</p>
+                                <p className="text-muted-foreground leading-relaxed text-xs">{question.rubric}</p>
                               </div>
                             )}
                           </div>
@@ -197,7 +197,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                         {/* Key Points if available */}
                         {question?.key_points && question.key_points.length > 0 && (
                           <div className="bg-amber-500/10 p-3 rounded-lg text-xs border border-amber-500/20">
-                            <p className="text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 font-bold">Key Points</p>
+                            <p className="text-xs text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 font-bold">Key Points</p>
                             <ul className="space-y-1">
                               {question.key_points.map((point: string, idx: number) => (
                                 <li key={idx} className="flex items-start gap-2 text-foreground">

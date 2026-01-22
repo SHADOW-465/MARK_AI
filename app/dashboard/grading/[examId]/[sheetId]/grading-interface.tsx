@@ -72,6 +72,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
   // Drawing State
   const [isDrawingMode, setIsDrawingMode] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [imgDimensions, setImgDimensions] = useState({ width: 0, height: 0 })
 
@@ -343,37 +344,51 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
           </div>
         )}
 
-        <div className="flex-1 overflow-auto p-8 flex items-center justify-center bg-muted/30">
+        {/* Left: Document View */}
+        <div className="flex-1 overflow-auto bg-muted/30 relative">
           <div
+            className="min-h-full min-w-full flex p-4"
             style={{
-              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-              transition: "transform 0.2s ease-out",
+              alignItems: zoom > 100 ? 'flex-start' : 'center',
+              justifyContent: zoom > 100 ? 'flex-start' : 'center',
             }}
-            className="origin-center shadow-2xl shadow-muted/20"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={currentFileUrl}
-              alt={`Answer Sheet Page ${currentPageIndex + 1}`}
-              className="max-w-full rounded-sm border border-border"
-              onLoad={(e) => setImgDimensions({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
-            />
-            <canvas
-              ref={canvasRef}
-              width={imgDimensions.width}
-              height={imgDimensions.height}
-              className={`absolute inset-0 w-full h-full ${isDrawingMode ? "cursor-crosshair pointer-events-auto" : "pointer-events-none"}`}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-            />
+            <div className="relative" style={{ width: `${zoom}%` }}>
+              <img
+                ref={imageRef}
+                src={currentFileUrl}
+                alt={`Answer Sheet Page ${currentPageIndex + 1}`}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  transformOrigin: 'top left',
+                  transform: `rotate(${rotation}deg)`,
+                  transition: "transform 0.2s ease-out",
+                }}
+                className="shadow-2xl rounded-sm border border-border"
+                onLoad={(e) => setImgDimensions({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+              />
+              <canvas
+                ref={canvasRef}
+                width={imgDimensions.width}
+                height={imgDimensions.height}
+                className={`absolute inset-0 w-full h-full ${isDrawingMode ? "cursor-crosshair pointer-events-auto" : "pointer-events-none"}`}
+                style={{
+                  transform: `rotate(${rotation}deg)`,
+                  transformOrigin: 'top left',
+                }}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Right Panel: Grading & Feedback */}
-      <div className="w-[500px] border-l border-border flex flex-col bg-card/50 backdrop-blur-xl h-full overflow-hidden">
+      <div className="w-panel-sidebar border-l border-border flex flex-col bg-card/50 backdrop-blur-xl h-full overflow-hidden">
 
         {/* Tabs */}
         <div className="p-4 border-b border-border">

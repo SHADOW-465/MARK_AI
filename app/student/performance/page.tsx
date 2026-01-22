@@ -152,13 +152,13 @@ export default async function ProgressInsights() {
     return (
         <div className="space-y-12 pb-20">
             <div>
-                <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">Progress & Insights</h1>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground tracking-tight">Progress & Insights</h1>
                 <p className="text-muted-foreground mt-2 font-medium text-lg">Diagnostic view of your academic growth.</p>
             </div>
 
             {/* Pillar 1: Growth Analytics */}
             <section className="space-y-6">
-                <div className="flex items-center gap-2 text-primary uppercase tracking-widest text-[10px] font-mono font-bold">
+                <div className="flex items-center gap-2 text-primary uppercase tracking-widest text-xs font-mono font-bold">
                     <TrendingUp size={14} /> 01. Growth Analytics
                 </div>
                 <AnalyticsCharts

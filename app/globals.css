@@ -156,6 +156,36 @@
     --font-sans: 'Inter', system-ui, sans-serif;
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
 
+    /* --- FLUID DESIGN SYSTEM --- */
+
+    /* Fluid Typography using clamp() */
+    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);     /* 12px → 14px */
+    --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);      /* 14px → 16px */
+    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);     /* 16px → 18px */
+    --font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);   /* 18px → 20px */
+    --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);       /* 20px → 24px */
+    --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);        /* 24px → 32px */
+    --font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.5rem);   /* 30px → 40px */
+    --font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);        /* 36px → 48px */
+    
+    /* Fluid Spacing Scale */
+    --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);           /* 4px → 8px */
+    --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);               /* 8px → 16px */
+    --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);                 /* 16px → 24px */
+    --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);             /* 24px → 40px */
+    --space-xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);                 /* 32px → 64px */
+    
+    /* Responsive Container Widths */
+    --container-sm: min(95%, 640px);
+    --container-md: min(92%, 768px);
+    --container-lg: min(90%, 1024px);
+    --container-xl: min(88%, 1280px);
+    --container-2xl: min(85%, 1536px);
+    
+    /* Responsive Panel Widths */
+    --panel-sidebar: clamp(280px, 30vw, 420px);    /* Replaces w-[500px] */
+    --panel-narrow: clamp(240px, 25vw, 360px);     /* Replaces w-[450px] */
+
     /* --- LIGHT MODE TOKENS --- */
     --background: 220 33% 98%;
     /* #F8FAFC (Slate 50) */

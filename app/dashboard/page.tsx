@@ -102,9 +102,9 @@ export default async function DashboardPage() {
     <div className="space-y-8 pb-24 lg:pb-0 animate-fade-in-up">
 
       {/* Header Section */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
             Dashboard
             <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse-glow shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
           </h2>

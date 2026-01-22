@@ -699,7 +699,7 @@ export default function StudentList({ examId, examData, students, answerSheets }
                                                                     <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                                                         {files.map((f, i) => (
                                                                             <div key={i} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
-                                                                                <span className="truncate max-w-[200px] text-foreground">{f.name}</span>
+                                                                                <span className="truncate max-w-[120px] sm:max-w-[200px] text-foreground">{f.name}</span>
                                                                                 <Button
                                                                                     variant="ghost"
                                                                                     size="icon"

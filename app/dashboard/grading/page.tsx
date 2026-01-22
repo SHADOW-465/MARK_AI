@@ -79,7 +79,7 @@ export default async function GradingPage() {
                                         <Progress value={progress} className="h-2 rounded-full" />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/50">
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                             <Users size={16} />
                                             <span>{totalSheets} Papers</span>

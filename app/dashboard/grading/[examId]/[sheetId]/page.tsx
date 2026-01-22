@@ -37,7 +37,7 @@ export default async function GradingReviewPage({
   // ---------------------------------------------
 
   return (
-    <div className="h-[calc(100vh-220px)] flex flex-col overflow-hidden border border-white/10 rounded-xl bg-card/50 backdrop-blur-xl">
+    <div className="flex flex-col overflow-hidden border border-white/10 rounded-xl bg-card/50 backdrop-blur-xl" style={{ height: 'calc(100dvh - 6rem)' }}>
       <header className="flex items-center justify-between px-6 py-3 border-b bg-background shrink-0">
         <div className="flex items-center gap-4">
           <Link href={`/dashboard/grading/${sheet.exam_id}`}>

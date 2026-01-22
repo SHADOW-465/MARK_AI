@@ -121,14 +121,14 @@ export default async function StudentDashboard() {
         <div className="space-y-8 pb-24 animate-fade-in-up">
 
             {/* Header with Performance Summary */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
                             <span className="font-display font-bold text-lg">{student.name.charAt(0)}</span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-display font-bold text-foreground">
+                            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
                                 Hello, {student.name.split(' ')[0]}!
                             </h1>
                             <p className="text-muted-foreground font-medium">Ready to learn?</p>
