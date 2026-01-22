@@ -239,13 +239,13 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
         .upsert({
           answer_sheet_id: sheet.id,
           student_id: sheet.student_id,
-          
+
           // Exam metadata for student view (denormalized snapshot)
           exam_name: sheet.exams.exam_name || 'Exam',
           exam_subject: sheet.exams.subject || '',
           exam_total_marks: sheet.exams.total_marks,
           exam_marking_scheme: sheet.exams.marking_scheme,
-          
+
           // Feedback data
           overall_feedback: overallFeedback,
           root_cause_analysis: rcSummary,
@@ -391,7 +391,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
       <div className="w-panel-sidebar border-l border-border flex flex-col bg-card/50 backdrop-blur-xl h-full overflow-hidden">
 
         {/* Tabs */}
-        <div className="p-4 border-b border-border">
+        <div className="p-4 border-b border-border shrink-0">
           <div className="flex bg-muted/40 p-1 rounded-xl border border-border/50">
             <button
               onClick={() => setActiveTab('grading')}
@@ -408,7 +408,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4">
+        <div className="flex-1 overflow-y-auto p-4">
           <AnimatePresence mode="wait">
             {activeTab === 'grading' ? (
               <motion.div
@@ -507,10 +507,10 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border bg-muted/20 backdrop-blur-md">
+        <div className="p-4 border-t border-border bg-muted/20 backdrop-blur-md shrink-0">
           <div className="flex justify-between items-center mb-4">
             <span className="text-muted-foreground text-sm">Total Score</span>
             <div className="text-right">
