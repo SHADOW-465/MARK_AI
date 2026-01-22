@@ -158,8 +158,8 @@ export default async function ProgressInsights() {
 
             {/* Pillar 1: Growth Analytics */}
             <section className="space-y-6">
-                <div className="flex items-center gap-2 text-primary uppercase tracking-widest text-xs font-mono font-bold">
-                    <TrendingUp size={14} /> 01. Growth Analytics
+                <div className="flex items-center gap-2 text-primary uppercase tracking-widest text-sm font-semibold">
+                    <TrendingUp size={16} /> 01. Growth Analytics
                 </div>
                 <AnalyticsCharts
                     xpData={cumulativeXpData}
@@ -177,8 +177,8 @@ export default async function ProgressInsights() {
             {/* Pillar 2: Problem Areas & Simulation */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center gap-2 text-amber-500 uppercase tracking-widest text-[10px] font-mono font-bold">
-                        <AlertCircle size={14} /> 02. Grade Simulation
+                    <div className="flex items-center gap-2 text-amber-500 uppercase tracking-widest text-sm font-semibold">
+                        <AlertCircle size={16} /> 02. Grade Simulation
                     </div>
                     {lastExamStats.maxScore > 0 ? (
                         <PredictiveGradeSandbox initialStats={lastExamStats} />
@@ -190,8 +190,8 @@ export default async function ProgressInsights() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="flex items-center gap-2 text-destructive uppercase tracking-widest text-[10px] font-mono font-bold">
-                        <AlertCircle size={14} /> 03. Global Gaps
+                    <div className="flex items-center gap-2 text-destructive uppercase tracking-widest text-sm font-semibold">
+                        <AlertCircle size={16} /> 03. Global Gaps
                     </div>
                     <GlassCard variant="neu" className="h-full p-6">
                         <h3 className="text-lg font-bold mb-6 text-foreground flex items-center gap-2">
@@ -224,13 +224,15 @@ export default async function ProgressInsights() {
 
             {/* Pillar 3: Detailed History */}
             <section className="space-y-6">
-                <div className="flex items-center gap-2 text-purple-500 uppercase tracking-widest text-[10px] font-mono font-bold">
-                    <CheckCircle size={14} /> 04. Exam Archive
+                <div className="flex items-center gap-2 text-purple-500 uppercase tracking-widest text-sm font-semibold">
+                    <CheckCircle size={16} /> 04. Exam Archive
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                     {exams.length > 0 ? (
-                        exams.map((sheet, i) => (
-                            <ExamCard key={i} sheet={sheet} />
+                        exams.map((sheet: any, i) => (
+                            <Link key={i} href={`/student/performance/${sheet.id}`}>
+                                <ExamCard sheet={sheet} />
+                            </Link>
                         ))
                     ) : (
                         <div className="text-center py-20 bg-secondary/30 rounded-3xl border border-dashed border-border">
@@ -270,7 +272,7 @@ function ExamCard({ sheet }: { sheet: any }) {
     const displayName = feedbackAnalysis?.exam_name || examData?.exam_name || "Unknown Exam"
     const displaySubject = feedbackAnalysis?.exam_subject || examData?.subject || 'General'
     const displayTotalMarks = feedbackAnalysis?.exam_total_marks || examData?.total_marks || '?'
-    
+
     return (
         <GlassCard variant="neu" className="p-0 overflow-hidden hover:border-primary/30 transition-all group rounded-3xl">
             <div className="p-6 flex items-center justify-between">

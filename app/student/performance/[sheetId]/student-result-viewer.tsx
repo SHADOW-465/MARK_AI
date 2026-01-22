@@ -107,7 +107,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
       </div>
 
       {/* Right Panel: Grading & Feedback */}
-      <div className="w-panel-narrow border-l border-border flex flex-col bg-card/50 backdrop-blur-xl">
+      <div className="flex-1 border-l border-border flex flex-col bg-card/50 backdrop-blur-xl min-w-0">
 
         {/* Exam Name Header */}
         <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-purple-500/10">

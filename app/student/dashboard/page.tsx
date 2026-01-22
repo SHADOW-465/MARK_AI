@@ -70,9 +70,10 @@ export default async function StudentDashboard() {
     const { data: recentExams } = await supabase
         .from("answer_sheets")
         .select(`
-        id, created_at, total_score, status, exam_id,
-        exams!left (exam_name, total_marks, subject, exam_date)
-    `)
+            id, created_at, total_score, status, exam_id,
+            exams (exam_name, total_marks, subject, exam_date),
+            feedback_analysis (exam_name, exam_subject, exam_total_marks)
+        `)
         .eq("student_id", student.id)
         .eq("status", "approved")
         .order("created_at", { ascending: false })
@@ -223,17 +224,21 @@ export default async function StudentDashboard() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {recentExams && recentExams.length > 0 ? recentExams.slice(0, 4).map((sheet: any) => {
                                 const examData = sheet.exams
-                                const percentage = Math.round((sheet.total_score / (examData?.total_marks || 100)) * 100)
+                                const feedbackData = sheet.feedback_analysis?.[0]
+                                const displayName = feedbackData?.exam_name || examData?.exam_name || 'Exam'
+                                const displaySubject = feedbackData?.exam_subject || examData?.subject || 'General'
+                                const totalMarks = feedbackData?.exam_total_marks || examData?.total_marks || 100
+                                const percentage = Math.round((sheet.total_score / totalMarks) * 100)
                                 return (
                                     <Link key={sheet.id} href={`/student/performance/${sheet.id}`}>
                                         <GlassCard hoverEffect className="p-5 flex flex-col justify-between h-full group border-l-4 border-l-transparent hover:border-l-primary transition-all">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
                                                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                                                        {examData?.subject}
+                                                        {displaySubject}
                                                     </p>
                                                     <h4 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
-                                                        {examData?.exam_name}
+                                                        {displayName}
                                                     </h4>
                                                 </div>
                                                 <div className={cn(
