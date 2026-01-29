@@ -2,6 +2,8 @@ import type React from "react"
 import { Inter, Plus_Jakarta_Sans } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { VoiceAssistantWrapper } from "@/components/voice-assistant/voice-assistant-wrapper"
+import { NextIntlClientProvider } from "next-intl"
+import { getMessages, getLocale } from "next-intl/server"
 import "./globals.css"
 
 const inter = Inter({
@@ -22,24 +24,29 @@ export const metadata = {
   generator: 'Next.js'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-mesh-light dark:bg-mesh-dark min-h-screen transition-colors duration-300`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <VoiceAssistantWrapper>
-            {children}
-          </VoiceAssistantWrapper>
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <VoiceAssistantWrapper>
+              {children}
+            </VoiceAssistantWrapper>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

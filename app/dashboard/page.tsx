@@ -4,6 +4,7 @@ import {
   Activity, Zap, Layers, AlertTriangle, TrendingUp, TrendingDown,
   Calendar, GraduationCap
 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
@@ -115,18 +116,18 @@ export default async function DashboardPage() {
 
         {/* Quick Action Button Group */}
         <div className="hidden md:flex gap-3">
-          <Link href="/dashboard/exams/create">
-            <div className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer">
+          <Button asChild variant="default" className="rounded-full px-5 py-2.5 shadow-lg shadow-primary/25 hover:shadow-primary/40">
+            <Link href="/dashboard/exams/create">
               <FileText size={18} />
               <span>Create Exam</span>
-            </div>
-          </Link>
-          <Link href="/dashboard/grading">
-            <div className="px-5 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-border font-semibold hover:bg-secondary transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+            </Link>
+          </Button>
+          <Button asChild variant="neu" className="rounded-full px-5 py-2.5">
+            <Link href="/dashboard/grading">
               <CheckCircle size={18} className="text-emerald-500" />
               <span>Grade All</span>
-            </div>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -235,7 +236,11 @@ export default async function DashboardPage() {
                           {new Date(item.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="h-8 w-8 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+                      <div 
+                        className="h-8 w-8 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all"
+                        role="button"
+                        aria-label={`Grade submission for ${item.students?.name}`}
+                      >
                         <ArrowUpRight size={16} />
                       </div>
                     </div>
@@ -274,24 +279,24 @@ export default async function DashboardPage() {
                 <Sparkles size={18} className="fill-white/20" /> Quick Actions
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                <Link href="/dashboard/exams/create" className="col-span-2">
-                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex items-center gap-3 border border-white/10">
+                <Button asChild variant="ghost" className="col-span-2 h-auto justify-start p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                  <Link href="/dashboard/exams/create">
                     <FileText size={18} />
                     <span className="font-semibold text-sm">New Exam</span>
-                  </div>
-                </Link>
-                <Link href="/dashboard/students/add">
-                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex flex-col items-center gap-2 border border-white/10 text-center">
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" className="h-auto flex-col p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                  <Link href="/dashboard/students/add">
                     <Users size={18} />
                     <span className="font-semibold text-xs">Add Student</span>
-                  </div>
-                </Link>
-                <Link href="/dashboard/settings">
-                  <div className="p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md transition-all cursor-pointer flex flex-col items-center gap-2 border border-white/10 text-center">
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" className="h-auto flex-col p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                  <Link href="/dashboard/settings">
                     <Layers size={18} />
                     <span className="font-semibold text-xs">Manage</span>
-                  </div>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
             {/* Decorative background */}

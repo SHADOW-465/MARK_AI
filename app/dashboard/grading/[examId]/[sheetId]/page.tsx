@@ -1,9 +1,42 @@
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Shield, ShieldAlert } from "lucide-react"
 import Link from "next/link"
 import GradingInterface from "./grading-interface"
+
+// Plagiarism Badge Component
+function PlagiarismBadge({ score, matchedPeers }: { score: number | null; matchedPeers?: any[] }) {
+  if (score === null || score === undefined) {
+    return (
+      <Badge variant="outline" className="gap-1">
+        <Shield className="h-3 w-3" />
+        N/A
+      </Badge>
+    )
+  }
+
+  const getColor = (s: number) => {
+    if (s <= 30) return "bg-green-500/20 text-green-400 border-green-500/30"
+    if (s <= 60) return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+    if (s <= 80) return "bg-orange-500/20 text-orange-400 border-orange-500/30"
+    return "bg-red-500/20 text-red-400 border-red-500/30"
+  }
+
+  const peerNames = matchedPeers?.map((p: any) => p.student_name).join(", ") || ""
+  const tooltip = score > 30 && peerNames ? `Similar to: ${peerNames}` : `Similarity: ${score}%`
+
+  return (
+    <Badge 
+      variant="outline" 
+      className={`gap-1 ${getColor(score)}`}
+      title={tooltip}
+    >
+      {score > 60 ? <ShieldAlert className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+      {score}%
+    </Badge>
+  )
+}
 
 export default async function GradingReviewPage({
   params,
@@ -22,6 +55,13 @@ export default async function GradingReviewPage({
       exams (id, exam_name, subject, total_marks, marking_scheme)
     `)
     .eq("id", sheetId)
+    .single()
+
+  // Fetch plagiarism score
+  const { data: plagiarismData } = await supabase
+    .from("plagiarism_scores")
+    .select("combined_score, matched_peers, status")
+    .eq("answer_sheet_id", sheetId)
     .single()
 
   if (!sheet) {
@@ -55,7 +95,11 @@ export default async function GradingReviewPage({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
+          <PlagiarismBadge 
+            score={plagiarismData?.combined_score ?? null} 
+            matchedPeers={plagiarismData?.matched_peers} 
+          />
           <Badge
             variant={sheet.status === "approved" ? "default" : sheet.status === "graded" ? "secondary" : "outline"}
           >

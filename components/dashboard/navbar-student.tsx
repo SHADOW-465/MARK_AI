@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import { Home, Brain, BookOpen, BarChart2, LogOut, Bell, Menu } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -100,6 +101,8 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-4">
+
+                    <LanguageSwitcher />
 
                     <button className="relative p-2.5 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
                         <Bell size={22} />

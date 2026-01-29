@@ -1,7 +1,13 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { generateText } from "ai"
+import { generateText, embed } from "ai"
 import { google } from "@ai-sdk/google"
+
+// Plagiarism detection helper - truncate text for embedding (max ~8000 chars to be safe)
+function truncateForEmbedding(text: string, maxLength: number = 8000): string {
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength) + "..."
+}
 
 export async function POST(request: Request) {
   try {
@@ -142,7 +148,95 @@ export async function POST(request: Request) {
       }
     })
 
-    await supabase.from("question_evaluations").insert(evaluations)
+await supabase.from("question_evaluations").insert(evaluations)
+
+    // ============================================
+    // PLAGIARISM DETECTION (Soft Fail - won't break grading)
+    // ============================================
+    try {
+      // 1. Combine all extracted text for embedding
+      const allExtractedText = result.ocr_extractions
+        .map((e: any) => `Q${e.question_num}: ${e.extracted_text}`)
+        .join("\n\n")
+
+      if (allExtractedText.trim().length > 50) {
+        // Only run if there's meaningful text
+        // 2. Generate embedding using Gemini text-embedding-004
+        const truncatedText = truncateForEmbedding(allExtractedText)
+        const { embedding } = await embed({
+          model: google.textEmbeddingModel("text-embedding-004"),
+          value: truncatedText,
+        })
+
+        // 3. Store embedding in plagiarism_scores table
+        const { data: insertedScore } = await supabase
+          .from("plagiarism_scores")
+          .insert({
+            answer_sheet_id: sheetId,
+            embedding: embedding,
+            status: "pending",
+          })
+          .select("id")
+          .single()
+
+        // 4. Query for similar submissions using RPC function
+        const { data: similarSubmissions } = await supabase.rpc(
+          "find_similar_submissions",
+          {
+            query_embedding: embedding,
+            match_threshold: 0.7,
+            match_count: 5,
+            exclude_sheet_id: sheetId,
+            target_exam_id: examId,
+          }
+        )
+
+        // 5. Calculate peer similarity (highest match)
+        let peerSimilarity = 0
+        let matchedPeers: any[] = []
+
+        if (similarSubmissions && similarSubmissions.length > 0) {
+          peerSimilarity = Math.round(similarSubmissions[0].similarity * 100)
+          matchedPeers = similarSubmissions.map((s: any) => ({
+            answer_sheet_id: s.answer_sheet_id,
+            student_name: s.student_name,
+            similarity: Math.round(s.similarity * 100),
+          }))
+        }
+
+        // 6. Calculate combined score (for now, just peer similarity)
+        // Model similarity would require having model answer embeddings stored
+        const combinedScore = peerSimilarity
+
+        // 7. Update plagiarism_scores with results
+        await supabase
+          .from("plagiarism_scores")
+          .update({
+            peer_similarity: peerSimilarity,
+            combined_score: combinedScore,
+            matched_peers: matchedPeers,
+            status: combinedScore > 60 ? "flagged" : "checked",
+            checked_at: new Date().toISOString(),
+          })
+          .eq("answer_sheet_id", sheetId)
+
+        console.log(
+          `[Plagiarism] Sheet ${sheetId}: ${combinedScore}% similarity detected`
+        )
+      }
+    } catch (plagiarismError: any) {
+      // Soft fail - log error but don't break grading
+      console.error("[Plagiarism] Detection failed (soft fail):", plagiarismError.message)
+      // Insert a record with error status so we know it failed
+      await supabase
+        .from("plagiarism_scores")
+        .upsert({
+          answer_sheet_id: sheetId,
+          status: "error",
+          combined_score: 0,
+        })
+        .select()
+    }
 
     // Insert Feedback Analysis (Student OS Data)
     if (result.student_os_analysis && studentId) {

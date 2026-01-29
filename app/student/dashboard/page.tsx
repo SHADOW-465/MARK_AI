@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/ui/glass-card"
 import {
     Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle,
@@ -40,9 +41,11 @@ export default async function StudentDashboard() {
                     </p>
                 </div>
                 <div className="flex gap-4">
-                    <Link href="/auth/sign-up" className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:scale-105 transition-transform flex items-center gap-2">
-                        Try Linking Again <ArrowRight size={18} />
-                    </Link>
+                    <Button asChild variant="default" className="px-6 py-3 hover:scale-105">
+                        <Link href="/auth/sign-up">
+                            Try Linking Again <ArrowRight size={18} />
+                        </Link>
+                    </Button>
                 </div>
             </div>
         )
@@ -191,19 +194,21 @@ export default async function StudentDashboard() {
                             </div>
 
                             <div className="flex gap-4">
-                                <Link
-                                    href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}
-                                    className="px-6 py-3 rounded-full bg-white text-indigo-600 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
-                                >
-                                    {nbaTask ? <Play size={18} fill="currentColor" /> : <Folder size={18} />}
-                                    {nbaTask ? "Start Mission" : "Open Vault"}
-                                </Link>
-                                <Link
-                                    href="/student/performance"
-                                    className="px-6 py-3 rounded-full bg-indigo-800/30 text-white font-semibold border border-white/10 hover:bg-indigo-800/50 transition-all flex items-center gap-2 backdrop-blur-md"
-                                >
-                                    <TrendingUp size={18} /> View Analytics
-                                </Link>
+                                <Button asChild variant="liquid" className="px-6 py-3 bg-white text-indigo-600 hover:bg-white/90 shadow-lg hover:shadow-xl hover:scale-105">
+                                    <Link
+                                        href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}
+                                    >
+                                        {nbaTask ? <Play size={18} fill="currentColor" /> : <Folder size={18} />}
+                                        {nbaTask ? "Start Mission" : "Open Vault"}
+                                    </Link>
+                                </Button>
+                                <Button asChild variant="soft" className="px-6 py-3 bg-indigo-800/30 text-white hover:bg-indigo-800/50 border-white/10 backdrop-blur-md">
+                                    <Link
+                                        href="/student/performance"
+                                    >
+                                        <TrendingUp size={18} /> View Analytics
+                                    </Link>
+                                </Button>
                             </div>
                         </div>
 
@@ -253,7 +258,7 @@ export default async function StudentDashboard() {
                                             <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
                                                 <span>{new Date(sheet.created_at).toLocaleDateString()}</span>
                                                 <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-primary font-medium">
-                                                    Feedback <ArrowRight size={12} />
+                                                    Feedback <ArrowRight size={12} aria-label={`View feedback for ${displayName}`} />
                                                 </span>
                                             </div>
                                         </GlassCard>
@@ -303,14 +308,18 @@ export default async function StudentDashboard() {
                     <GlassCard className="p-6">
                         <h3 className="text-lg font-display font-bold text-foreground mb-4">Quick Study</h3>
                         <div className="grid grid-cols-2 gap-3">
-                            <Link href="/student/flashcards" className="p-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors flex flex-col items-center justify-center gap-2 text-center cursor-pointer group">
-                                <Brain size={24} className="text-indigo-500 group-hover:scale-110 transition-transform" />
-                                <span className="text-xs font-semibold">Flashcards</span>
-                            </Link>
-                            <Link href="/student/vault" className="p-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors flex flex-col items-center justify-center gap-2 text-center cursor-pointer group">
-                                <BookOpen size={24} className="text-teal-500 group-hover:scale-110 transition-transform" />
-                                <span className="text-xs font-semibold">Library</span>
-                            </Link>
+                            <Button asChild variant="secondary" className="h-auto flex-col p-3 rounded-xl hover:bg-secondary/80">
+                                <Link href="/student/flashcards" className="group">
+                                    <Brain size={24} className="text-indigo-500 group-hover:scale-110 transition-transform" />
+                                    <span className="text-xs font-semibold">Flashcards</span>
+                                </Link>
+                            </Button>
+                            <Button asChild variant="secondary" className="h-auto flex-col p-3 rounded-xl hover:bg-secondary/80">
+                                <Link href="/student/vault" className="group">
+                                    <BookOpen size={24} className="text-teal-500 group-hover:scale-110 transition-transform" />
+                                    <span className="text-xs font-semibold">Library</span>
+                                </Link>
+                            </Button>
                         </div>
                     </GlassCard>
 
