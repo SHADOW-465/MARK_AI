@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id             String   @id @default(uuid())
+  user_id        String   @unique
+  name           String
+  class          String?
+  challenge_mode Boolean?
+  xp             Int?
+  streak         Int?
+  level          Int?
+  last_active_at DateTime?
+  
+  sources        StudentSource[]
+  sessions       AiGuideSession[]
+  tasks          StudentTask[]
+  answerSheets   AnswerSheet[]
+
+  @@map("students")
+}
+
+model Exam {
+  id           String   @id @default(uuid())
+  exam_name    String
+  total_marks  Int?
+  subject      String?
+  exam_date    DateTime?
+  class        String?
+  shared_with_students Boolean @default(false)
+  
+  answerSheets AnswerSheet[]
+
+  @@map("exams")
+}
+
+model AnswerSheet {
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  total_score Int?
+  status      String?
+  exam_id     String?
+  student_id  String
+  
+  student     Student @relation(fields: [student_id], references: [id])
+  exam        Exam?   @relation(fields: [exam_id], references: [id])
+  feedback    FeedbackAnalysis[]
+
+  @@map("answer_sheets")
+}
+
+model FeedbackAnalysis {
+  id               String   @id @default(uuid())
+  answer_sheet_id  String
+  exam_name        String?
+  exam_subject     String?
+  exam_total_marks Int?
+  root_cause_analysis Json?
+  
+  answerSheet      AnswerSheet @relation(fields: [answer_sheet_id], references: [id])
+
+  @@map("feedback_analysis")
+}
+
+model StudentTask {
+  id          String @id @default(uuid())
+  student_id  String
+  status      String
+  priority    String?
+  title       String?
+  why         String?
+  metadata    Json?
+  
+  student     Student @relation(fields: [student_id], references: [id])
+
+  @@map("student_tasks")
+}
+
+// New Tables
+
+model StudentSource {
+  id          String   @id @default(uuid())
+  student_id  String
+  file_url    String
+  ocr_text    String?  @db.Text
+  type        String   // 'upload' | 'shared'
+  title       String?
+  created_at  DateTime @default(now())
+  
+  student     Student  @relation(fields: [student_id], references: [id])
+
+  @@map("student_sources")
+}
+
+model AiGuideSession {
+  id           String   @id @default(uuid())
+  student_id   String
+  sources_json Json?    // IDs of sources
+  outputs_json Json?    // Summary, Q&A, etc.
+  chat_history Json?    // Chat messages
+  rating       Int?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  
+  student      Student  @relation(fields: [student_id], references: [id])
+
+  @@map("ai_guide_sessions")
+}

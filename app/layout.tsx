@@ -20,8 +20,19 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata = {
   title: "MARK AI - Intelligent Grading Platform",
-  description: "AI-powered grading system for K-12 schools",
-  generator: 'Next.js'
+  description: "AI-powered grading system for K-12 schools with automated assessment, performance analytics, and personalized learning paths.",
+  generator: 'Next.js',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://mark-ai.vercel.app'),
+  openGraph: {
+    title: 'MARK AI - Intelligent Grading Platform',
+    description: 'AI-powered grading system for K-12 schools',
+    siteName: 'MARK AI',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default async function RootLayout({

@@ -14,18 +14,18 @@ interface GlassCardProps {
   gradientColor?: 'primary' | 'teal' | 'purple'
 }
 
-export const GlassCard = ({ 
-  children, 
-  className = "", 
-  hoverEffect = false, 
+export const GlassCard = ({
+  children,
+  className = "",
+  hoverEffect = false,
   onClick,
   variant = 'liquid',
   shimmer = false,
   gradientColor = 'primary'
 }: GlassCardProps) => {
-  
+
   const getGradientBorder = () => {
-    switch(gradientColor) {
+    switch (gradientColor) {
       case 'teal': return 'from-teal-500/30 to-emerald-500/30';
       case 'purple': return 'from-purple-500/30 to-pink-500/30';
       default: return 'from-indigo-500/30 to-blue-500/30';
@@ -43,19 +43,22 @@ export const GlassCard = ({
         onClick={onClick}
         className={cn(
           "relative rounded-2xl @md:rounded-[2rem] overflow-hidden transition-all duration-300 group",
-          
+
           // Variant Styles
           variant === 'liquid' && "liquid-glass shadow-lg shadow-indigo-500/5 dark:shadow-black/30",
-          
+
           variant === 'neu' && "bg-secondary dark:bg-slate-800 neu-flat border-none",
-          
+
           variant === 'glass' && "bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm",
-          
+
           // Hover Interactions
           hoverEffect && variant === 'liquid' && "hover:shadow-xl hover:shadow-indigo-500/20 dark:hover:shadow-indigo-900/30 hover:border-white/80 dark:hover:border-white/20",
-          
+
           hoverEffect && variant === 'neu' && "hover:shadow-lg hover:-translate-y-1 transition-transform",
-          
+
+          // Cursor for interactive cards
+          (hoverEffect || onClick) && "cursor-pointer",
+
           className
         )}
       >
@@ -63,7 +66,7 @@ export const GlassCard = ({
         {variant === 'liquid' && (
           <div className={cn(
             "absolute inset-0 rounded-2xl @md:rounded-[2rem] opacity-40 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none",
-            "bg-gradient-to-br p-[1px]", 
+            "bg-gradient-to-br p-[1px]",
             getGradientBorder()
           )} style={{ mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', maskComposite: 'exclude' }} />
         )}

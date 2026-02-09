@@ -9,6 +9,7 @@ import Link from "next/link"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
 import { StreakReminder } from "@/components/student/streak-reminder"
 import { StudentTasksWidget } from "@/components/student/tasks-widget"
+import { AddToGuideButton } from "@/components/student/add-to-guide-button"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -257,9 +258,12 @@ export default async function StudentDashboard() {
                                             </div>
                                             <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
                                                 <span>{new Date(sheet.created_at).toLocaleDateString()}</span>
-                                                <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-primary font-medium">
-                                                    Feedback <ArrowRight size={12} aria-label={`View feedback for ${displayName}`} />
-                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <AddToGuideButton examId={sheet.id} examName={displayName} studentId={student.id} />
+                                                    <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-primary font-medium">
+                                                        Feedback <ArrowRight size={12} aria-label={`View feedback for ${displayName}`} />
+                                                    </span>
+                                                </div>
                                             </div>
                                         </GlassCard>
                                     </Link>
@@ -318,6 +322,12 @@ export default async function StudentDashboard() {
                                 <Link href="/student/vault" className="group">
                                     <BookOpen size={24} className="text-teal-500 group-hover:scale-110 transition-transform" />
                                     <span className="text-xs font-semibold">Library</span>
+                                </Link>
+                            </Button>
+                            <Button asChild variant="liquid" className="h-auto flex-col p-3 rounded-xl col-span-2">
+                                <Link href="/student/ai-guide" className="group w-full flex flex-row items-center justify-center gap-3">
+                                    <Sparkles size={24} className="text-white group-hover:spin-slow" />
+                                    <span className="text-sm font-bold text-white">Open AI Study Guide</span>
                                 </Link>
                             </Button>
                         </div>
