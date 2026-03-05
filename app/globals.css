@@ -34,56 +34,49 @@
   --color-brand-purple-600: #7C3AED;
 
   /* Semantic System Mapping */
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
 
   /* Chart Colors */
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
+  --color-chart-1: var(--primary);
+  --color-chart-2: var(--accent);
+  --color-chart-3: #10b981;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #8b5cf6;
 
   /* --- ADVANCED SHADOW SYSTEM (Soft UI + Liquid) --- */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.15);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  /* Card Shadow */
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.5);
 
-  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.5);
+  --shadow-glow-primary: 0 0 20px rgba(155, 140, 255, 0.5);
   --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.5);
 
-  /* Neumorphic Shadows */
-  --shadow-neu-flat-light: -6px -6px 12px #ffffff, 6px 6px 12px #d1d5db;
-  --shadow-neu-flat-dark: -5px -5px 10px rgba(255, 255, 255, 0.05), 5px 5px 15px rgba(0, 0, 0, 0.3);
-
-  --shadow-neu-pressed-light: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
-  --shadow-neu-pressed-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
-
-  --shadow-liquid: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
-
-  --radius-lg: 1.5rem;
-  /* Increased radius for Pillbox feel */
-  --radius-md: 1rem;
-  --radius-sm: 0.5rem;
+  /* Precise radii per spec */
+  --radius-xl: 20px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 
   /* --- ANIMATION KEYFRAMES --- */
   @keyframes float {
@@ -159,124 +152,96 @@
     /* --- FLUID DESIGN SYSTEM --- */
 
     /* Fluid Typography using clamp() */
-    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);     /* 12px → 14px */
-    --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);      /* 14px → 16px */
-    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);     /* 16px → 18px */
-    --font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);   /* 18px → 20px */
-    --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);       /* 20px → 24px */
-    --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);        /* 24px → 32px */
-    --font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.5rem);   /* 30px → 40px */
-    --font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);        /* 36px → 48px */
-    
+    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+    /* 12px → 14px */
+    --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+    /* 14px → 16px */
+    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    /* 16px → 18px */
+    --font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+    /* 18px → 20px */
+    --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    /* 20px → 24px */
+    --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);
+    /* 24px → 32px */
+    --font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.5rem);
+    /* 30px → 40px */
+    --font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);
+    /* 36px → 48px */
+
     /* Fluid Spacing Scale */
-    --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);           /* 4px → 8px */
-    --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);               /* 8px → 16px */
-    --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);                 /* 16px → 24px */
-    --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);             /* 24px → 40px */
-    --space-xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);                 /* 32px → 64px */
-    
+    --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+    /* 4px → 8px */
+    --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
+    /* 8px → 16px */
+    --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+    /* 16px → 24px */
+    --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+    /* 24px → 40px */
+    --space-xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+    /* 32px → 64px */
+
     /* Responsive Container Widths */
     --container-sm: min(95%, 640px);
     --container-md: min(92%, 768px);
     --container-lg: min(90%, 1024px);
     --container-xl: min(88%, 1280px);
     --container-2xl: min(85%, 1536px);
-    
+
     /* Responsive Panel Widths */
-    --panel-sidebar: clamp(280px, 30vw, 420px);    /* Replaces w-[500px] */
-    --panel-narrow: clamp(240px, 25vw, 360px);     /* Replaces w-[450px] */
+    --panel-sidebar: clamp(280px, 30vw, 420px);
+    /* Replaces w-[500px] */
+    --panel-narrow: clamp(240px, 25vw, 360px);
+    /* Replaces w-[450px] */
 
-    /* --- LIGHT MODE TOKENS --- */
-    --background: 220 33% 98%;
-    /* #F8FAFC (Slate 50) */
-    --foreground: 224 71% 4%;
-    /* #020617 */
+    /* --- MODERN DARK SAAS THEME TOKENS --- */
+    /* Light Mode mapped to Dark because UI spec requests strict dark SaaS dashboard aesthetic everywhere */
+    --background: #0f1115;
+    --foreground: #ffffff;
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
+    --card: #1c2128;
+    --card-foreground: #ffffff;
+    --card-hover: #222833;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
+    --primary: #9b8cff;
+    --primary-foreground: #0f1115;
 
-    /* Primary: Pro Max Blue (Trust & Clarity) */
-    --primary: 217 91% 60%;
-    /* #3B82F6 */
-    --primary-foreground: 0 0% 100%;
+    --secondary: #161a20;
+    --secondary-foreground: #ffffff;
 
-    /* Secondary: Soft Slate */
-    --secondary: 210 40% 96%;
-    /* #F1F5F9 */
-    --secondary-foreground: 222 47% 11%;
+    --muted: #161a20;
+    --muted-foreground: #6b7280;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    /* #64748B */
+    --accent: #c4b7ff;
+    /* accent_secondary */
+    --accent-foreground: #0f1115;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 224 71% 4%;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --border: rgba(255, 255, 255, 0.06);
 
-    --border: 220 13% 91%;
-    /* #E2E8F0 */
-    --input: 220 13% 91%;
-    --ring: 239 84% 67%;
-
-    --radius: 1.5rem;
-    /* 24px - Pillbox Rounded */
-
-    /* Chart Colors */
-    --chart-1: 239 84% 67%;
-    /* Indigo */
-    --chart-2: 172 66% 50%;
-    /* Teal */
-    --chart-3: 142 71% 45%;
-    /* Emerald */
-    --chart-4: 38 92% 50%;
-    /* Amber */
-    --chart-5: 262 83% 58%;
-    /* Purple */
+    --radius: 16px;
   }
 
   .dark {
-    /* --- DARK MODE TOKENS --- */
-    --background: 224 71% 4%;
-    /* #020617 - Deepest Navy (Rich Black) */
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 11%;
-    /* #1E293B */
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
-    --ring: 217 91% 60%;
-
-    /* Chart Colors - Brighter for dark mode */
-    --chart-1: 217 91% 65%;
-    --chart-2: 172 66% 55%;
-    --chart-3: 142 71% 50%;
-    --chart-4: 38 92% 55%;
-    --chart-5: 262 83% 65%;
+    /* Identical mapping for strict thematic consistency */
+    --background: #0f1115;
+    --foreground: #ffffff;
+    --card: #1c2128;
+    --card-foreground: #ffffff;
+    --card-hover: #222833;
+    --primary: #9b8cff;
+    --primary-foreground: #0f1115;
+    --secondary: #161a20;
+    --secondary-foreground: #ffffff;
+    --muted: #161a20;
+    --muted-foreground: #6b7280;
+    --accent: #c4b7ff;
+    --accent-foreground: #0f1115;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -301,52 +266,23 @@
   }
 }
 
-/* --- PREMIUM UTILITIES --- */
+/* --- STREAMLINED UTILITIES --- */
 
-/* Glass Effects - Updated for Liquid Look */
-.glass-panel {
-  @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
-}
-
-/* Liquid Glass Utility */
+/* Liquid Glass - updated for dark SaaS */
 .liquid-glass {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(28, 33, 40, 0.7);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-}
-
-.dark .liquid-glass {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* Neumorphic Utilities */
-.neu-flat {
-  box-shadow: var(--shadow-neu-flat-light);
-}
-
-.dark .neu-flat {
-  box-shadow: var(--shadow-neu-flat-dark);
-}
-
-.neu-pressed {
-  box-shadow: var(--shadow-neu-pressed-light);
-}
-
-.dark .neu-pressed {
-  box-shadow: var(--shadow-neu-pressed-dark);
 }
 
 /* Text Gradients */
 .text-gradient-primary {
-  @apply bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent;
-}
-
-.text-gradient-success {
-  @apply bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent;
+  background: linear-gradient(135deg, #9b8cff, #c4b7ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Animations */
@@ -355,7 +291,7 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -371,28 +307,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
 }
 
-/* Mesh Gradients for Backgrounds */
-.bg-mesh-light {
-  background-color: hsla(0, 0%, 100%, 1);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(172, 66%, 50%, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(25, 95%, 53%, 0.05) 0px, transparent 50%);
-}
-
-.bg-mesh-dark {
-  background-color: hsla(222, 47%, 11%, 1);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(172, 66%, 50%, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(25, 95%, 53%, 0.1) 0px, transparent 50%);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Reduced Motion Support for Accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

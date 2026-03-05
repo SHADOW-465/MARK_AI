@@ -1,15 +1,13 @@
 import { createClient } from "@/lib/supabase/server"
 import {
   FileText, Users, CheckCircle, Clock, ArrowUpRight, Sparkles,
-  Activity, Zap, Layers, AlertTriangle, TrendingUp, TrendingDown,
-  Calendar, GraduationCap
+  Activity, AlertTriangle, TrendingUp, TrendingDown,
+  Calendar, GraduationCap, Plus, BarChart3
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
-import { UpcomingExams } from "@/components/dashboard/upcoming-exams"
-import { SystemStatus } from "@/components/dashboard/system-status"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -27,7 +25,7 @@ export default async function DashboardPage() {
     .select("*", { count: "exact", head: true })
     .in("status", ["pending", "graded"])
 
-  // At Risk Students (Approximate)
+  // At Risk Students
   const { data: lowScores } = await supabase
     .from("answer_sheets")
     .select("student_id, total_score, exams(total_marks)")
@@ -48,7 +46,7 @@ export default async function DashboardPage() {
     atRiskCount = uniqueStudents.size
   }
 
-  // 2. Priority Queue: Exams needing grading
+  // 2. Priority Queue
   const { data: priorityQueue } = await supabase
     .from("answer_sheets")
     .select(`
@@ -57,7 +55,7 @@ export default async function DashboardPage() {
       students!inner (name, roll_number)
     `)
     .in("status", ["pending", "graded"])
-    .order("created_at", { ascending: true }) // Oldest first
+    .order("created_at", { ascending: true })
     .limit(5)
 
   // 3. Recent Activity
@@ -99,245 +97,240 @@ export default async function DashboardPage() {
     })
   )
 
+  // 5. Upcoming Exams
+  const { data: upcomingExams } = await supabase
+    .from("exams")
+    .select("id, exam_name, exam_date, class, subject")
+    .gte("exam_date", new Date().toISOString().split('T')[0])
+    .order("exam_date", { ascending: true })
+    .limit(4)
+
+  // Stat cards data
+  const stats = [
+    {
+      label: "Needs Review",
+      val: pendingCount || 0,
+      sub: "submissions pending",
+      icon: Clock,
+      trend: "+12%",
+      trendUp: true
+    },
+    {
+      label: "Avg Test Score",
+      val: "78%",
+      sub: "across all exams",
+      icon: TrendingUp,
+      trend: "+3% vs last month",
+      trendUp: true
+    },
+    {
+      label: "At Risk",
+      val: atRiskCount,
+      sub: "students below 60%",
+      icon: AlertTriangle,
+      trend: "-2",
+      trendUp: false
+    },
+    {
+      label: "Total Students",
+      val: studentCount || 0,
+      sub: `across ${examCount || 0} exams`,
+      icon: Users,
+      trend: "+5 new",
+      trendUp: true
+    },
+  ]
+
   return (
-    <div className="space-y-8 pb-24 lg:pb-0 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up">
 
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2 border-b border-border/40">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
-            Dashboard
-            <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse-glow shadow-sm" />
-          </h2>
-          <p className="text-muted-foreground font-medium mt-2 text-lg">
-            Good Morning, Professor. You have <span className="text-foreground font-bold">{pendingCount} items</span> requiring attention.
-          </p>
-        </div>
+      {/* ── ROW 1: Stats (2x2) + Chart + Schedule ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* Quick Action Button Group */}
-        <div className="hidden md:flex gap-4">
-          <Button asChild variant="default" className="rounded-full px-6 py-5 shadow-lg shadow-primary/25 hover:shadow-primary/40 text-base">
-            <Link href="/dashboard/exams/create">
-              <FileText size={20} />
-              <span>Create Exam</span>
-            </Link>
-          </Button>
-          <Button asChild variant="secondary" className="rounded-full px-6 py-5 text-base border-border/50">
-            <Link href="/dashboard/grading">
-              <CheckCircle size={20} className="text-emerald-500" />
-              <span>Grade All</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* 1. Key Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          {
-            label: "Needs Review",
-            val: pendingCount || 0,
-            icon: Clock,
-            color: "amber",
-            trend: "+12%",
-            trendUp: true
-          },
-          {
-            label: "Total Students",
-            val: studentCount || 0,
-            icon: Users,
-            color: "purple",
-            trend: "+5 new",
-            trendUp: true
-          },
-          {
-            label: "At Risk",
-            val: atRiskCount || 0,
-            icon: AlertTriangle,
-            color: "red",
-            trend: "-2%",
-            trendUp: false
-          },
-          {
-            label: "Avg. Performance",
-            val: "78%",
-            icon: Activity,
-            color: "teal",
-            trend: "+4%",
-            trendUp: true
-          },
-        ].map((s, i) => (
-          <GlassCard key={i} variant="neu" hoverEffect className="p-5 flex items-center justify-between group">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">{s.label}</p>
-              <h3 className="text-3xl font-display font-bold text-foreground">{s.val}</h3>
-              <div className={cn(
-                "flex items-center gap-1 text-xs font-semibold mt-2",
-                s.trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
-              )}>
-                {s.trendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                {s.trend} <span className="text-muted-foreground font-normal ml-1">vs last week</span>
+        {/* Stat Cards — 2x2 grid, spanning 4 columns */}
+        <div className="lg:col-span-4 grid grid-cols-2 gap-4">
+          {stats.map((s, i) => (
+            <GlassCard key={i} className="p-5 flex flex-col justify-between group">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{s.label}</p>
+                <Link href="/dashboard/grading" className="h-7 w-7 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors">
+                  <ArrowUpRight size={14} />
+                </Link>
               </div>
-            </div>
-            <div className={cn(
-              "h-14 w-14 rounded-2xl flex items-center justify-center border",
-              s.color === 'amber' && "bg-chart-4/10 text-chart-4 border-chart-4/20",
-              s.color === 'purple' && "bg-chart-5/10 text-chart-5 border-chart-5/20",
-              s.color === 'red' && "bg-destructive/10 text-destructive border-destructive/20",
-              s.color === 'teal' && "bg-chart-2/10 text-chart-2 border-chart-2/20",
-            )}>
-              <s.icon size={26} />
-            </div>
-          </GlassCard>
-        ))}
-      </div>
+              <h3 className="text-3xl font-bold text-foreground tracking-tight">{s.val}</h3>
+              <p className={cn(
+                "text-xs font-medium mt-2",
+                s.trendUp ? "text-emerald-400" : "text-red-400"
+              )}>
+                {s.trend} <span className="text-muted-foreground font-normal">vs last month</span>
+              </p>
+            </GlassCard>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        {/* 2. Priority Queue (Left 2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
-          <GlassCard variant="liquid" className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
-                <Zap className="text-amber-500 fill-amber-500" size={20} />
-                Priority Queue
-              </h3>
-              <Link href="/dashboard/grading" className="text-sm font-medium text-primary hover:underline">
-                View Grading Queue &rarr;
-              </Link>
+        {/* Performance Chart — spanning 5 columns */}
+        <div className="lg:col-span-5">
+          <GlassCard className="p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-foreground">Class Performance</h3>
+              <button className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors">
+                <BarChart3 size={16} />
+              </button>
             </div>
-
-            <div className="space-y-4">
-              {priorityQueue && priorityQueue.length > 0 ? (
-                priorityQueue.map((item: any, i) => (
-                  <div key={item.id} className="group flex items-center justify-between p-4 rounded-xl bg-secondary border border-border hover:border-border/80 transition-all cursor-pointer">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border border-primary/20 shrink-0">
-                        {item.students?.name.charAt(0)}
-                      </div>
-                      <div className="overflow-hidden">
-                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
-                          {item.students?.name}
-                        </h4>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {item.exams?.subject} • {item.exams?.exam_name}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block shrink-0">
-                        <span className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border",
-                          item.status === 'graded' ? "bg-chart-3/10 text-chart-3 border-chart-3/20" : "bg-chart-4/10 text-chart-4 border-chart-4/20"
-                        )}>
-                          {item.status === 'graded' ? 'Review' : 'Grade'}
-                        </span>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div
-                        className="h-10 w-10 shrink-0 rounded-full border border-border flex items-center justify-center bg-background group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
-                        role="button"
-                        aria-label={`Grade submission for ${item.students?.name}`}
-                      >
-                        <ArrowUpRight size={18} />
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-12 text-muted-foreground bg-secondary/50 rounded-xl border border-dashed border-border">
-                  <CheckCircle size={48} className="mx-auto mb-3 text-chart-3 opacity-50" />
-                  <p>All caught up! No pending items.</p>
-                </div>
-              )}
-            </div>
-          </GlassCard>
-
-          {/* Performance Chart */}
-          <GlassCard variant="neu" className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
-                <Activity className="text-indigo-500" size={20} />
-                Class Performance
-              </h3>
-            </div>
-            <div className="h-16 w-full">
+            <div className="flex-1 min-h-[200px]">
               <AnalyticsChart data={analyticsData} />
             </div>
           </GlassCard>
         </div>
 
-        {/* 3. Sidebar (Right 1 col) */}
-        <div className="space-y-6">
-
-          {/* Quick Actions Card */}
-          <GlassCard variant="liquid" className="p-6 relative overflow-hidden bg-primary/5 border-primary/20 hover:border-primary/40 transition-colors">
-            <div className="relative z-10">
-              <h3 className="text-lg font-bold mb-5 flex items-center gap-2 text-primary">
-                <Sparkles size={20} className="fill-primary/20" /> Quick Actions
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <Button asChild variant="default" className="col-span-2 h-auto justify-start p-4 rounded-xl shadow-lg shadow-primary/20">
-                  <Link href="/dashboard/exams/create">
-                    <FileText size={20} />
-                    <span className="font-semibold text-sm">New Exam</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl border-border/50">
-                  <Link href="/dashboard/students/add">
-                    <Users size={24} className="mb-1 text-chart-1" />
-                    <span className="font-semibold text-xs">Add Student</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl border-border/50">
-                  <Link href="/dashboard/settings">
-                    <Layers size={24} className="mb-1 text-chart-2" />
-                    <span className="font-semibold text-xs">Manage</span>
-                  </Link>
-                </Button>
-              </div>
+        {/* Schedule — spanning 3 columns */}
+        <div className="lg:col-span-3">
+          <GlassCard className="p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-foreground">Upcoming</h3>
+              <button className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors">
+                <Calendar size={16} />
+              </button>
             </div>
-            {/* Decorative background */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+            <div className="flex-1 space-y-3">
+              {upcomingExams && upcomingExams.length > 0 ? upcomingExams.map((exam: any) => {
+                const examDate = new Date(exam.exam_date)
+                const daysLeft = Math.ceil((examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                return (
+                  <div key={exam.id} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50 border border-border/50 hover:border-primary/20 transition-colors group">
+                    <div className="flex flex-col items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary text-xs font-bold shrink-0">
+                      <span className="text-[9px] uppercase tracking-wider">{examDate.toLocaleString('default', { month: 'short' })}</span>
+                      <span className="text-sm leading-none">{examDate.getDate()}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{exam.exam_name}</p>
+                      <p className="text-[11px] text-muted-foreground">{exam.subject} • {exam.class}</p>
+                    </div>
+                    <span className={cn(
+                      "text-[10px] font-bold px-2 py-1 rounded-md shrink-0",
+                      daysLeft <= 3 ? "bg-red-500/10 text-red-400" : "bg-primary/10 text-primary"
+                    )}>
+                      {daysLeft > 0 ? `${daysLeft}d` : 'Today'}
+                    </span>
+                  </div>
+                )
+              }) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground text-center">
+                  <Calendar size={32} className="mb-2 opacity-30" />
+                  <p className="text-xs">No upcoming exams</p>
+                </div>
+              )}
+            </div>
           </GlassCard>
+        </div>
+      </div>
 
-          {/* Recent Activity Feed */}
-          <GlassCard variant="neu" className="p-6">
-            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <Clock size={18} className="text-muted-foreground" />
+      {/* ── ROW 2: Grading Queue + Quick Actions ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        {/* Priority Queue — spanning 8 columns */}
+        <div className="lg:col-span-8">
+          <GlassCard className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-foreground">Grading Queue</h3>
+              <Link href="/dashboard/grading" className="text-xs font-medium text-primary hover:underline">
+                View All →
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              {priorityQueue && priorityQueue.length > 0 ? (
+                priorityQueue.map((item: any) => (
+                  <Link key={item.id} href={`/dashboard/grading`} className="block">
+                    <div className="group flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50 hover:border-primary/30 hover:bg-secondary/60 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                          {item.students?.name?.charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                            {item.students?.name}
+                          </h4>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.exams?.subject} • {item.exams?.exam_name}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider",
+                          item.status === 'graded'
+                            ? "bg-emerald-500/10 text-emerald-400"
+                            : "bg-amber-500/10 text-amber-400"
+                        )}>
+                          {item.status === 'graded' ? 'Review' : 'Grade'}
+                        </span>
+                        <div className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+                          <ArrowUpRight size={14} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="text-center py-16 text-muted-foreground">
+                  <CheckCircle size={40} className="mx-auto mb-3 text-emerald-500/40" />
+                  <p className="text-sm">All caught up! No pending items.</p>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </div>
+
+        {/* Quick Actions — spanning 4 columns, featured card style */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Featured Card — light accent like the reference */}
+          <div className="rounded-2xl bg-primary/90 p-6 text-primary-foreground relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold uppercase tracking-wider opacity-80">Quick Action</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold uppercase">New</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Create New Exam</h3>
+              <p className="text-sm opacity-80 mb-6 leading-relaxed">
+                Set up an exam, add questions, and start grading with AI assistance.
+              </p>
+              <Button asChild variant="secondary" className="w-full rounded-xl bg-white text-primary hover:bg-white/90 font-bold shadow-md">
+                <Link href="/dashboard/exams/create">
+                  <Plus size={18} />
+                  Get Started
+                </Link>
+              </Button>
+            </div>
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+          </div>
+
+          {/* Activity Feed */}
+          <GlassCard className="p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Clock size={14} className="text-muted-foreground" />
               Recent Activity
             </h3>
-            <div className="relative pl-4 space-y-6 border-l border-border/50">
+            <div className="relative pl-4 space-y-4 border-l border-border/50">
               {recentActivity && recentActivity.length > 0 ? (
-                recentActivity.map((activity: any) => (
+                recentActivity.slice(0, 4).map((activity: any) => (
                   <div key={activity.id} className="relative">
-                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-chart-3 border-2 border-background" />
+                    <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-background" />
                     <div>
-                      <p className="text-sm font-medium text-foreground">
+                      <p className="text-xs font-medium text-foreground">
                         Graded <span className="font-bold text-primary">{activity.students?.name}</span>
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {activity.exams?.exam_name} • Score: {activity.total_score}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-wide font-semibold">
-                        {new Date(activity.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        {activity.exams?.exam_name} • {activity.total_score} pts
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No recent activity.</p>
+                <p className="text-xs text-muted-foreground">No recent activity.</p>
               )}
             </div>
           </GlassCard>
-
-          {/* System Status */}
-          <GlassCard className="p-6">
-            <SystemStatus />
-          </GlassCard>
-
         </div>
       </div>
     </div>

@@ -14,14 +14,18 @@ interface GlassCardProps {
 }
 
 /**
- * @deprecated Use `Card` component with `variant="liquid" | "neu" | "glass"` instead.
+ * Thin wrapper around the simplified Card component.
+ * Accepts legacy variant/shimmer/gradientColor props but ignores them,
+ * so existing call sites don't break.
  */
 export const GlassCard = ({
   className,
-  variant = 'liquid',
+  variant,       // ignored – kept for backwards compat
+  shimmer,       // ignored
+  gradientColor, // ignored
   ...props
 }: GlassCardProps) => {
   return (
-    <Card variant={variant} className={className} {...props} />
+    <Card className={className} {...props} />
   )
 }

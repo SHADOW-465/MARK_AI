@@ -134,7 +134,7 @@ export default async function StudentDashboard() {
         .limit(3)
 
     return (
-        <div className="space-y-8 pb-24 animate-fade-in-up">
+        <div className="space-y-8 animate-fade-in-up">
 
             {/* Header with Performance Summary */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -143,10 +143,10 @@ export default async function StudentDashboard() {
                         <span className="font-display font-bold text-2xl">{student.name.charAt(0)}</span>
                     </div>
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                        <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
                             Hello, {student.name.split(' ')[0]}!
                         </h1>
-                        <p className="text-muted-foreground font-medium text-lg">Ready to learn?</p>
+                        <p className="text-muted-foreground font-medium text-sm">Ready to learn?</p>
                     </div>
                 </div>
 
@@ -176,10 +176,10 @@ export default async function StudentDashboard() {
 
             <AiDailyBrief studentId={student.id} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                {/* Main Content (Left 2 cols) */}
-                <div className="lg:col-span-2 space-y-8">
+                {/* Main Content (Left 8 cols) */}
+                <div className="lg:col-span-8 space-y-6">
 
                     {/* Hero Action Card */}
                     <GlassCard variant="liquid" className="p-8 relative overflow-hidden group">
@@ -190,10 +190,10 @@ export default async function StudentDashboard() {
                                         Recommended Focus
                                     </span>
                                 </div>
-                                <h2 className="text-3xl font-display font-bold text-foreground mb-4 max-w-xl leading-tight">
+                                <h2 className="text-2xl font-bold text-foreground mb-3 max-w-xl leading-tight">
                                     {nbaTask ? nbaTask.title : "Explore the Knowledge Vault"}
                                 </h2>
-                                <p className="text-muted-foreground mb-8 max-w-lg text-lg">
+                                <p className="text-muted-foreground mb-6 max-w-lg text-sm">
                                     {nbaTask?.why || "You're all caught up! Browse past materials or practice with AI flashcards."}
                                 </p>
 
@@ -226,7 +226,7 @@ export default async function StudentDashboard() {
                     {/* Recent Results Cards */}
                     <div>
                         <div className="flex items-center justify-between mb-4 px-2">
-                            <h3 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+                            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                                 <Star className="text-amber-500 fill-amber-500" size={20} />
                                 Recent Results
                             </h3>
@@ -283,13 +283,13 @@ export default async function StudentDashboard() {
 
                 </div>
 
-                {/* Right Sidebar (1 col) */}
-                <div className="space-y-8">
+                {/* Right Sidebar (4 cols) */}
+                <div className="lg:col-span-4 space-y-6">
 
                     {/* Upcoming Schedule */}
                     <GlassCard variant="neu" className="p-6">
-                        <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
-                            <Calendar className="text-indigo-500" size={20} />
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <Calendar className="text-primary" size={20} />
                             Upcoming Exams
                         </h3>
                         <div className="space-y-4">
@@ -333,7 +333,7 @@ export default async function StudentDashboard() {
 
                     {/* Quick Access */}
                     <GlassCard className="p-6">
-                        <h3 className="text-lg font-display font-bold text-foreground mb-4">Quick Study</h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-4">Quick Study</h3>
                         <div className="grid grid-cols-2 gap-3">
                             <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl hover:bg-secondary/80">
                                 <Link href="/student/flashcards" className="w-full h-full flex flex-col items-center justify-center gap-2">

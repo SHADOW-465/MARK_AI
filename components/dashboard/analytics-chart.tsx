@@ -20,7 +20,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
     }
 
     return (
-        <div className="h-16 w-full">
+        <div className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />

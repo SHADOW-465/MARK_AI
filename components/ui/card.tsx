@@ -6,97 +6,54 @@ import { cn } from '@/lib/utils'
 
 export interface CardProps extends React.ComponentProps<'div'> {
   hoverEffect?: boolean
-  variant?: 'default' | 'liquid' | 'neu' | 'glass'
-  shimmer?: boolean
-  gradientColor?: 'primary' | 'teal' | 'purple'
 }
 
 function Card({
   className,
   children,
   hoverEffect = false,
-  variant = 'default',
-  shimmer = false,
-  gradientColor = 'primary',
   onClick,
   ...props
 }: CardProps) {
 
-  const getGradientBorder = () => {
-    switch (gradientColor) {
-      case 'teal': return 'from-teal-500/30 to-emerald-500/30';
-      case 'purple': return 'from-purple-500/30 to-pink-500/30';
-      default: return 'from-indigo-500/30 to-blue-500/30';
-    }
-  }
-
   const isInteractive = hoverEffect || typeof onClick !== 'undefined';
-  const MotionComponent = isInteractive || variant !== 'default' ? motion.div : 'div';
 
-  const motionProps = isInteractive || variant !== 'default' ? {
-    whileHover: hoverEffect ? { y: -4, scale: 1.01 } : undefined,
-    whileTap: hoverEffect ? { scale: 0.98 } : undefined,
-    initial: { opacity: 0, y: 15 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } as any,
-  } : {};
+  const cardClasses = cn(
+    "relative overflow-hidden transition-all duration-300 group",
+    "rounded-2xl border border-border bg-card/60 backdrop-blur-xl shadow-md text-card-foreground",
+    (hoverEffect || onClick) && "cursor-pointer hover:shadow-lg hover:border-primary/30 hover:bg-card-hover/80",
+    className
+  );
+
+  const content = (
+    <div className="relative z-10 w-full flex flex-col h-full">
+      {children}
+    </div>
+  );
+
+  if (isInteractive) {
+    return (
+      <div className="@container w-full" data-slot="card-wrapper" onClick={onClick}>
+        <motion.div
+          whileHover={hoverEffect ? { y: -4, scale: 1.01 } : undefined}
+          whileTap={hoverEffect ? { scale: 0.98 } : undefined}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          data-slot="card"
+          className={cardClasses}
+        >
+          {content}
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="@container w-full" data-slot="card-wrapper" onClick={onClick}>
-      <MotionComponent
-        {...motionProps}
-        data-slot="card"
-        className={cn(
-          "relative overflow-hidden transition-all duration-300 group",
-
-          // Default variant (Standard Card)
-          variant === 'default' && "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
-
-          // Glass Card Variants
-          variant !== 'default' && "rounded-2xl @md:rounded-[2rem]",
-          variant === 'liquid' && "liquid-glass shadow-lg bg-card/40 backdrop-blur-xl border border-border/50",
-          variant === 'neu' && "bg-secondary neu-flat border-none text-secondary-foreground",
-          variant === 'glass' && "bg-background/60 backdrop-blur-md border border-border/50 shadow-sm text-foreground",
-
-          // Hover Interactions
-          hoverEffect && variant === 'liquid' && "hover:shadow-xl hover:border-primary/30",
-          hoverEffect && variant === 'neu' && "hover:shadow-lg hover:-translate-y-1 transition-transform",
-          hoverEffect && variant === 'default' && "hover:shadow-md hover:-translate-y-1 transition-transform",
-
-          (hoverEffect || onClick) && "cursor-pointer",
-          className
-        )}
-        {...props}
-      >
-        {/* Default standard background effect */}
-        {variant === 'default' && (
-          <div className="absolute inset-0 bg-gradient-to-br from-black/[0.02] dark:from-white/5 to-transparent pointer-events-none" />
-        )}
-
-        {/* Gradient Border for Liquid Variant */}
-        {variant === 'liquid' && (
-          <div className={cn(
-            "absolute inset-0 rounded-2xl @md:rounded-[2rem] opacity-40 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none",
-            "bg-gradient-to-br p-1",
-            getGradientBorder()
-          )} style={{ mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', maskComposite: 'exclude' } as any} />
-        )}
-
-        {/* Shimmer Effect */}
-        {shimmer && (
-          <div className="absolute inset-0 -translate-x-full group-hover:animate-shimmer bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent z-20 pointer-events-none" />
-        )}
-
-        {/* Content */}
-        <div className="relative z-10 w-full">
-          {children}
-        </div>
-
-        {/* Inner Glow / Highlight for Liquid Feel */}
-        {variant === 'liquid' && (
-          <div className="absolute inset-0 rounded-2xl @md:rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] pointer-events-none z-20 mix-blend-overlay" />
-        )}
-      </MotionComponent>
+      <div data-slot="card" className={cardClasses} {...props}>
+        {content}
+      </div>
     </div>
   )
 }
@@ -118,7 +75,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold text-xl', className)}
+      className={cn('leading-none font-semibold text-lg text-foreground tracking-tight', className)}
       {...props}
     />
   )

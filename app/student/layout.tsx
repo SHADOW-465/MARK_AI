@@ -1,8 +1,7 @@
 import type React from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { NavbarStudent } from "@/components/dashboard/navbar-student"
-import { BackButton } from "@/components/ui/back-button"
+import { DashboardShell } from "@/components/layout/dashboard-shell"
 
 export default async function StudentLayout({
     children,
@@ -28,19 +27,13 @@ export default async function StudentLayout({
     const userInitials = userName[0].toUpperCase()
 
     return (
-        <div className="min-h-screen bg-background dark">
-            {/* Top Navigation Bar */}
-            <NavbarStudent
-                userName={userName}
-                userEmail={userEmail}
-                userInitials={userInitials}
-            />
-
-            {/* Main Content */}
-            <main className="pt-24 pb-8 px-4 md:px-8 max-w-16 mx-auto w-full">
-                <BackButton />
-                {children}
-            </main>
-        </div>
+        <DashboardShell
+            userName={userName}
+            userEmail={userEmail}
+            userInitials={userInitials}
+            role="Student"
+        >
+            {children}
+        </DashboardShell>
     )
 }
