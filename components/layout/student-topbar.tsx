@@ -63,7 +63,7 @@ export function StudentTopbar({ userName, userInitials }: StudentTopbarProps) {
                     <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                         <Headphones size={20} />
                     </Button>
-                    <NotificationDropdown />
+                    {/* <NotificationDropdown /> */}
                 </div>
 
                 <div className="h-8 w-px bg-border mx-1 hidden sm:block" />

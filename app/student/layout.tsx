@@ -24,7 +24,7 @@ export default async function StudentLayout({
 
     const userName = student?.name || "Student"
     const userEmail = user.email || ""
-    const userInitials = userName[0].toUpperCase()
+    const userInitials = userName && userName.length > 0 ? userName[0].toUpperCase() : "S"
 
     return (
         <StudentShell

@@ -1,0 +1,171 @@
+app/student/dashboard/page.tsx(1,30): error TS2307: Cannot find module '@/lib/supabase/server' or its corresponding type declarations.
+app/student/dashboard/page.tsx(2,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.
+app/student/dashboard/page.tsx(5,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+app/student/dashboard/page.tsx(14,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(26,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(27,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(28,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(31,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(32,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(32,66): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(92,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(93,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(96,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(97,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(98,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(99,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(105,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(106,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(108,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(109,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(110,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(118,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(122,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(127,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(133,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(134,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(135,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(136,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(136,119): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(140,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(141,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(142,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(143,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(145,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(146,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(147,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(148,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(153,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(155,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(156,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(157,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(159,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(160,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(163,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(164,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(165,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(167,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(168,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(171,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(172,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(173,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(175,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(176,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(182,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(185,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(186,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(187,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(188,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(189,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(190,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(192,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(193,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(195,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(202,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(204,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(205,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(206,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(207,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(208,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(211,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(217,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(218,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(219,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(221,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(222,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(225,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(226,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(227,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(229,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(230,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(231,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(241,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(244,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(245,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(246,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(247,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(248,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(249,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(254,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(256,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(257,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(258,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(260,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(263,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(264,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(265,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(267,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(270,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(271,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(272,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(274,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(277,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(278,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(279,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(281,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(287,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(291,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(292,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(293,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(297,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(298,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(299,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(300,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(302,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(303,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(308,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(309,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(310,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(311,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(316,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+app/student/dashboard/page.tsx(317,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-shell.tsx(4,31): error TS6142: Module './student-topbar' was resolved to 'C:/Users/acer/Documents/projects/MARK_AI/components/layout/student-topbar.tsx', but '--jsx' is not set.
+components/layout/student-shell.tsx(20,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-shell.tsx(22,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-shell.tsx(25,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-shell.tsx(31,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(6,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+components/layout/student-topbar.tsx(7,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.
+components/layout/student-topbar.tsx(8,38): error TS2307: Cannot find module '@/components/dashboard/notification-dropdown' or its corresponding type declarations.
+components/layout/student-topbar.tsx(26,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(29,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(30,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(31,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(33,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(39,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(43,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(60,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(61,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(63,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(64,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(66,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(69,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(72,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(73,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+components/layout/student-topbar.tsx(75,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+node_modules/lucide-react/dist/lucide-react.d.ts(2,10): error TS2305: Module '"react"' has no exported member 'ReactSVG'.
+node_modules/next/dist/build/templates/app-page.d.ts(3,25): error TS2307: Cannot find module 'VAR_MODULE_GLOBAL_ERROR' or its corresponding type declarations.
+node_modules/next/dist/build/webpack-config.d.ts(10,104): error TS2694: Namespace '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/next/dist/compiled/webpack/webpack".webpack' has no exported member 'RuleSetUseItem'.
+node_modules/next/dist/build/webpack/loaders/next-app-loader/index.d.ts(1,13): error TS2613: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "C:/Users/acer/Documents/projects/MARK_AI/node_modules/next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/http-access-fallback/error-boundary.d.ts(11,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/layout-router.d.ts(2,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/link.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/lib/metadata/metadata.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/entry-base.d.ts(1,114): error TS2307: Cannot find module 'react-server-dom-webpack/server' or its corresponding type declarations.
+node_modules/next/dist/server/app-render/entry-base.d.ts(2,27): error TS2307: Cannot find module 'react-server-dom-webpack/static' or its corresponding type declarations.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(39,16): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(40,13): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(41,15): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(42,26): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-types.d.ts(7,13): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/acer/Documents/projects/MARK_AI/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(10,13): error TS1192: Module '"fs"' has no default export.
