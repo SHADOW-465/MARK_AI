@@ -18,19 +18,19 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        
+
         // Premium / Soft UI Variants
-        glow: "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_rgba(99,102,241,0.7)] hover:scale-[1.02] border border-primary/50",
-        
-        gradient: "bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_auto] text-white shadow-lg shadow-indigo-500/30 hover:bg-[position:right_center] transition-all duration-500 hover:shadow-indigo-500/50 hover:-translate-y-0.5",
-        
+        glow: "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.5)] hover:shadow-[0_0_30px_rgba(var(--primary),0.7)] hover:scale-[1.02] border border-primary/50",
+
+        gradient: "bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] text-primary-foreground shadow-lg shadow-primary/30 hover:bg-[position:right_center] transition-all duration-500 hover:shadow-primary/50 hover:-translate-y-0.5",
+
         soft: "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/10",
-        
+
         // Neumorphic Button
-        neu: "bg-secondary dark:bg-slate-800 text-foreground neu-flat hover:neu-pressed active:scale-[0.98] border border-white/20 dark:border-white/5",
-        
+        neu: "bg-secondary text-secondary-foreground neu-flat hover:neu-pressed active:scale-[0.98] border border-border/50",
+
         // Liquid Gem Button
-        liquid: "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_12px_24px_rgba(99,102,241,0.4)] hover:-translate-y-1 active:translate-y-0 border border-white/20",
+        liquid: "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(var(--primary),0.3)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_12px_24px_rgba(var(--primary),0.4)] hover:-translate-y-1 active:translate-y-0 border border-primary/20",
       },
       size: {
         default: "h-11 px-6 py-2",

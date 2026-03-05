@@ -103,11 +103,11 @@ export default async function DashboardPage() {
     <div className="space-y-8 pb-24 lg:pb-0 animate-fade-in-up">
 
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2 border-b border-border/40">
         <div>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground tracking-tight flex items-center gap-3">
             Dashboard
-            <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse-glow shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
+            <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse-glow shadow-sm" />
           </h2>
           <p className="text-muted-foreground font-medium mt-2 text-lg">
             Good Morning, Professor. You have <span className="text-foreground font-bold">{pendingCount} items</span> requiring attention.
@@ -115,16 +115,16 @@ export default async function DashboardPage() {
         </div>
 
         {/* Quick Action Button Group */}
-        <div className="hidden md:flex gap-3">
-          <Button asChild variant="default" className="rounded-full px-5 py-2.5 shadow-lg shadow-primary/25 hover:shadow-primary/40">
+        <div className="hidden md:flex gap-4">
+          <Button asChild variant="default" className="rounded-full px-6 py-5 shadow-lg shadow-primary/25 hover:shadow-primary/40 text-base">
             <Link href="/dashboard/exams/create">
-              <FileText size={18} />
+              <FileText size={20} />
               <span>Create Exam</span>
             </Link>
           </Button>
-          <Button asChild variant="neu" className="rounded-full px-5 py-2.5">
+          <Button asChild variant="secondary" className="rounded-full px-6 py-5 text-base border-border/50">
             <Link href="/dashboard/grading">
-              <CheckCircle size={18} className="text-emerald-500" />
+              <CheckCircle size={20} className="text-emerald-500" />
               <span>Grade All</span>
             </Link>
           </Button>
@@ -180,13 +180,13 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div className={cn(
-              "h-12 w-12 rounded-full flex items-center justify-center shadow-inner",
-              s.color === 'amber' && "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
-              s.color === 'purple' && "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-              s.color === 'red' && "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-              s.color === 'teal' && "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400",
+              "h-14 w-14 rounded-2xl flex items-center justify-center border",
+              s.color === 'amber' && "bg-chart-4/10 text-chart-4 border-chart-4/20",
+              s.color === 'purple' && "bg-chart-5/10 text-chart-5 border-chart-5/20",
+              s.color === 'red' && "bg-destructive/10 text-destructive border-destructive/20",
+              s.color === 'teal' && "bg-chart-2/10 text-chart-2 border-chart-2/20",
             )}>
-              <s.icon size={24} />
+              <s.icon size={26} />
             </div>
           </GlassCard>
         ))}
@@ -207,48 +207,48 @@ export default async function DashboardPage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {priorityQueue && priorityQueue.length > 0 ? (
                 priorityQueue.map((item: any, i) => (
-                  <div key={item.id} className="group flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 hover:bg-white hover:shadow-lg transition-all cursor-pointer">
+                  <div key={item.id} className="group flex items-center justify-between p-4 rounded-xl bg-secondary border border-border hover:border-border/80 transition-all cursor-pointer">
                     <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                      <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border border-primary/20 shrink-0">
                         {item.students?.name.charAt(0)}
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                      <div className="overflow-hidden">
+                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                           {item.students?.name}
                         </h4>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground truncate">
                           {item.exams?.subject} • {item.exams?.exam_name}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
+                      <div className="text-right hidden sm:block shrink-0">
                         <span className={cn(
-                          "px-2 py-1 rounded text-xs font-bold uppercase tracking-wider",
-                          item.status === 'graded' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                          "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border",
+                          item.status === 'graded' ? "bg-chart-3/10 text-chart-3 border-chart-3/20" : "bg-chart-4/10 text-chart-4 border-chart-4/20"
                         )}>
                           {item.status === 'graded' ? 'Review' : 'Grade'}
                         </span>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-2">
                           {new Date(item.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <div 
-                        className="h-8 w-8 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all"
+                      <div
+                        className="h-10 w-10 shrink-0 rounded-full border border-border flex items-center justify-center bg-background group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
                         role="button"
                         aria-label={`Grade submission for ${item.students?.name}`}
                       >
-                        <ArrowUpRight size={16} />
+                        <ArrowUpRight size={18} />
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <CheckCircle size={48} className="mx-auto mb-3 text-emerald-500 opacity-50" />
+                <div className="text-center py-12 text-muted-foreground bg-secondary/50 rounded-xl border border-dashed border-border">
+                  <CheckCircle size={48} className="mx-auto mb-3 text-chart-3 opacity-50" />
                   <p>All caught up! No pending items.</p>
                 </div>
               )}
@@ -273,34 +273,34 @@ export default async function DashboardPage() {
         <div className="space-y-6">
 
           {/* Quick Actions Card */}
-          <GlassCard variant="liquid" gradientColor="purple" className="p-6 text-white relative overflow-hidden">
+          <GlassCard variant="liquid" className="p-6 relative overflow-hidden bg-primary/5 border-primary/20 hover:border-primary/40 transition-colors">
             <div className="relative z-10">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Sparkles size={18} className="fill-white/20" /> Quick Actions
+              <h3 className="text-lg font-bold mb-5 flex items-center gap-2 text-primary">
+                <Sparkles size={20} className="fill-primary/20" /> Quick Actions
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                <Button asChild variant="ghost" className="col-span-2 h-auto justify-start p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                <Button asChild variant="default" className="col-span-2 h-auto justify-start p-4 rounded-xl shadow-lg shadow-primary/20">
                   <Link href="/dashboard/exams/create">
-                    <FileText size={18} />
+                    <FileText size={20} />
                     <span className="font-semibold text-sm">New Exam</span>
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" className="h-auto flex-col p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl border-border/50">
                   <Link href="/dashboard/students/add">
-                    <Users size={18} />
+                    <Users size={24} className="mb-1 text-chart-1" />
                     <span className="font-semibold text-xs">Add Student</span>
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" className="h-auto flex-col p-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 text-white hover:text-white">
+                <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl border-border/50">
                   <Link href="/dashboard/settings">
-                    <Layers size={18} />
+                    <Layers size={24} className="mb-1 text-chart-2" />
                     <span className="font-semibold text-xs">Manage</span>
                   </Link>
                 </Button>
               </div>
             </div>
             {/* Decorative background */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           </GlassCard>
 
           {/* Recent Activity Feed */}
@@ -313,7 +313,7 @@ export default async function DashboardPage() {
               {recentActivity && recentActivity.length > 0 ? (
                 recentActivity.map((activity: any) => (
                   <div key={activity.id} className="relative">
-                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-emerald-500 border-2 border-background" />
+                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-chart-3 border-2 border-background" />
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         Graded <span className="font-bold text-primary">{activity.students?.name}</span>

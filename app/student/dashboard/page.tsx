@@ -35,17 +35,17 @@ export default async function StudentDashboard() {
     if (!student) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-                <div className="h-24 w-24 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                <div className="h-24 w-24 rounded-full bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/20 shadow-sm">
                     <AlertCircle size={48} />
                 </div>
                 <div className="space-y-2">
                     <h1 className="text-3xl font-display font-bold">Account Link Required</h1>
-                    <p className="text-muted-foreground max-w-sm text-lg">
+                    <p className="text-muted-foreground max-w-sm text-lg mx-auto">
                         We couldn&apos;t find your student profile. Ask your teacher to add you!
                     </p>
                 </div>
                 <div className="flex gap-4">
-                    <Button asChild variant="default" className="px-6 py-3 hover:scale-105">
+                    <Button asChild variant="default" className="px-6 py-3">
                         <Link href="/auth/sign-up">
                             Try Linking Again <ArrowRight size={18} />
                         </Link>
@@ -138,24 +138,22 @@ export default async function StudentDashboard() {
 
             {/* Header with Performance Summary */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
-                            <span className="font-display font-bold text-lg">{student.name.charAt(0)}</span>
-                        </div>
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                                Hello, {student.name.split(' ')[0]}!
-                            </h1>
-                            <p className="text-muted-foreground font-medium">Ready to learn?</p>
-                        </div>
+                <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                        <span className="font-display font-bold text-2xl">{student.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                        <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                            Hello, {student.name.split(' ')[0]}!
+                        </h1>
+                        <p className="text-muted-foreground font-medium text-lg">Ready to learn?</p>
                     </div>
                 </div>
 
                 {/* Performance Pill */}
-                <GlassCard className="px-6 py-4 flex items-center gap-6 rounded-2xl border border-border" variant="neu">
+                <GlassCard className="px-6 py-4 flex items-center gap-6 rounded-2xl" variant="neu">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary">
                             <Trophy size={20} />
                         </div>
                         <div>
@@ -163,9 +161,9 @@ export default async function StudentDashboard() {
                             <p className="text-2xl font-display font-bold text-foreground">{averageScore}%</p>
                         </div>
                     </div>
-                    <div className="h-10 w-px bg-border" />
+                    <div className="h-12 w-px bg-border" />
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                        <div className="p-3 rounded-xl bg-chart-4/10 text-chart-4">
                             <Flame size={20} />
                         </div>
                         <div>
@@ -184,51 +182,45 @@ export default async function StudentDashboard() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Hero Action Card */}
-                    <GlassCard variant="liquid" gradientColor="purple" className="p-8 relative overflow-hidden group">
-                        <div className="relative z-10">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white uppercase tracking-wider border border-white/10">
-                                            Recommended Focus
-                                        </span>
-                                    </div>
-                                    <h2 className="text-3xl font-display font-bold text-white mb-2 max-w-lg leading-tight">
-                                        {nbaTask ? nbaTask.title : "Explore the Knowledge Vault"}
-                                    </h2>
-                                    <p className="text-indigo-100 mb-6 max-w-md">
-                                        {nbaTask?.why || "You're all caught up! Browse past materials or practice with AI flashcards."}
-                                    </p>
+                    <GlassCard variant="liquid" className="p-8 relative overflow-hidden group">
+                        <div className="relative z-10 flex flex-col md:flex-row gap-6 md:items-center justify-between">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="px-3 py-1 rounded-full bg-primary/20 backdrop-blur-md text-xs font-bold text-primary uppercase tracking-wider border border-primary/10">
+                                        Recommended Focus
+                                    </span>
                                 </div>
-                                <div className="hidden sm:block">
-                                    <div className="h-24 w-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-500">
-                                        {nbaTask ? <Target size={40} className="text-white" /> : <BookOpen size={40} className="text-white" />}
-                                    </div>
+                                <h2 className="text-3xl font-display font-bold text-foreground mb-4 max-w-xl leading-tight">
+                                    {nbaTask ? nbaTask.title : "Explore the Knowledge Vault"}
+                                </h2>
+                                <p className="text-muted-foreground mb-8 max-w-lg text-lg">
+                                    {nbaTask?.why || "You're all caught up! Browse past materials or practice with AI flashcards."}
+                                </p>
+
+                                <div className="flex flex-wrap gap-4">
+                                    <Button asChild variant="default" className="px-8 py-6 text-base shadow-lg shadow-primary/25">
+                                        <Link href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}>
+                                            {nbaTask ? <Play size={20} fill="currentColor" /> : <Folder size={20} />}
+                                            {nbaTask ? "Start Mission" : "Open Vault"}
+                                        </Link>
+                                    </Button>
+                                    <Button asChild variant="secondary" className="px-8 py-6 text-base">
+                                        <Link href="/student/performance">
+                                            <TrendingUp size={20} /> View Analytics
+                                        </Link>
+                                    </Button>
                                 </div>
                             </div>
-
-                            <div className="flex gap-4">
-                                <Button asChild variant="liquid" className="px-6 py-3 bg-white text-indigo-600 hover:bg-white/90 shadow-lg hover:shadow-xl hover:scale-105">
-                                    <Link
-                                        href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}
-                                    >
-                                        {nbaTask ? <Play size={18} fill="currentColor" /> : <Folder size={18} />}
-                                        {nbaTask ? "Start Mission" : "Open Vault"}
-                                    </Link>
-                                </Button>
-                                <Button asChild variant="soft" className="px-6 py-3 bg-indigo-800/30 text-white hover:bg-indigo-800/50 border-white/10 backdrop-blur-md">
-                                    <Link
-                                        href="/student/performance"
-                                    >
-                                        <TrendingUp size={18} /> View Analytics
-                                    </Link>
-                                </Button>
+                            <div className="hidden md:flex shrink-0">
+                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 group-hover:bg-primary/20 transition-all duration-500">
+                                    {nbaTask ? <Target size={48} className="text-primary" /> : <BookOpen size={48} className="text-primary" />}
+                                </div>
                             </div>
                         </div>
 
                         {/* Abstract Background Shapes */}
-                        <div className="absolute -right-20 -bottom-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-purple-400/30 transition-colors duration-1000" />
-                        <div className="absolute -left-20 -top-40 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl group-hover:bg-indigo-400/30 transition-colors duration-1000" />
+                        <div className="absolute -right-20 -bottom-40 w-80 h-80 bg-chart-1/20 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute -left-20 -top-40 w-80 h-80 bg-chart-5/20 rounded-full blur-3xl pointer-events-none" />
                     </GlassCard>
 
                     {/* Recent Results Cards */}
@@ -261,10 +253,10 @@ export default async function StudentDashboard() {
                                                     </h4>
                                                 </div>
                                                 <div className={cn(
-                                                    "px-2 py-1 rounded-lg text-xs font-bold",
-                                                    percentage >= 80 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
-                                                        percentage >= 60 ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
-                                                            "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                                    "px-3 py-1.5 rounded-lg text-xs font-bold border",
+                                                    percentage >= 80 ? "bg-chart-3/10 text-chart-3 border-chart-3/20" :
+                                                        percentage >= 60 ? "bg-chart-4/10 text-chart-4 border-chart-4/20" :
+                                                            "bg-destructive/10 text-destructive border-destructive/20"
                                                 )}>
                                                     {percentage}%
                                                 </div>
@@ -302,14 +294,14 @@ export default async function StudentDashboard() {
                         </h3>
                         <div className="space-y-4">
                             {upcomingExams && upcomingExams.length > 0 ? upcomingExams.map((exam: any) => (
-                                <div key={exam.id} className="flex items-center gap-4 p-3 rounded-xl bg-secondary/50 border border-border shadow-sm">
-                                    <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-500/30">
-                                        <span className="text-xs uppercase">{new Date(exam.exam_date).toLocaleString('default', { month: 'short' })}</span>
-                                        <span className="text-lg leading-none">{new Date(exam.exam_date).getDate()}</span>
+                                <div key={exam.id} className="flex items-center gap-4 p-4 rounded-xl bg-secondary border border-border transition-colors hover:border-border/80">
+                                    <div className="flex flex-col items-center justify-center h-14 w-14 rounded-lg bg-primary/10 text-primary font-bold border border-primary/20 shrink-0">
+                                        <span className="text-[10px] tracking-widest uppercase">{new Date(exam.exam_date).toLocaleString('default', { month: 'short' })}</span>
+                                        <span className="text-xl leading-none">{new Date(exam.exam_date).getDate()}</span>
                                     </div>
-                                    <div>
-                                        <p className="font-semibold text-foreground text-sm line-clamp-1">{exam.exam_name}</p>
-                                        <p className="text-xs text-muted-foreground">{exam.subject}</p>
+                                    <div className="overflow-hidden">
+                                        <p className="font-semibold text-foreground text-sm truncate">{exam.exam_name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{exam.subject}</p>
                                     </div>
                                 </div>
                             )) : (
@@ -343,22 +335,22 @@ export default async function StudentDashboard() {
                     <GlassCard className="p-6">
                         <h3 className="text-lg font-display font-bold text-foreground mb-4">Quick Study</h3>
                         <div className="grid grid-cols-2 gap-3">
-                            <Button asChild variant="secondary" className="h-auto flex-col p-3 rounded-xl hover:bg-secondary/80">
-                                <Link href="/student/flashcards" className="group">
-                                    <Brain size={24} className="text-indigo-500 group-hover:scale-110 transition-transform" />
+                            <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl hover:bg-secondary/80">
+                                <Link href="/student/flashcards" className="w-full h-full flex flex-col items-center justify-center gap-2">
+                                    <Brain size={24} className="text-chart-1 group-hover:scale-110 transition-transform" />
                                     <span className="text-xs font-semibold">Flashcards</span>
                                 </Link>
                             </Button>
-                            <Button asChild variant="secondary" className="h-auto flex-col p-3 rounded-xl hover:bg-secondary/80">
-                                <Link href="/student/vault" className="group">
-                                    <BookOpen size={24} className="text-teal-500 group-hover:scale-110 transition-transform" />
+                            <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl hover:bg-secondary/80">
+                                <Link href="/student/vault" className="w-full h-full flex flex-col items-center justify-center gap-2">
+                                    <BookOpen size={24} className="text-chart-2 group-hover:scale-110 transition-transform" />
                                     <span className="text-xs font-semibold">Library</span>
                                 </Link>
                             </Button>
-                            <Button asChild variant="liquid" className="h-auto flex-col p-3 rounded-xl col-span-2">
-                                <Link href="/student/ai-guide" className="group w-full flex flex-row items-center justify-center gap-3">
-                                    <Sparkles size={24} className="text-white group-hover:spin-slow" />
-                                    <span className="text-sm font-bold text-white">Open AI Study Guide</span>
+                            <Button asChild variant="default" className="h-[60px] col-span-2 rounded-xl text-base shadow-lg shadow-primary/20">
+                                <Link href="/student/ai-guide" className="w-full h-full flex items-center justify-center gap-3">
+                                    <Sparkles size={20} className="group-hover:spin-slow" />
+                                    <span className="font-bold">Open AI Study Guide</span>
                                 </Link>
                             </Button>
                         </div>

@@ -43,7 +43,6 @@ function Card({
 
   return (
     <div className="@container w-full" data-slot="card-wrapper" onClick={onClick}>
-      {/* @ts-ignore  */}
       <MotionComponent
         {...motionProps}
         data-slot="card"
@@ -51,18 +50,18 @@ function Card({
           "relative overflow-hidden transition-all duration-300 group",
 
           // Default variant (Standard Card)
-          variant === 'default' && "rounded-xl border border-border bg-card/80 dark:bg-card/60 text-card-foreground shadow-xl backdrop-blur-md",
+          variant === 'default' && "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
 
           // Glass Card Variants
           variant !== 'default' && "rounded-2xl @md:rounded-[2rem]",
-          variant === 'liquid' && "liquid-glass shadow-lg shadow-indigo-500/5 dark:shadow-black/30 bg-card/40 backdrop-blur-xl",
-          variant === 'neu' && "bg-secondary dark:bg-slate-800 neu-flat border-none",
-          variant === 'glass' && "bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm",
+          variant === 'liquid' && "liquid-glass shadow-lg bg-card/40 backdrop-blur-xl border border-border/50",
+          variant === 'neu' && "bg-secondary neu-flat border-none text-secondary-foreground",
+          variant === 'glass' && "bg-background/60 backdrop-blur-md border border-border/50 shadow-sm text-foreground",
 
           // Hover Interactions
-          hoverEffect && variant === 'liquid' && "hover:shadow-xl hover:shadow-indigo-500/20 dark:hover:shadow-indigo-900/30 hover:border-white/80 dark:hover:border-white/20",
+          hoverEffect && variant === 'liquid' && "hover:shadow-xl hover:border-primary/30",
           hoverEffect && variant === 'neu' && "hover:shadow-lg hover:-translate-y-1 transition-transform",
-          hoverEffect && variant === 'default' && "hover:shadow-2xl hover:-translate-y-1 transition-transform",
+          hoverEffect && variant === 'default' && "hover:shadow-md hover:-translate-y-1 transition-transform",
 
           (hoverEffect || onClick) && "cursor-pointer",
           className
