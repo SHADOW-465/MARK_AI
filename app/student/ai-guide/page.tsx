@@ -11,12 +11,16 @@ export default async function AiGuidePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect("/auth/sign-in")
 
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        return <div className="p-8 text-center"><p className="text-destructive font-bold">Server configuration error: missing service key. Contact administrator.</p></div>
+    }
+
     const admin = createAdminClient()
 
-    const { data: student } = await admin
+    const { data: student, error: studentError } = await admin
         .from("students")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", user!.id)
         .maybeSingle()
 
     if (!student) return <div className="p-8 text-center"><p className="text-destructive font-bold">Profile not found. Contact your administrator.</p></div>
