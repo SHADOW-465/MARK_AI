@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/ui/glass-card"
 import { DashboardLayout } from "@/components/student-dashboard/dashboard-layout"
-import { TopNavigation } from "@/components/student-dashboard/top-navigation"
 import { StudentProfileCard } from "@/components/student-dashboard/student-profile-card"
 import { CourseCarousel } from "@/components/student-dashboard/course-carousel"
 import { StudyProgressChart } from "@/components/student-dashboard/study-progress-chart"
@@ -236,7 +235,6 @@ export default async function StudentDashboard() {
 
   return (
     <DashboardLayout
-      topNavigation={<TopNavigation studentName={student.name?.split(" ")[0] || "Student"} />}
       profile={
         <div className="space-y-4">
           <StudentProfileCard

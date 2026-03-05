@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
 interface DashboardLayoutProps {
-  topNavigation: ReactNode
+  topNavigation?: ReactNode
   profile: ReactNode
   courses: ReactNode
   progress: ReactNode
@@ -13,7 +13,7 @@ export function DashboardLayout({ topNavigation, profile, courses, progress, ass
   return (
     <div className="student-ui rounded-[20px] border border-border bg-background p-4 md:p-6">
       <div className="space-y-6">
-        {topNavigation}
+        {topNavigation && topNavigation}
 
         <div className="grid grid-cols-4 gap-6 lg:grid-cols-12">
           <section className="col-span-4 lg:col-span-3">{profile}</section>

@@ -5,7 +5,8 @@
       "Bash(echo No PRs or error occurred:*)",
       "Bash(cd:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(rm:*)"
     ]
   }
 }
