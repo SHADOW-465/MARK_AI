@@ -6,40 +6,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "Geist Mono", monospace;
 
-  /* --- PREMIUM COLOR PALETTE --- */
-
-  /* Primary: Deep Indigo (Trust & Intelligence) */
-  --color-brand-indigo-50: #EEF2FF;
-  --color-brand-indigo-100: #E0E7FF;
-  --color-brand-indigo-200: #C7D2FE;
-  --color-brand-indigo-300: #A5B4FC;
-  --color-brand-indigo-400: #818CF8;
-  --color-brand-indigo-500: #6366F1;
-  --color-brand-indigo-600: #4F46E5;
-  --color-brand-indigo-700: #4338CA;
-  --color-brand-indigo-800: #3730A3;
-  --color-brand-indigo-900: #312E81;
-
-  /* Accent: Vibrant Teal (Growth & Success) */
-  --color-brand-teal-50: #F0FDFA;
-  --color-brand-teal-400: #2DD4BF;
-  --color-brand-teal-500: #14B8A6;
-  --color-brand-teal-600: #0D9488;
-
-  /* Secondary Accent: Royal Purple (AI Magic) */
-  --color-brand-purple-500: #8B5CF6;
-  --color-brand-purple-600: #7C3AED;
-
-  /* Semantic System Mapping */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--card);
-  --color-popover-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -51,208 +27,97 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-input: var(--border);
-  --color-ring: var(--primary);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
-  /* Chart Colors */
-  --color-chart-1: var(--primary);
-  --color-chart-2: var(--accent);
-  --color-chart-3: #10b981;
-  --color-chart-4: #f59e0b;
-  --color-chart-5: #8b5cf6;
-
-  /* --- ADVANCED SHADOW SYSTEM (Soft UI + Liquid) --- */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
-  /* Card Shadow */
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.5);
-
-  --shadow-glow-primary: 0 0 20px rgba(155, 140, 255, 0.5);
-  --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.5);
-
-  /* Precise radii per spec */
-  --radius-xl: 20px;
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-
-  /* --- ANIMATION KEYFRAMES --- */
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  @keyframes pulse-glow {
-
-    0%,
-    100% {
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
-    }
-
-    50% {
-      box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
-    }
-  }
-
-  @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-shimmer: shimmer 8s linear infinite;
-  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
-  --animate-scale-in: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-sm: var(--radius-sm-token);
+  --radius-md: var(--radius-md-token);
+  --radius-lg: var(--radius-lg-token);
+  --radius-xl: var(--radius-xl-token);
 }
 
 @layer base {
   :root {
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-
-    /* --- FLUID DESIGN SYSTEM --- */
-
-    /* Fluid Typography using clamp() */
-    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-    /* 12px → 14px */
-    --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
-    /* 14px → 16px */
-    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-    /* 16px → 18px */
-    --font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
-    /* 18px → 20px */
-    --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-    /* 20px → 24px */
-    --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);
-    /* 24px → 32px */
-    --font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.5rem);
-    /* 30px → 40px */
-    --font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);
-    /* 36px → 48px */
-
-    /* Fluid Spacing Scale */
-    --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
-    /* 4px → 8px */
-    --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
-    /* 8px → 16px */
-    --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
-    /* 16px → 24px */
-    --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
-    /* 24px → 40px */
-    --space-xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
-    /* 32px → 64px */
-
-    /* Responsive Container Widths */
-    --container-sm: min(95%, 640px);
-    --container-md: min(92%, 768px);
-    --container-lg: min(90%, 1024px);
-    --container-xl: min(88%, 1280px);
-    --container-2xl: min(85%, 1536px);
-
-    /* Responsive Panel Widths */
-    --panel-sidebar: clamp(280px, 30vw, 420px);
-    /* Replaces w-[500px] */
-    --panel-narrow: clamp(240px, 25vw, 360px);
-    /* Replaces w-[450px] */
-
-    /* --- MODERN DARK SAAS THEME TOKENS --- */
-    /* Light Mode mapped to Dark because UI spec requests strict dark SaaS dashboard aesthetic everywhere */
     --background: #0f1115;
     --foreground: #ffffff;
-
     --card: #1c2128;
     --card-foreground: #ffffff;
-    --card-hover: #222833;
-
+    --popover: #1c2128;
+    --popover-foreground: #ffffff;
     --primary: #9b8cff;
     --primary-foreground: #0f1115;
-
     --secondary: #161a20;
     --secondary-foreground: #ffffff;
-
     --muted: #161a20;
-    --muted-foreground: #6b7280;
-
+    --muted-foreground: #9aa4b2;
     --accent: #c4b7ff;
-    /* accent_secondary */
     --accent-foreground: #0f1115;
-
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-
     --border: rgba(255, 255, 255, 0.06);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: #9b8cff;
+    --chart-1: #9b8cff;
+    --chart-2: #c4b7ff;
+    --chart-3: #22c55e;
+    --chart-4: #f59e0b;
+    --chart-5: #38bdf8;
 
-    --radius: 16px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 32px;
+    --space-8: 40px;
+    --space-9: 48px;
+
+    --radius-sm-token: 8px;
+    --radius-md-token: 12px;
+    --radius-lg-token: 16px;
+    --radius-xl-token: 20px;
+
+    --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+    --shadow-soft: 0 8px 28px rgba(0, 0, 0, 0.32);
+    --shadow-glow: 0 0 24px rgba(155, 140, 255, 0.25);
   }
 
   .dark {
-    /* Identical mapping for strict thematic consistency */
     --background: #0f1115;
     --foreground: #ffffff;
     --card: #1c2128;
     --card-foreground: #ffffff;
-    --card-hover: #222833;
+    --popover: #1c2128;
+    --popover-foreground: #ffffff;
     --primary: #9b8cff;
     --primary-foreground: #0f1115;
     --secondary: #161a20;
     --secondary-foreground: #ffffff;
     --muted: #161a20;
-    --muted-foreground: #6b7280;
+    --muted-foreground: #9aa4b2;
     --accent: #c4b7ff;
     --accent-foreground: #0f1115;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     --border: rgba(255, 255, 255, 0.06);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: #9b8cff;
   }
-}
 
-@layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/60;
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-foreground;
     font-family: var(--font-sans);
+    min-height: 100vh;
   }
 
   h1,
@@ -262,44 +127,92 @@
   h5,
   h6 {
     font-family: var(--font-display);
-    @apply font-semibold tracking-tight;
+    @apply tracking-tight;
   }
 }
 
-/* --- STREAMLINED UTILITIES --- */
+@layer utilities {
+  .bg-mesh-light,
+  .bg-mesh-dark {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(circle at 12% -10%, rgba(155, 140, 255, 0.18), transparent 34%),
+      radial-gradient(circle at 85% -5%, rgba(196, 183, 255, 0.12), transparent 34%),
+      radial-gradient(circle at 50% 120%, rgba(37, 99, 235, 0.1), transparent 40%);
+  }
 
-/* Liquid Glass - updated for dark SaaS */
-.liquid-glass {
-  background: rgba(28, 33, 40, 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  .saas-surface {
+    background: linear-gradient(160deg, rgba(28, 33, 40, 0.96), rgba(22, 26, 32, 0.92));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-lg-token);
+  }
+
+  .liquid-glass {
+    background: rgba(28, 33, 40, 0.75);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .dashboard-grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (min-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(130deg, #9b8cff, #c4b7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 320ms ease-out;
+  }
+
+  .spin-slow {
+    animation: spin 3.2s linear infinite;
+  }
+
+  .neu-flat {
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-card);
+  }
+
+  .neu-pressed {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.55);
+  }
 }
 
-/* Text Gradients */
-.text-gradient-primary {
-  background: linear-gradient(135deg, #9b8cff, #c4b7ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Animations */
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -307,17 +220,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.16);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.28);
 }
 
-/* Reduced Motion Support for Accessibility */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {

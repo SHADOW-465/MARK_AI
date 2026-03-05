@@ -8,78 +8,96 @@ import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type NavItem = {
-    href: string
-    label: string
-    icon: React.ElementType
-    matchPrefix?: boolean
+  href: string
+  label: string
+  icon: React.ElementType
+  matchPrefix?: boolean
 }
 
 interface SidebarNavigationProps {
-    items: NavItem[]
-    userName: string
-    userEmail: string
-    userInitials: string
-    role: "Teacher" | "Student"
+  items: NavItem[]
+  userName: string
+  userEmail: string
+  userInitials: string
+  role: "Teacher" | "Student"
+  collapsed?: boolean
 }
 
-export function SidebarNavigation({ items, userName, userEmail, userInitials, role }: SidebarNavigationProps) {
-    const pathname = usePathname()
+export function SidebarNavigation({
+  items,
+  userName,
+  userEmail,
+  userInitials,
+  role,
+  collapsed = false,
+}: SidebarNavigationProps) {
+  const pathname = usePathname()
 
-    return (
-        <div className="flex flex-col h-full w-full bg-background text-card-foreground">
-            <div className="h-20 flex px-6 items-center border-b border-border/50 shrink-0">
-                <Logo />
-            </div>
+  return (
+    <div className="flex h-full w-full flex-col bg-secondary/70 text-card-foreground">
+      <div className={cn("flex h-20 items-center border-b border-border/60", collapsed ? "justify-center px-2" : "px-5")}> 
+        {collapsed ? (
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+            <span className="text-sm font-bold">M</span>
+          </div>
+        ) : (
+          <Logo />
+        )}
+      </div>
 
-            <div className="flex-1 py-6 px-4 flex flex-col gap-1.5 overflow-y-auto w-full">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
-                    Menu
-                </div>
-                {items.map((item) => {
-                    const isHome = (item.href === "/dashboard" || item.href === "/student/dashboard")
-                    const actuallyActive = isHome ? pathname === item.href : pathname.startsWith(item.href)
+      <div className={cn("flex-1 overflow-y-auto py-6", collapsed ? "px-2" : "px-3")}> 
+        {!collapsed && (
+          <div className="mb-3 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Navigation
+          </div>
+        )}
 
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all group relative overflow-hidden",
-                                actuallyActive
-                                    ? "bg-primary/10 text-primary"
-                                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                            )}
-                        >
-                            <item.icon size={18} className={cn(
-                                "transition-colors",
-                                actuallyActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                            )} />
-                            <span className="font-semibold">{item.label}</span>
-                            {actuallyActive && (
-                                <div className="absolute left-0 top-[10%] bottom-[10%] w-1 bg-primary rounded-r-md"></div>
-                            )}
-                        </Link>
-                    )
-                })}
-            </div>
+        <div className="space-y-1">
+          {items.map((item) => {
+            const isHome = item.href === "/dashboard" || item.href === "/student/dashboard"
+            const isActive = isHome ? pathname === item.href : pathname.startsWith(item.href)
 
-            <div className="p-4 border-t border-border/50 mt-auto shrink-0">
-                <div className="p-3 bg-secondary/50 rounded-xl flex items-center gap-3 mb-2 border border-border/50">
-                    <div className="w-10 h-10 shrink-0 rounded-full bg-primary flex items-center justify-center font-bold text-sm text-primary-foreground shadow-sm">
-                        {userInitials}
-                    </div>
-                    <div className="overflow-hidden flex-1">
-                        <p className="text-sm font-bold text-foreground truncate leading-tight mb-0.5">{userName}</p>
-                        <p className="text-xs text-muted-foreground truncate">{role}</p>
-                    </div>
-                </div>
-                <form action="/auth/sign-out" method="post">
-                    <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                        <LogOut size={16} className="mr-3" />
-                        <span className="font-medium">Sign out</span>
-                    </Button>
-                </form>
-            </div>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "group flex items-center rounded-xl border border-transparent px-3 py-3 text-sm font-medium transition-all",
+                  collapsed ? "justify-center" : "gap-3",
+                  isActive
+                    ? "border-primary/35 bg-primary/15 text-foreground shadow-[var(--shadow-glow)]"
+                    : "text-muted-foreground hover:border-border hover:bg-card/70 hover:text-foreground",
+                )}
+              >
+                <item.icon size={18} className={cn(isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
+                {!collapsed && <span>{item.label}</span>}
+              </Link>
+            )
+          })}
         </div>
-    )
+      </div>
+
+      <div className={cn("mt-auto border-t border-border/60 p-3", collapsed && "p-2")}> 
+        {!collapsed && (
+          <div className="mb-2 flex items-center gap-3 rounded-xl border border-border/60 bg-card/60 p-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+              {userInitials}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">{userName}</p>
+              <p className="truncate text-xs text-muted-foreground">{role} • {userEmail}</p>
+            </div>
+          </div>
+        )}
+
+        <form action="/auth/sign-out" method="post">
+          <Button variant="ghost" className={cn("w-full text-muted-foreground hover:text-destructive", collapsed ? "justify-center" : "justify-start")}>
+            <LogOut size={16} className={cn(!collapsed && "mr-2")} />
+            {!collapsed && <span>Sign out</span>}
+          </Button>
+        </form>
+      </div>
+    </div>
+  )
 }
+

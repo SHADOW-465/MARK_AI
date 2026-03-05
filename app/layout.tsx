@@ -45,12 +45,12 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-mesh-light dark:bg-mesh-dark min-h-screen transition-colors duration-300`}>
+      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-mesh-light min-h-screen`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
-            enableSystem
+            defaultTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <VoiceAssistantWrapper>
@@ -62,3 +62,4 @@ export default async function RootLayout({
     </html>
   )
 }
+

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/ui/glass-card"
 import {
     Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle,
-    Sparkles, Folder, Calendar, BookOpen, Star, Trophy, Clock
+    Sparkles, Folder, Calendar, BookOpen, Star, Trophy
 } from "lucide-react"
 import Link from "next/link"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
@@ -13,6 +13,7 @@ import { StudyThisButton } from "@/components/student/study-this-button"
 import { AiDailyBrief } from "@/components/dashboard/ai-daily-brief"
 import { ActiveSessionsWidget } from "@/components/dashboard/active-sessions-widget"
 import { SelfAssessmentPrompt } from "@/components/student/self-assessment-prompt"
+import { ProgressBar } from "@/components/dashboard/progress-bar"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -54,6 +55,9 @@ export default async function StudentDashboard() {
             </div>
         )
     }
+
+    const currentXp = student.xp || 0
+    const levelProgress = Math.min(100, Math.max(0, currentXp % 100))
 
     // 1. NBA Hero: Query Tasks sorted by impact
     let nbaTask = null
@@ -175,6 +179,14 @@ export default async function StudentDashboard() {
             </div>
 
             <AiDailyBrief studentId={student.id} />
+
+            <GlassCard className="p-5">
+                <div className="mb-3 flex items-center justify-between">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Level Progress</p>
+                    <span className="text-sm font-semibold text-foreground">Level {student.level || 1}</span>
+                </div>
+                <ProgressBar label="XP to next level" value={levelProgress} />
+            </GlassCard>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -361,3 +373,8 @@ export default async function StudentDashboard() {
         </div>
     )
 }
+
+
+
+
+
