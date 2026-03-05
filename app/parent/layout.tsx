@@ -14,7 +14,7 @@ export default async function ParentLayout({
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   // Get or create parent profile

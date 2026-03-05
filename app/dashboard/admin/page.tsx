@@ -9,7 +9,7 @@ export default async function AdminAnalyticsPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   // Check admin role

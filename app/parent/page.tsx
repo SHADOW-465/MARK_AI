@@ -11,7 +11,7 @@ export default async function ParentDashboard() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   // Get parent profile
@@ -22,7 +22,7 @@ export default async function ParentDashboard() {
     .single()
 
   if (!parent) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   // Get claimed children with their latest exam info

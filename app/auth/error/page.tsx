@@ -27,7 +27,7 @@ export default async function AuthErrorPage({
                 ) : (
                   <p className="text-sm text-muted-foreground">An unspecified error occurred during authentication.</p>
                 )}
-                <Link href="/auth/login">
+                <Link href="/">
                   <Button className="w-full">Back to Login</Button>
                 </Link>
               </div>

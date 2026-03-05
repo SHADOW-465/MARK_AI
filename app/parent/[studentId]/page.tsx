@@ -16,7 +16,7 @@ export default async function ChildDetailPage({
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   // Verify parent has access to this student
@@ -27,7 +27,7 @@ export default async function ChildDetailPage({
     .single()
 
   if (!parent) {
-    redirect("/auth/login")
+    redirect("/")
   }
 
   const { data: mapping } = await supabase

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 export default async function AiGuidePage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect("/auth/sign-in")
+    if (!user) redirect("/")
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
         return <div className="p-8 text-center"><p className="text-destructive font-bold">Server configuration error: missing service key. Contact administrator.</p></div>

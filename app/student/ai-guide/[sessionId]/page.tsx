@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic"
 export default async function SessionPage({ params }: { params: { sessionId: string } }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect("/auth/sign-in")
+    if (!user) redirect("/")
 
     const admin = createAdminClient()
 
@@ -20,7 +20,7 @@ export default async function SessionPage({ params }: { params: { sessionId: str
         .eq("user_id", user.id)
         .maybeSingle()
 
-    if (!student) redirect("/auth/sign-in")
+    if (!student) redirect("/")
 
     const { data: session } = await admin
         .from("ai_guide_sessions")

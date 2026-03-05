@@ -8,7 +8,7 @@ export default async function StudentAnalytics() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) redirect("/auth/login")
+    if (!user) redirect("/")
 
     // Get student
     const { data: student } = await supabase

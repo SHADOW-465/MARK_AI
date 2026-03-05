@@ -21,7 +21,7 @@ export default function SignUpSuccessPage() {
                   Please check your email to confirm your account. Once confirmed, you can login to access the
                   dashboard.
                 </p>
-                <Link href="/auth/login">
+                <Link href="/">
                   <Button variant="outline" className="w-full bg-transparent">
                     Back to Login
                   </Button>
