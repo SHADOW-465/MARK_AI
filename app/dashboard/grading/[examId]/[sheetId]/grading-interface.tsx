@@ -444,7 +444,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                       </div>
 
                       <div className="space-y-3">
-                        <div className="bg-muted/20 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border/50 max-h-[150px] overflow-y-auto">
+                        <div className="bg-muted/20 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border/50 max-h-16 overflow-y-auto">
                           <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Extracted Answer</p>
                           {ev.extracted_text || <span className="italic text-muted-foreground/60">No text extracted</span>}
                         </div>
@@ -455,7 +455,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                             value={ev.reasoning}
                             onChange={(e) => handleFeedbackChange(index, e.target.value)}
                             enableVoice
-                            className="text-sm min-h-[60px] max-h-[200px] overflow-y-auto bg-transparent border-border focus:border-primary text-foreground resize-none"
+                            className="text-sm min-h-16 max-h-16 overflow-y-auto bg-transparent border-border focus:border-primary text-foreground resize-none"
                             placeholder="AI Feedback..."
                           />
                         </div>
@@ -489,7 +489,7 @@ export default function GradingInterface({ sheet, initialEvaluations }: GradingI
                     value={overallFeedback}
                     onChange={(e) => setOverallFeedback(e.target.value)}
                     enableVoice
-                    className="min-h-[150px] max-h-[300px] overflow-y-auto bg-muted/20 border-border text-foreground mb-4"
+                    className="min-h-16 max-h-16 overflow-y-auto bg-muted/20 border-border text-foreground mb-4"
                     placeholder="Enter overall feedback for the student..."
                   />
 

@@ -33,7 +33,7 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="pt-24 pb-8 relative">
-        <div className="px-4 lg:px-8 max-w-[1600px] mx-auto">
+        <div className="px-4 lg:px-8 max-w-16 mx-auto">
           <BackButton />
           {children}
         </div>

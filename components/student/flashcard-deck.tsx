@@ -63,7 +63,7 @@ export function FlashcardDeck({ initialCards, studentId }: { initialCards: any[]
 
     if (!currentCard) {
         return (
-            <GlassCard className="h-[400px] flex flex-col items-center justify-center text-center p-8 border-dashed border-white/10">
+            <GlassCard className="h-16 flex flex-col items-center justify-center text-center p-8 border-dashed border-white/10">
                 <Brain size={48} className="text-muted-foreground mb-4 opacity-20" />
                 <h3 className="text-lg font-bold mb-2">Workspace Clear</h3>
                 <p className="text-sm text-muted-foreground">All cards reviewed! Upload more notes to generate new cards.</p>
@@ -80,7 +80,7 @@ export function FlashcardDeck({ initialCards, studentId }: { initialCards: any[]
             </div>
 
             {/* FLIP CARD */}
-            <div className="perspective-1000 h-[400px] w-full" onClick={() => setIsFlipped(!isFlipped)}>
+            <div className="perspective-1000 h-16 w-full" onClick={() => setIsFlipped(!isFlipped)}>
                 <motion.div
                     className="relative w-full h-full text-center transition-all duration-500 [transform-style:preserve-3d] cursor-pointer"
                     animate={{ rotateY: isFlipped ? 180 : 0 }}

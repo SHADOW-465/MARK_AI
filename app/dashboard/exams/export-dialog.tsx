@@ -170,7 +170,7 @@ export function ExportDialog({ exam }: ExportDialogProps) {
                     Export Exam
                 </button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-[400px]">
+            <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-16">
                 <DialogHeader>
                     <DialogTitle>Export Exam</DialogTitle>
                     <DialogDescription className="text-muted-foreground">

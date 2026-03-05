@@ -263,7 +263,7 @@ export default async function DashboardPage() {
                 Class Performance
               </h3>
             </div>
-            <div className="h-[300px] w-full">
+            <div className="h-16 w-full">
               <AnalyticsChart data={analyticsData} />
             </div>
           </GlassCard>

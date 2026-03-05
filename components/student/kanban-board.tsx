@@ -67,7 +67,7 @@ export function KanbanBoard({ initialTasks, studentId }: { initialTasks: any[], 
                         </span>
                     </div>
 
-                    <div className="space-y-3 min-h-[400px] p-2 rounded-2xl bg-secondary/30 border border-dashed border-border">
+                    <div className="space-y-3 min-h-16 p-2 rounded-2xl bg-secondary/30 border border-dashed border-border">
                         {tasks.filter(t => t.status === col.id).map(task => (
                             <motion.div
                                 key={task.id}

@@ -59,7 +59,7 @@ export function StudentFilters({ classes }: { classes: string[] }) {
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Select onValueChange={handleClassChange} defaultValue={searchParams.get("class") || "all"}>
-                    <SelectTrigger className="w-[120px] bg-slate-100/50 dark:bg-black/20 border-border rounded-xl">
+                    <SelectTrigger className="w-16 bg-slate-100/50 dark:bg-black/20 border-border rounded-xl">
                         <SelectValue placeholder="Class" />
                     </SelectTrigger>
                     <SelectContent>
@@ -72,7 +72,7 @@ export function StudentFilters({ classes }: { classes: string[] }) {
 
                 <Input
                     placeholder="Section"
-                    className="w-[100px] bg-slate-100/50 dark:bg-black/20 border-border rounded-xl"
+                    className="w-16 bg-slate-100/50 dark:bg-black/20 border-border rounded-xl"
                     defaultValue={searchParams.get("section") || ""}
                     onChange={(e) => handleSectionChange(e.target.value)}
                 />

@@ -164,7 +164,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                           <span className="px-2 py-1 bg-secondary/50 rounded text-xs text-muted-foreground font-mono mr-2">Q{ev.question_num}</span>
                           <span className="font-semibold text-foreground text-sm">{question?.question_text}</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2 min-w-[60px] justify-center">
+                        <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2 min-w-16 justify-center">
                           <span className="text-lg font-bold text-foreground">{ev.final_score}</span>
                           <span className="text-xs text-muted-foreground">/{question?.max_marks}</span>
                         </div>
@@ -172,7 +172,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
 
                       <div className="space-y-3">
                         {ev.extracted_text && (
-                          <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border max-h-[100px] overflow-y-auto">
+                          <div className="bg-muted/50 p-3 rounded-lg text-xs font-mono text-muted-foreground border border-border max-h-16 overflow-y-auto">
                             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your Answer</p>
                             {ev.extracted_text}
                           </div>
@@ -180,7 +180,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
 
                         {/* Answer Key / Model Answer */}
                         {question?.model_answer && (
-                          <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-[150px] overflow-y-auto">
+                          <div className="bg-emerald-500/10 p-3 rounded-lg text-xs border border-emerald-500/20 max-h-16 overflow-y-auto">
                             <p className="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-bold">📝 Answer Key</p>
                             <p className="text-foreground leading-relaxed">{question.model_answer}</p>
 
@@ -234,7 +234,7 @@ export default function StudentResultViewer({ sheet, evaluations, feedbackData }
                     <Sparkles size={20} />
                     <h3 className="font-bold">Personalized Growth Plan</h3>
                   </div>
-                  <div className="min-h-[150px] text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                  <div className="min-h-16 text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
                     {overallFeedback}
                   </div>
                 </GlassCard>

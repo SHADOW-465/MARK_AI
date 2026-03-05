@@ -94,7 +94,7 @@ export function FloatingAssistant() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-4 min-h-[80px] max-h-[200px] overflow-y-auto">
+                        <div className="p-4 min-h-16 max-h-16 overflow-y-auto">
                             {/* Listening Indicator */}
                             {isListening && (
                                 <div className="flex items-center gap-3">

@@ -248,7 +248,7 @@ export default function CreateExamPage() {
                 AI Import / Generate
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] bg-card border-border">
+            <DialogContent className="sm:max-w-16 bg-card border-border">
               <DialogHeader>
                 <DialogTitle>AI Exam Assistant</DialogTitle>
                 <DialogDescription>Import questions from text or generate them from a topic.</DialogDescription>
@@ -263,7 +263,7 @@ export default function CreateExamPage() {
                     <Label>Paste Question Paper / Answer Key</Label>
                     <Textarea
                       placeholder="Paste your questions here. e.g.&#10;1. What is the speed of light? (2 marks)&#10;2. Explain Newton's First Law. (5 marks)"
-                      className="min-h-[200px] max-h-[500px] overflow-y-auto bg-background/50"
+                      className="min-h-16 max-h-16 overflow-y-auto bg-background/50"
                       enableVoice
                       value={importText}
                       onChange={(e) => setImportText(e.target.value)}
@@ -295,7 +295,7 @@ export default function CreateExamPage() {
                     <Label>Additional Instructions</Label>
                     <Textarea
                       placeholder="e.g. Create 5 questions. Mix of multiple choice and short answer. Hard difficulty."
-                      className="bg-background/50 max-h-[200px] overflow-y-auto"
+                      className="bg-background/50 max-h-16 overflow-y-auto"
                       enableVoice
                       value={generationPrompt}
                       onChange={(e) => setGenerationPrompt(e.target.value)}
@@ -479,7 +479,7 @@ export default function CreateExamPage() {
                         onChange={(e) => updateQuestion(index, "question_text", e.target.value)}
                         enableVoice
                         required
-                        className="bg-background/50 min-h-[80px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
+                        className="bg-background/50 min-h-16 max-h-16 overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -505,7 +505,7 @@ export default function CreateExamPage() {
                         onChange={(e) => updateQuestion(index, "model_answer", e.target.value)}
                         enableVoice
                         required
-                        className="bg-background/50 min-h-[100px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
+                        className="bg-background/50 min-h-16 max-h-16 overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -516,7 +516,7 @@ export default function CreateExamPage() {
                         onChange={(e) => updateQuestion(index, "rubric", e.target.value)}
                         enableVoice
                         required
-                        className="bg-background/50 min-h-[100px] max-h-[300px] overflow-y-auto border-primary/10 focus:border-primary/50"
+                        className="bg-background/50 min-h-16 max-h-16 overflow-y-auto border-primary/10 focus:border-primary/50"
                       />
                     </div>
                   </div>
@@ -533,7 +533,7 @@ export default function CreateExamPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 min-w-[150px]"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 min-w-16"
           >
             {isLoading ? (
               <>

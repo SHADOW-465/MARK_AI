@@ -97,7 +97,7 @@ export function BulkImportDialog() {
                     Bulk Import
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-slate-900 border-slate-800 text-white sm:max-w-16">
                 <DialogHeader>
                     <DialogTitle>Bulk Import Students</DialogTitle>
                     <DialogDescription className="text-muted-foreground">

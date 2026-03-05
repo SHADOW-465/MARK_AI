@@ -54,7 +54,7 @@ export const Navbar = ({ isTeacher, userName, userEmail, userInitials }: NavbarP
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="w-[300px] p-0 border-r border-border bg-background/95 backdrop-blur-xl">
+                            <SheetContent side="left" className="w-16 p-0 border-r border-border bg-background/95 backdrop-blur-xl">
                                 <div className="flex flex-col h-full">
                                     <div className="p-8 border-b border-border/50">
                                         <Logo />

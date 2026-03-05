@@ -41,7 +41,7 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-center pointer-events-none">
-            <nav className="pointer-events-auto flex items-center justify-between w-full max-w-[1600px] h-20 px-6 rounded-full liquid-glass transition-all duration-300">
+            <nav className="pointer-events-auto flex items-center justify-between w-full max-w-16 h-20 px-6 rounded-full liquid-glass transition-all duration-300">
 
                 {/* Left Section: Mobile Menu + Logo */}
                 <div className="flex items-center gap-6">
@@ -52,7 +52,7 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="w-[300px] p-0 border-r border-border bg-background/95 backdrop-blur-xl">
+                            <SheetContent side="left" className="w-16 p-0 border-r border-border bg-background/95 backdrop-blur-xl">
                                 <div className="flex flex-col h-full">
                                     <div className="p-8 border-b border-border/50">
                                         <Logo />
@@ -110,8 +110,8 @@ export const NavbarStudent = ({ userName, userEmail, userInitials }: NavbarStude
                     </button>
 
                     <div className="hidden md:flex items-center gap-4 pl-4 border-l border-border/50">
-                        <div className="flex flex-col items-end min-w-[60px]">
-                            <span className="text-sm font-bold text-foreground leading-none truncate max-w-[120px]">{userName}</span>
+                        <div className="flex flex-col items-end min-w-16">
+                            <span className="text-sm font-bold text-foreground leading-none truncate max-w-16">{userName}</span>
                             <span className="text-xs text-muted-foreground mt-1 font-medium">Student</span>
                         </div>
                         <div className="group relative">

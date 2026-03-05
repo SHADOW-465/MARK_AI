@@ -111,7 +111,7 @@ export function PredictiveGradeSandbox({
                             +{gain} Marks
                         </div>
                     )}
-                    <p className="text-xs text-center text-muted-foreground mt-4 max-w-[200px]">
+                    <p className="text-xs text-center text-muted-foreground mt-4 max-w-16">
                         Adjust the sliders to see how fixing specific weaknesses impacts your final grade.
                     </p>
                 </div>

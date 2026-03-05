@@ -115,7 +115,7 @@ export function CustomCardDialog({ studentId }: CustomCardDialogProps) {
                                 value={formData.answer}
                                 onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
                                 required
-                                className="bg-white/5 border-white/10 rounded-xl focus:border-neon-purple/50 min-h-[100px] resize-none"
+                                className="bg-white/5 border-white/10 rounded-xl focus:border-neon-purple/50 min-h-16 resize-none"
                             />
                         </div>
 

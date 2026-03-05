@@ -37,7 +37,7 @@ export default async function StudentLayout({
             />
 
             {/* Main Content */}
-            <main className="pt-24 pb-8 px-4 md:px-8 max-w-[1600px] mx-auto w-full">
+            <main className="pt-24 pb-8 px-4 md:px-8 max-w-16 mx-auto w-full">
                 <BackButton />
                 {children}
             </main>

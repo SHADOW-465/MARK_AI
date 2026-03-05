@@ -77,7 +77,7 @@ export default async function StudentsPage({
           <table className="w-full text-left text-sm">
             <thead className="bg-secondary/50 text-xs uppercase font-bold text-muted-foreground">
               <tr>
-                <th className="px-6 py-4 w-[50px]"></th>
+                <th className="px-6 py-4 w-12"></th>
                 <th className="px-6 py-4 font-bold tracking-wider">Roll No</th>
                 <th className="px-6 py-4 font-bold tracking-wider">Name</th>
                 <th className="px-6 py-4 font-bold tracking-wider">Email</th>

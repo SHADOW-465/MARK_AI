@@ -13,14 +13,14 @@ export interface AnalyticsChartProps {
 export function AnalyticsChart({ data }: AnalyticsChartProps) {
     if (!data || data.length === 0) {
         return (
-            <div className="h-[300px] w-full flex items-center justify-center text-slate-500">
+            <div className="h-16 w-full flex items-center justify-center text-slate-500">
                 <p>No exam data available yet</p>
             </div>
         )
     }
 
     return (
-        <div className="h-[300px] w-full">
+        <div className="h-16 w-full">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />

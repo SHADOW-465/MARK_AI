@@ -84,7 +84,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                         </LineChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                    <div className="h-16 flex items-center justify-center text-muted-foreground">
                         No XP data yet. Complete activities to see your progress!
                     </div>
                 )}
@@ -116,7 +116,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                        <div className="h-16 flex items-center justify-center text-muted-foreground">
                             No graded exams yet.
                         </div>
                     )}
@@ -148,7 +148,7 @@ export function AnalyticsCharts({ xpData, examScoreData, subjectData, currentSta
                             ))}
                         </div>
                     ) : (
-                        <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                        <div className="h-16 flex items-center justify-center text-muted-foreground">
                             Complete exams to see subject breakdown.
                         </div>
                     )}
