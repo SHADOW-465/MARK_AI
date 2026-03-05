@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, MoreHorizontal, Send } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, MoreHorizontal, Send, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -296,7 +296,7 @@ export default async function StudentDashboard() {
                             {/* Top right badges */}
                             <div className="absolute top-6 right-6 flex items-center gap-2 z-10">
                                 <div className="bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 shadow-sm">
-                                    <Model size={14} className="text-foreground" />
+                                    <Sparkles size={14} className="text-foreground" />
                                     <span className="text-xs font-bold text-foreground">Model</span>
                                 </div>
                                 <button className="w-8 h-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm">

@@ -12,7 +12,6 @@ const NAV_ITEMS = [
     { href: "/student/dashboard", label: "Dashboard" },
     { href: "/student/performance", label: "Statistic" },
     { href: "/student/ai-guide", label: "AI-assistant" },
-    { href: "/student/support", label: "Support" }, // Optional
 ]
 
 interface StudentTopbarProps {
