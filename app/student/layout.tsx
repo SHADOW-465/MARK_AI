@@ -15,23 +15,8 @@ export default async function StudentLayout({
         redirect("/auth/login")
     }
 
-    // Fetch Student Data for Navbar
-    const { data: student } = await supabase
-        .from("students")
-        .select("name")
-        .eq("user_id", user.id)
-        .maybeSingle()
-
-    const userName = student?.name || "Student"
-    const userEmail = user.email || ""
-    const userInitials = userName && userName.length > 0 ? userName[0].toUpperCase() : "S"
-
     return (
-        <StudentShell
-            userName={userName}
-            userEmail={userEmail}
-            userInitials={userInitials}
-        >
+        <StudentShell>
             {children}
         </StudentShell>
     )

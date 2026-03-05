@@ -204,6 +204,32 @@
   }
 }
 
+  .student-ui {
+    --background: #f4f6fb;
+    --foreground: #1e293b;
+    --card: #ffffff;
+    --card-foreground: #1e293b;
+    --popover: #ffffff;
+    --popover-foreground: #1e293b;
+    --primary: #ff6b4a;
+    --primary-foreground: #ffffff;
+    --secondary: #fff1ed;
+    --secondary-foreground: #1e293b;
+    --muted: #f8fafc;
+    --muted-foreground: #64748b;
+    --accent: #ff9b85;
+    --accent-foreground: #ffffff;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #ff6b4a;
+    --chart-1: #ff6b4a;
+    --chart-2: #ff9b85;
+    --chart-3: #38bdf8;
+    --chart-4: #f59e0b;
+    --chart-5: #8b5cf6;
+    color-scheme: light;
+  }
+
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -245,3 +271,4 @@
     scroll-behavior: auto !important;
   }
 }
+
