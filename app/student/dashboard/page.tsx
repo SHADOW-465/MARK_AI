@@ -9,7 +9,10 @@ import Link from "next/link"
 import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
 import { StreakReminder } from "@/components/student/streak-reminder"
 import { StudentTasksWidget } from "@/components/student/tasks-widget"
-import { AddToGuideButton } from "@/components/student/add-to-guide-button"
+import { StudyThisButton } from "@/components/student/study-this-button"
+import { AiDailyBrief } from "@/components/dashboard/ai-daily-brief"
+import { ActiveSessionsWidget } from "@/components/dashboard/active-sessions-widget"
+import { SelfAssessmentPrompt } from "@/components/student/self-assessment-prompt"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -113,6 +116,14 @@ export default async function StudentDashboard() {
         }
     }
 
+    // Recent AI Guide sessions for the "Resume Studying" widget
+    const { data: recentSessions } = await supabase
+        .from("ai_guide_sessions")
+        .select("id, title, last_active_at")
+        .eq("student_id", student.id)
+        .order("last_active_at", { ascending: false })
+        .limit(5)
+
     // 4. Upcoming Exams
     const { data: upcomingExams } = await supabase
         .from("exams")
@@ -164,6 +175,8 @@ export default async function StudentDashboard() {
                     </div>
                 </GlassCard>
             </div>
+
+            <AiDailyBrief studentId={student.id} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -259,7 +272,7 @@ export default async function StudentDashboard() {
                                             <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
                                                 <span>{new Date(sheet.created_at).toLocaleDateString()}</span>
                                                 <div className="flex items-center gap-2">
-                                                    <AddToGuideButton examId={sheet.id} examName={displayName} studentId={student.id} />
+                                                    <StudyThisButton examId={sheet.id} examName={displayName} studentId={student.id} />
                                                     <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-primary font-medium">
                                                         Feedback <ArrowRight size={12} aria-label={`View feedback for ${displayName}`} />
                                                     </span>
@@ -305,8 +318,26 @@ export default async function StudentDashboard() {
                         </div>
                     </GlassCard>
 
+                    {(() => {
+                        if (!upcomingExams || upcomingExams.length === 0) return null
+                        const soon = upcomingExams[0] as any
+                        const daysUntil = Math.ceil(
+                            (new Date(soon.exam_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                        )
+                        if (daysUntil > 7) return null
+                        return (
+                            <SelfAssessmentPrompt
+                                examId={soon.id}
+                                examName={soon.exam_name}
+                                studentId={student.id}
+                                subject={soon.subject || "General"}
+                            />
+                        )
+                    })()}
+
                     {/* Widgets */}
-                    <MarkRecoveryWidget stats={recoveryStats} />
+                    <ActiveSessionsWidget sessions={recentSessions || []} />
+                    <MarkRecoveryWidget stats={recoveryStats} studentId={student.id} />
 
                     {/* Quick Access */}
                     <GlassCard className="p-6">

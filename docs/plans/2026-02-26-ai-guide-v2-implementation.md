@@ -13,6 +13,8 @@ Frontend work does not begin until all API routes are complete and manually veri
 
 > **Note:** This project has no test infrastructure. All "verify" steps are manual browser/console checks.
 
+> **CRITICAL POST-MIGRATION INSTRUCTION:** The Prisma to Supabase migration has been executed. When executing the rest of this plan, DO NOT use Prisma. Instead of `import { prisma } from "@/lib/prisma"`, use `import { createAdminClient } from "@/lib/supabase/admin"` for API routes, and `createClient()` for Server Components. Convert all `prisma.*` queries below to their Supabase equivalents on the fly!
+
 ---
 
 ## Phase 1 — Database
@@ -324,7 +326,7 @@ git commit -m "feat: Sarvam AI OCR service — routes Indian-script/handwriting 
 ```typescript
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { extractTextFromFile } from "@/lib/sarvam-ocr"
 
 export async function POST(req: Request) {
@@ -415,7 +417,7 @@ git commit -m "feat: wire OCR into upload pipeline — ocr_text now populated vi
 
 ```typescript
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 // GET /api/ai-guide/sessions?studentId=xxx
 // Returns all sessions for a student, newest first
@@ -504,7 +506,7 @@ export async function POST(req: Request) {
 
 ```typescript
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 // GET /api/ai-guide/sessions/:id
 // Full session including chat_history and generated_outputs
@@ -596,7 +598,7 @@ git commit -m "feat: session persistence API — full CRUD for AiGuideSession"
 ```typescript
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "")
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
@@ -813,7 +815,7 @@ git commit -m "feat: add concept_explainer, drill_practice, keyword_builder, exa
 
 ```typescript
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "")
@@ -921,7 +923,7 @@ git commit -m "feat: AI Daily Brief API — personalized 2-sentence study focus 
 
 ```typescript
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 // POST /api/student/self-assessment
 // Body: { studentId, examId, topics: [{ name, confidence: 1-5 }] }
@@ -2189,7 +2191,7 @@ git commit -m "feat: dashboard + analytics components — Daily Brief, Active Se
 ```typescript
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { SessionsList } from "@/components/ai-guide/sessions-list"
 import { Brain, Sparkles } from "lucide-react"
 
@@ -2241,7 +2243,7 @@ export default async function AiGuidePage() {
 ```typescript
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { SessionView } from "@/components/ai-guide/session-view"
 import { Brain, ArrowLeft } from "lucide-react"
 import Link from "next/link"

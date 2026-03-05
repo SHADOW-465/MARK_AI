@@ -5,6 +5,7 @@ import { CheckCircle, AlertCircle, Clock, ArrowRight, TrendingUp, BarChart2 } fr
 import Link from "next/link"
 import { PredictiveGradeSandbox } from "@/components/performance/predictive-grade-sandbox"
 import { AnalyticsCharts } from "@/components/student/analytics-charts"
+import { ErrorTrendChart } from "@/components/student/error-trend-chart"
 
 export const dynamic = 'force-dynamic'
 
@@ -147,6 +148,19 @@ export default async function ProgressInsights() {
         }
     }
 
+    const errorTrendData = approvedExams.map((sheet: any) => {
+        const examData = sheet.exams as any
+        const feedback = feedbackList?.find((f: any) => f.answer_sheet_id === sheet.id)
+        const root = (feedback?.root_cause_analysis as Record<string, number>) || {}
+
+        return {
+            examName: examData?.exam_name || "Exam",
+            concept: Number(root.concept || 0),
+            calculation: Number(root.calculation || 0),
+            keyword: Number(root.keyword || 0),
+        }
+    }).reverse() // Chronological order
+
     const getPct = (val: number) => gapStats.total > 0 ? Math.round((val / gapStats.total) * 100) : 0
 
     return (
@@ -219,6 +233,8 @@ export default async function ProgressInsights() {
                             </div>
                         )}
                     </GlassCard>
+
+                    <ErrorTrendChart data={errorTrendData} />
                 </div>
             </div>
 
