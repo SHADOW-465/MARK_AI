@@ -1,34 +1,27 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-
-// We need a Service Role client to process uploads broadly if needed, 
-// but for student uploads, we can usage the standard client. 
-// However, the SRS says "backend support for uploads ... to Supabase storage".
-// We'll use the authenticated user's client if possible, or a server admin client.
-// Assuming we have env vars.
+import { createAdminClient } from "@/lib/supabase/admin"
+import { extractTextFromFile } from "@/lib/sarvam-ocr"
 
 export async function POST(req: Request) {
     try {
         const formData = await req.formData()
-        const file = formData.get('file') as File
-        const studentId = formData.get('student_id') as string
+        const file = formData.get("file") as File
+        const studentId = formData.get("student_id") as string
 
         if (!file || !studentId) {
-            return NextResponse.json({ error: 'Missing file or student_id' }, { status: 400 })
+            return NextResponse.json({ error: "Missing file or student_id" }, { status: 400 })
         }
 
-        const supabase = createClient(
+        // 1. Upload to Supabase Storage (use anon key client for storage — bucket policies handle auth)
+        const storageClient = createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
-
-        // 1. Upload to Supabase Storage
-        const fileExt = file.name.split('.').pop()
+        const fileExt = file.name.split(".").pop()
         const fileName = `${studentId}/${Date.now()}.${fileExt}`
-        const { data: uploadData, error: uploadError } = await supabase
-            .storage
-            .from('student_sources') // Assuming this bucket exists or will be created
+        const { error: uploadError } = await storageClient.storage
+            .from("student_sources")
             .upload(fileName, file)
 
         if (uploadError) {
@@ -37,25 +30,31 @@ export async function POST(req: Request) {
 
         const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/student_sources/${fileName}`
 
-        // 2. Perform OCR (Simulated or via Gemini Vision if text/image)
-        // For now, we'll placeholder OCR. In a real scenario, we'd send to Gemini/Google Cloud Vision.
-        // If it's a PDF/Image, we can use Gemini 2.5 Flash which accepts files/images.
-        let ocrText = ""
+        // 2. Extract text via Sarvam AI / pdf-parse
+        const { text: ocrText, method } = await extractTextFromFile(file)
+        console.log(`[upload] ${file.name} → method: ${method}, chars: ${ocrText.length}`)
 
         // 3. Save to DB
-        const source = await prisma.studentSource.create({
-            data: {
+        const supabase = createAdminClient()
+        const { data: source, error: dbError } = await supabase
+            .from("student_sources")
+            .insert({
                 student_id: studentId,
                 file_url: fileUrl,
-                type: 'upload',
+                type: "upload",
                 title: file.name,
-                ocr_text: ocrText
-            }
-        })
+                ocr_text: ocrText,
+            })
+            .select()
+            .single()
+
+        if (dbError) {
+            return NextResponse.json({ error: dbError.message }, { status: 500 })
+        }
 
         return NextResponse.json({ data: source })
     } catch (error) {
-        console.error('Upload Error:', error)
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        console.error("Upload Error:", error)
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
     }
 }

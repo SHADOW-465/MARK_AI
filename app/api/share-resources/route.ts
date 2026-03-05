@@ -1,33 +1,34 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 export async function POST(req: Request) {
     try {
-        const { resourceType, resourceId, studentIds, title, content } = await req.json()
-        // resourceType: 'exam_result' | 'answer_key' | 'past_paper'
+        const { studentIds, title, content, fileUrl } = await req.json()
 
-        // For each student, create a StudentSource entry
-        // In a real app, we might use a transition table, but SRS implies adding to student_sources.
+        if (!studentIds?.length) {
+            return NextResponse.json({ error: "No students specified" }, { status: 400 })
+        }
 
-        const operations = studentIds.map((studentId: string) =>
-            prisma.studentSource.create({
-                data: {
-                    student_id: studentId,
-                    type: 'shared',
-                    title: title || `Shared Resource`,
-                    ocr_text: content || "",
-                    // If it's a file, we should copy the URL. 
-                    // Assuming the request body provides necessary data (url/content)
-                    file_url: "", // Logic to handle file URL if applicable
-                }
-            })
-        )
+        const supabase = createAdminClient()
 
-        await prisma.$transaction(operations)
+        // Bulk insert — one row per student
+        const rows = studentIds.map((studentId: string) => ({
+            student_id: studentId,
+            type: "shared",
+            title: title || "Shared Resource",
+            ocr_text: content || "",
+            file_url: fileUrl || "",
+        }))
+
+        const { error } = await supabase.from("student_sources").insert(rows)
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 })
+        }
 
         return NextResponse.json({ success: true, count: studentIds.length })
     } catch (error) {
-        console.error('Share Error:', error)
-        return NextResponse.json({ error: 'Share Failed' }, { status: 500 })
+        console.error("Share Error:", error)
+        return NextResponse.json({ error: "Share Failed" }, { status: 500 })
     }
 }

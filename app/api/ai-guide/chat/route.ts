@@ -1,38 +1,58 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { smoothStream, streamText } from "ai" // Utilizing Vercel AI SDK if possible, or manual streaming
-// The user has "ai": "latest" and "@ai-sdk/google": "latest" in package.json (Step 10).
+import { streamText } from "ai"
 import { google } from "@ai-sdk/google"
-import { prisma } from "@/lib/prisma"
+import { createAdminClient } from "@/lib/supabase/admin"
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+export const maxDuration = 30
 
 export async function POST(req: Request) {
     try {
-        const { messages, sourceIds, studentId } = await req.json()
+        const { messages, sourceIds, studentId, examContextId } = await req.json()
+        const supabase = createAdminClient()
 
-        // 1. Fetch context from sources
-        const sources = await prisma.studentSource.findMany({
-            where: {
-                id: { in: sourceIds },
-                student_id: studentId
+        // 1. Fetch source materials
+        let context = ""
+        if (sourceIds && sourceIds.length > 0) {
+            const { data: sources } = await supabase
+                .from("student_sources")
+                .select("title, ocr_text")
+                .in("id", sourceIds)
+                .eq("student_id", studentId)
+
+            if (sources) {
+                context = sources
+                    .map((s) => `Source: ${s.title}\nContent: ${s.ocr_text || "(No text)"}`)
+                    .join("\n\n")
             }
-        })
+        }
 
-        const context = sources.map((s: { title: string | null; ocr_text: string | null }) => `Source: ${s.title}\nContent: ${s.ocr_text || "(No text)"}`).join("\n\n")
+        // 2. Fetch exam context if provided
+        let examContext = ""
+        if (examContextId) {
+            const { data: sheet } = await supabase
+                .from("answer_sheets")
+                .select("total_score, exams(*), feedback_analysis(*)")
+                .eq("id", examContextId)
+                .maybeSingle()
 
-        const systemPrompt = `You are an AI Study Guide. Assist the student based on the following materials:\n\n${context}\n\nAnswer their questions accurately and concisely.`
+            if (sheet) {
+                const exam = sheet.exams as any
+                const fb = (sheet.feedback_analysis as any[])?.[0]
+                const rca = fb?.root_cause_analysis || {}
+                examContext = `\n\nExam context: ${fb?.exam_name || exam?.exam_name} — Score: ${sheet.total_score}/${fb?.exam_total_marks || exam?.total_marks}. Errors: concept=${rca.concept || 0}, calculation=${rca.calculation || 0}, keyword=${rca.keyword || 0}`
+            }
+        }
 
-        // 2. Stream Response
+        const systemPrompt = `You are an AI Study Guide tutor for Indian school students. Help the student based on their materials and exam performance.\n\n${context}${examContext}\n\nBe specific, encouraging, and reference the actual content when answering.`
+
         const result = streamText({
             model: google("gemini-1.5-flash"),
             system: systemPrompt,
             messages,
         })
 
-        return result.toTextStreamResponse();
+        return result.toTextStreamResponse()
     } catch (error) {
-        console.error('Chat Error:', error)
-        return new Response('Chat Failed', { status: 500 })
+        console.error("Chat Error:", error)
+        return new Response("Chat Failed", { status: 500 })
     }
 }
