@@ -1,19 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
-import { GlassCard } from "@/components/ui/glass-card"
-import {
-    Target, Brain, TrendingUp, ArrowRight, Play, Flame, AlertCircle,
-    Sparkles, Folder, Calendar, BookOpen, Star, Trophy
-} from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, MoreHorizontal, Send } from "lucide-react"
 import Link from "next/link"
-import { MarkRecoveryWidget } from "@/components/dashboard/mark-recovery-widget"
-import { StreakReminder } from "@/components/student/streak-reminder"
-import { StudentTasksWidget } from "@/components/student/tasks-widget"
-import { StudyThisButton } from "@/components/student/study-this-button"
-import { AiDailyBrief } from "@/components/dashboard/ai-daily-brief"
-import { ActiveSessionsWidget } from "@/components/dashboard/active-sessions-widget"
-import { SelfAssessmentPrompt } from "@/components/student/self-assessment-prompt"
-import { ProgressBar } from "@/components/dashboard/progress-bar"
 import { cn } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
@@ -23,7 +11,7 @@ export default async function StudentDashboard() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-        return <div>Please log in</div>
+        return <div className="p-8 text-center text-muted-foreground">Please log in to view your dashboard.</div>
     }
 
     // Fetch Student Data
@@ -36,99 +24,22 @@ export default async function StudentDashboard() {
     if (!student) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-                <div className="h-24 w-24 rounded-full bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/20 shadow-sm">
-                    <AlertCircle size={48} />
-                </div>
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-display font-bold">Account Link Required</h1>
-                    <p className="text-muted-foreground max-w-sm text-lg mx-auto">
-                        We couldn&apos;t find your student profile. Ask your teacher to add you!
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <Button asChild variant="default" className="px-6 py-3">
-                        <Link href="/auth/sign-up">
-                            Try Linking Again <ArrowRight size={18} />
-                        </Link>
-                    </Button>
-                </div>
+                <h1 className="text-3xl font-display font-bold">Account Link Required</h1>
+                <p className="text-muted-foreground max-w-sm text-lg mx-auto">
+                    We couldn't find your student profile. Ask your teacher to add you!
+                </p>
+                <Button asChild variant="default" className="px-6 py-3">
+                    <Link href="/auth/sign-up">Try Linking Again <ArrowRight size={18} className="ml-2" /></Link>
+                </Button>
             </div>
         )
     }
 
-    const currentXp = student.xp || 0
-    const levelProgress = Math.min(100, Math.max(0, currentXp % 100))
+    // Task counts approximation for the UI metrics
+    const { count: pendingCount } = await supabase.from("student_tasks").select("*", { count: 'exact', head: true }).eq("student_id", student.id).eq("status", "pending")
+    const { count: completedCount } = await supabase.from("student_tasks").select("*", { count: 'exact', head: true }).eq("student_id", student.id).eq("status", "completed")
 
-    // 1. NBA Hero: Query Tasks sorted by impact
-    let nbaTask = null
-    const { data: nbaTasks } = await supabase
-        .from("student_tasks")
-        .select("*")
-        .eq("student_id", student.id)
-        .eq("status", "pending")
-        .eq("priority", "High")
-        .limit(5)
-
-    if (nbaTasks && nbaTasks.length > 0) {
-        nbaTask = nbaTasks.sort((a, b) => {
-            const wA = a.metadata?.priority_weight || 0
-            const wB = b.metadata?.priority_weight || 0
-            return wB - wA
-        })[0]
-    }
-
-    // 2. Recent Graded Exams & Average Calculation
-    const { data: recentExams } = await supabase
-        .from("answer_sheets")
-        .select(`
-            id, created_at, total_score, status, exam_id,
-            exams (exam_name, total_marks, subject, exam_date),
-            feedback_analysis (exam_name, exam_subject, exam_total_marks)
-        `)
-        .eq("student_id", student.id)
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(5)
-
-    // Calculate Average Score
-    let averageScore = 0
-    if (recentExams && recentExams.length > 0) {
-        const total = recentExams.reduce((acc, exam) => {
-            const examData = exam.exams as any
-            const max = examData?.total_marks || 100
-            return acc + ((exam.total_score || 0) / max) * 100
-        }, 0)
-        averageScore = Math.round(total / recentExams.length)
-    }
-
-    // 3. Mark Recovery Stats
-    let recoveryStats = { concept: 0, calculation: 0, keyword: 0 }
-    if (recentExams && recentExams.length > 0) {
-        const { data: feedback } = await supabase
-            .from("feedback_analysis")
-            .select("root_cause_analysis")
-            .eq("answer_sheet_id", recentExams[0].id)
-            .single()
-
-        if (feedback && feedback.root_cause_analysis) {
-            const r = feedback.root_cause_analysis as Record<string, unknown>
-            recoveryStats = {
-                concept: Number(r.concept || 0),
-                calculation: Number(r.calculation || 0),
-                keyword: Number(r.keyword || 0)
-            }
-        }
-    }
-
-    // Recent AI Guide sessions for the "Resume Studying" widget
-    const { data: recentSessions } = await supabase
-        .from("ai_guide_sessions")
-        .select("id, title, last_active_at")
-        .eq("student_id", student.id)
-        .order("last_active_at", { ascending: false })
-        .limit(5)
-
-    // 4. Upcoming Exams
+    // Upcoming Exams
     const { data: upcomingExams } = await supabase
         .from("exams")
         .select("id, exam_name, exam_date, subject")
@@ -137,244 +48,282 @@ export default async function StudentDashboard() {
         .order("exam_date", { ascending: true })
         .limit(3)
 
+    const upcomingCount = upcomingExams?.length || 0
+
+    // Recent subjects as "Courses"
+    const { data: recentExams } = await supabase
+        .from("answer_sheets")
+        .select(`
+            id, total_score, status,
+            exams (exam_name, total_marks, subject)
+        `)
+        .eq("student_id", student.id)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(5)
+
+    // Ensure we have some data for the 'courses' UI block to demonstrate the design
+    const dummyCourses = [
+        { title: "Design thinking", level: "Advanced", classes: "4/12 classes", progress: 46, mentorName: "Tomas Luis" },
+        { title: "Leadership", level: "Beginner", classes: "8/14 classes", progress: 72, mentorName: "Nelly Roven" },
+        { title: "IT English", level: "Advanced", classes: "6/10 classes", progress: 56, mentorName: "Stefan Colman" },
+    ]
+
+    const coursesToShow = recentExams && recentExams.length > 0
+        ? recentExams.map((exam: any, i) => {
+            const e = exam.exams
+            const percent = e?.total_marks ? Math.round(((exam.total_score || 0) / e.total_marks) * 100) : dummyCourses[i % 3].progress
+            return {
+                title: e?.subject || e?.exam_name || dummyCourses[i % 3].title,
+                level: "Advanced",
+                classes: `${percent}% Score`,
+                progress: percent,
+                mentorName: "Instructor"
+            }
+        })
+        : dummyCourses
+
+    // Progress calculations for the profile ring
+    const profileProgress = Math.min(100, Math.max(0, student.xp ? student.xp % 100 : 78))
+    const strokeDasharray = 283 // 2 * pi * 45
+    const strokeDashoffset = strokeDasharray - (strokeDasharray * profileProgress) / 100
+
     return (
-        <div className="space-y-8 animate-fade-in-up">
+        <div className="w-full animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
 
-            {/* Header with Performance Summary */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                        <span className="font-display font-bold text-2xl">{student.name.charAt(0)}</span>
+                {/* --- LEFT COLUMN: Statistic Profile --- */}
+                <div className="lg:col-span-4 xl:col-span-3">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-display font-semibold text-foreground">Statistic</h2>
+                        <Button variant="ghost" className="h-8 rounded-full text-xs font-semibold px-4 bg-secondary/50 hover:bg-secondary">
+                            View all
+                        </Button>
                     </div>
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
-                            Hello, {student.name.split(' ')[0]}!
-                        </h1>
-                        <p className="text-muted-foreground font-medium text-sm">Ready to learn?</p>
-                    </div>
-                </div>
 
-                {/* Performance Pill */}
-                <GlassCard className="px-6 py-4 flex items-center gap-6 rounded-2xl" variant="neu">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                            <Trophy size={20} />
-                        </div>
-                        <div>
-                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Avg. Score</p>
-                            <p className="text-2xl font-display font-bold text-foreground">{averageScore}%</p>
-                        </div>
-                    </div>
-                    <div className="h-12 w-px bg-border" />
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-xl bg-chart-4/10 text-chart-4">
-                            <Flame size={20} />
-                        </div>
-                        <div>
-                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Streak</p>
-                            <p className="text-2xl font-display font-bold text-foreground">{student.streak || 0} <span className="text-sm font-medium text-muted-foreground">days</span></p>
-                        </div>
-                    </div>
-                </GlassCard>
-            </div>
-
-            <AiDailyBrief studentId={student.id} />
-
-            <GlassCard className="p-5">
-                <div className="mb-3 flex items-center justify-between">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Level Progress</p>
-                    <span className="text-sm font-semibold text-foreground">Level {student.level || 1}</span>
-                </div>
-                <ProgressBar label="XP to next level" value={levelProgress} />
-            </GlassCard>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-                {/* Main Content (Left 8 cols) */}
-                <div className="lg:col-span-8 space-y-6">
-
-                    {/* Hero Action Card */}
-                    <GlassCard variant="liquid" className="p-8 relative overflow-hidden group">
-                        <div className="relative z-10 flex flex-col md:flex-row gap-6 md:items-center justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="px-3 py-1 rounded-full bg-primary/20 backdrop-blur-md text-xs font-bold text-primary uppercase tracking-wider border border-primary/10">
-                                        Recommended Focus
-                                    </span>
-                                </div>
-                                <h2 className="text-2xl font-bold text-foreground mb-3 max-w-xl leading-tight">
-                                    {nbaTask ? nbaTask.title : "Explore the Knowledge Vault"}
-                                </h2>
-                                <p className="text-muted-foreground mb-6 max-w-lg text-sm">
-                                    {nbaTask?.why || "You're all caught up! Browse past materials or practice with AI flashcards."}
-                                </p>
-
-                                <div className="flex flex-wrap gap-4">
-                                    <Button asChild variant="default" className="px-8 py-6 text-base shadow-lg shadow-primary/25">
-                                        <Link href={nbaTask ? "/student/vault?tab=missions" : "/student/vault"}>
-                                            {nbaTask ? <Play size={20} fill="currentColor" /> : <Folder size={20} />}
-                                            {nbaTask ? "Start Mission" : "Open Vault"}
-                                        </Link>
-                                    </Button>
-                                    <Button asChild variant="secondary" className="px-8 py-6 text-base">
-                                        <Link href="/student/performance">
-                                            <TrendingUp size={20} /> View Analytics
-                                        </Link>
-                                    </Button>
-                                </div>
+                    {/* Circular Profile Avatar */}
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="relative w-32 h-32 mb-4">
+                            {/* Background ring */}
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" className="stroke-secondary" strokeWidth="6" />
+                                <circle
+                                    cx="50" cy="50" r="45" fill="none"
+                                    className="stroke-[var(--student-primary)]"
+                                    strokeWidth="6" strokeLinecap="round"
+                                    style={{ strokeDasharray, strokeDashoffset, transition: 'stroke-dashoffset 1s ease-in-out' }}
+                                />
+                            </svg>
+                            {/* Avatar image / Initial */}
+                            <div className="absolute inset-2 rounded-full overflow-hidden bg-muted border-4 border-background flex items-center justify-center text-4xl font-display font-bold text-muted-foreground shadow-sm">
+                                {student.name.charAt(0)}
                             </div>
-                            <div className="hidden md:flex shrink-0">
-                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 group-hover:bg-primary/20 transition-all duration-500">
-                                    {nbaTask ? <Target size={48} className="text-primary" /> : <BookOpen size={48} className="text-primary" />}
-                                </div>
+                            {/* Level Badge overlapping bottom edge */}
+                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--student-primary)] text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-background shadow-sm whitespace-nowrap">
+                                Lvl {student.level || "Beginner"}
                             </div>
                         </div>
 
-                        {/* Abstract Background Shapes */}
-                        <div className="absolute -right-20 -bottom-40 w-80 h-80 bg-chart-1/20 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute -left-20 -top-40 w-80 h-80 bg-chart-5/20 rounded-full blur-3xl pointer-events-none" />
-                    </GlassCard>
-
-                    {/* Recent Results Cards */}
-                    <div>
-                        <div className="flex items-center justify-between mb-4 px-2">
-                            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                                <Star className="text-amber-500 fill-amber-500" size={20} />
-                                Recent Results
-                            </h3>
-                            <Link href="/student/performance" className="text-sm font-medium text-primary hover:underline">View All</Link>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {recentExams && recentExams.length > 0 ? recentExams.slice(0, 4).map((sheet: any) => {
-                                const examData = sheet.exams
-                                const feedbackData = sheet.feedback_analysis?.[0]
-                                const displayName = feedbackData?.exam_name || examData?.exam_name || 'Exam'
-                                const displaySubject = feedbackData?.exam_subject || examData?.subject || 'General'
-                                const totalMarks = feedbackData?.exam_total_marks || examData?.total_marks || 100
-                                const percentage = Math.round((sheet.total_score / totalMarks) * 100)
-                                return (
-                                    <Link key={sheet.id} href={`/student/performance/${sheet.id}`}>
-                                        <GlassCard hoverEffect className="p-5 flex flex-col justify-between h-full group border-l-4 border-l-transparent hover:border-l-primary transition-all">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                                                        {displaySubject}
-                                                    </p>
-                                                    <h4 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
-                                                        {displayName}
-                                                    </h4>
-                                                </div>
-                                                <div className={cn(
-                                                    "px-3 py-1.5 rounded-lg text-xs font-bold border",
-                                                    percentage >= 80 ? "bg-chart-3/10 text-chart-3 border-chart-3/20" :
-                                                        percentage >= 60 ? "bg-chart-4/10 text-chart-4 border-chart-4/20" :
-                                                            "bg-destructive/10 text-destructive border-destructive/20"
-                                                )}>
-                                                    {percentage}%
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
-                                                <span>{new Date(sheet.created_at).toLocaleDateString()}</span>
-                                                <div className="flex items-center gap-2">
-                                                    <StudyThisButton examId={sheet.id} examName={displayName} studentId={student.id} />
-                                                    <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-primary font-medium">
-                                                        Feedback <ArrowRight size={12} aria-label={`View feedback for ${displayName}`} />
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </GlassCard>
-                                    </Link>
-                                )
-                            }) : (
-                                <div className="col-span-2 text-center py-12 text-muted-foreground bg-secondary/30 rounded-2xl border border-dashed border-border">
-                                    <p>No graded exams yet. Time to study!</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* Right Sidebar (4 cols) */}
-                <div className="lg:col-span-4 space-y-6">
-
-                    {/* Upcoming Schedule */}
-                    <GlassCard variant="neu" className="p-6">
-                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                            <Calendar className="text-primary" size={20} />
-                            Upcoming Exams
+                        <h3 className="text-2xl font-display font-medium text-foreground text-center">
+                            Welcome, {student.name.split(' ')[0]} 👋
                         </h3>
-                        <div className="space-y-4">
-                            {upcomingExams && upcomingExams.length > 0 ? upcomingExams.map((exam: any) => (
-                                <div key={exam.id} className="flex items-center gap-4 p-4 rounded-xl bg-secondary border border-border transition-colors hover:border-border/80">
-                                    <div className="flex flex-col items-center justify-center h-14 w-14 rounded-lg bg-primary/10 text-primary font-bold border border-primary/20 shrink-0">
-                                        <span className="text-[10px] tracking-widest uppercase">{new Date(exam.exam_date).toLocaleString('default', { month: 'short' })}</span>
-                                        <span className="text-xl leading-none">{new Date(exam.exam_date).getDate()}</span>
+                    </div>
+
+                    {/* Total month activity */}
+                    <div className="mb-8">
+                        <div className="flex items-end gap-3 mb-2">
+                            <span className="text-5xl font-display font-bold text-foreground leading-none">{profileProgress}%</span>
+                            <span className="text-sm text-muted-foreground font-medium pb-1 leading-tight">Total month<br />activity</span>
+                        </div>
+
+                        {/* 3-segment progress bar */}
+                        <div className="flex h-2.5 w-full rounded-full overflow-hidden gap-1 mt-4">
+                            <div className="bg-[#b388ff] h-full rounded-l-full" style={{ width: '42%' }}></div>
+                            <div className="bg-[#fad02c] h-full" style={{ width: '15%' }}></div>
+                            <div className="bg-[#ff6b4a] h-full rounded-r-full" style={{ width: '56%' }}></div>
+                        </div>
+                        <div className="flex justify-between w-full text-[10px] font-bold text-muted-foreground mt-2 px-1">
+                            <span className="w-[42%]">42%</span>
+                            <span className="w-[15%]">15%</span>
+                            <span className="w-[30%]">56%</span>
+                        </div>
+                    </div>
+
+                    {/* Quick Stats Grid */}
+                    <div className="grid grid-cols-3 gap-3 bg-secondary/30 rounded-3xl p-4 border border-border/50">
+                        {/* In progress */}
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-[#f3e8ff] text-[#b388ff] flex items-center justify-center">
+                                <Clock size={18} strokeWidth={2.5} />
+                            </div>
+                            <span className="text-2xl font-display font-bold text-foreground">{pendingCount || 0}</span>
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground text-center line-clamp-1">In progress</span>
+                        </div>
+                        {/* Upcoming */}
+                        <div className="flex flex-col items-center justify-center gap-2 border-x border-border/60">
+                            <div className="w-10 h-10 rounded-full bg-[#fef9c3] text-[#eab308] flex items-center justify-center">
+                                <CalendarIcon size={18} strokeWidth={2.5} />
+                            </div>
+                            <span className="text-2xl font-display font-bold text-foreground">{upcomingCount || 0}</span>
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground text-center line-clamp-1">Upcoming</span>
+                        </div>
+                        {/* Completed */}
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-[#ffe4e6] text-[#fe6b4a] flex items-center justify-center">
+                                <CheckCircle2 size={18} strokeWidth={2.5} />
+                            </div>
+                            <span className="text-2xl font-display font-bold text-foreground">{completedCount || 0}</span>
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground text-center line-clamp-1">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* --- RIGHT COLUMN: Main content area --- */}
+                <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
+
+                    {/* TOP HALF: Your Courses (Orange card) */}
+                    <div className="w-full bg-[var(--student-primary)] text-white rounded-[2rem] p-6 lg:p-8 shadow-xl shadow-[var(--student-primary)]/20">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-display font-medium">Your courses</h2>
+                            <div className="flex gap-2 items-center">
+                                <button className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center backdrop-blur-sm transition-colors">
+                                    <ChevronLeft size={16} />
+                                </button>
+                                <button className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center backdrop-blur-sm transition-colors">
+                                    <ChevronRight size={16} />
+                                </button>
+                                <Button variant="secondary" className="bg-white text-[var(--student-primary)] hover:bg-white/90 rounded-full text-xs font-semibold px-5 h-8 ml-2">
+                                    View all
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Horizontal scrolling courses */}
+                        <div className="flex overflow-x-auto gap-5 pb-2 snap-x hide-scrollbar">
+                            {coursesToShow.map((course, idx) => (
+                                <div key={idx} className="min-w-[260px] md:min-w-[280px] bg-background text-foreground rounded-3xl p-5 flex flex-col justify-between snap-start shadow-md hover:shadow-lg transition-shadow">
+                                    <div>
+                                        <h3 className="font-display font-semibold text-lg mb-3">{course.title}</h3>
+                                        <div className="flex items-center gap-2 mb-8">
+                                            <span className="bg-secondary text-muted-foreground text-[10px] uppercase font-bold px-2 py-1 rounded-md">
+                                                {course.level}
+                                            </span>
+                                            <span className="bg-destructive/10 text-destructive text-[10px] uppercase font-bold px-2 py-1 rounded-md">
+                                                {course.classes}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="overflow-hidden">
-                                        <p className="font-semibold text-foreground text-sm truncate">{exam.exam_name}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{exam.subject}</p>
+
+                                    <div>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-xs font-bold">{course.progress}% completed</span>
+                                        </div>
+                                        <div className="w-full bg-secondary h-1.5 rounded-full mb-4 overflow-hidden">
+                                            <div className="bg-[var(--student-primary)] h-full rounded-full" style={{ width: `${course.progress}%` }}></div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-[#f3e8ff] flex items-center justify-center overflow-hidden shrink-0">
+                                                <span className="text-xs font-bold text-[#b388ff]">{course.mentorName[0]}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] text-muted-foreground font-semibold uppercase">Mentor</span>
+                                                <span className="text-xs font-bold leading-tight">{course.mentorName}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            )) : (
-                                <p className="text-sm text-muted-foreground text-center py-4">No upcoming exams scheduled.</p>
-                            )}
+                            ))}
                         </div>
-                    </GlassCard>
+                    </div>
 
-                    {(() => {
-                        if (!upcomingExams || upcomingExams.length === 0) return null
-                        const soon = upcomingExams[0] as any
-                        const daysUntil = Math.ceil(
-                            (new Date(soon.exam_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-                        )
-                        if (daysUntil > 7) return null
-                        return (
-                            <SelfAssessmentPrompt
-                                examId={soon.id}
-                                examName={soon.exam_name}
-                                studentId={student.id}
-                                subject={soon.subject || "General"}
-                            />
-                        )
-                    })()}
+                    {/* BOTTOM HALF: Charts and AI */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 min-h-[300px]">
 
-                    {/* Widgets */}
-                    <ActiveSessionsWidget sessions={recentSessions || []} />
-                    <MarkRecoveryWidget stats={recoveryStats} studentId={student.id} />
+                        {/* Bottom Left: Study process bar chart */}
+                        <div className="bg-background rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between shadow-sm border border-border/60">
+                            <div className="flex justify-between items-start mb-6">
+                                <h3 className="text-xl font-display font-semibold text-foreground">Study proccess</h3>
+                                <select className="bg-secondary/50 border border-border/50 rounded-full px-4 py-1.5 text-xs font-semibold focus:outline-none appearance-none cursor-pointer">
+                                    <option>Week v</option>
+                                    <option>Month v</option>
+                                </select>
+                            </div>
 
-                    {/* Quick Access */}
-                    <GlassCard className="p-6">
-                        <h3 className="text-lg font-semibold text-foreground mb-4">Quick Study</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl hover:bg-secondary/80">
-                                <Link href="/student/flashcards" className="w-full h-full flex flex-col items-center justify-center gap-2">
-                                    <Brain size={24} className="text-chart-1 group-hover:scale-110 transition-transform" />
-                                    <span className="text-xs font-semibold">Flashcards</span>
-                                </Link>
-                            </Button>
-                            <Button asChild variant="secondary" className="h-[80px] flex-col rounded-xl hover:bg-secondary/80">
-                                <Link href="/student/vault" className="w-full h-full flex flex-col items-center justify-center gap-2">
-                                    <BookOpen size={24} className="text-chart-2 group-hover:scale-110 transition-transform" />
-                                    <span className="text-xs font-semibold">Library</span>
-                                </Link>
-                            </Button>
-                            <Button asChild variant="default" className="h-[60px] col-span-2 rounded-xl text-base shadow-lg shadow-primary/20">
-                                <Link href="/student/ai-guide" className="w-full h-full flex items-center justify-center gap-3">
-                                    <Sparkles size={20} className="group-hover:spin-slow" />
-                                    <span className="font-bold">Open AI Study Guide</span>
-                                </Link>
-                            </Button>
+                            {/* Custom Bar Chart mimicking the design */}
+                            <div className="flex items-end justify-between h-48 w-full px-2 gap-2 sm:gap-4 mt-auto">
+                                {/* Engage */}
+                                <div className="flex flex-col items-center gap-3 h-full justify-end flex-1 group">
+                                    <div className="relative w-full bg-secondary/60 rounded-t-xl group-hover:bg-secondary transition-colors" style={{ height: '66%' }}>
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[var(--student-primary)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">66%</div>
+                                    </div>
+                                    <span className="text-xs font-bold text-muted-foreground">Engage</span>
+                                </div>
+                                {/* Grow */}
+                                <div className="flex flex-col items-center gap-3 h-full justify-end flex-1 group">
+                                    <div className="relative w-full bg-secondary/60 rounded-t-xl group-hover:bg-secondary transition-colors" style={{ height: '40%' }}>
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[var(--student-primary)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">40%</div>
+                                    </div>
+                                    <span className="text-xs font-bold text-muted-foreground">Grow</span>
+                                </div>
+                                {/* Skills (Highlighted) */}
+                                <div className="flex flex-col items-center gap-3 h-full justify-end flex-1">
+                                    <div className="relative w-full bg-[var(--student-primary)] rounded-t-xl shadow-md shadow-[var(--student-primary)]/20" style={{ height: '87%' }}>
+                                        <div className="absolute -top-3 -left-3 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded-full z-10">87%</div>
+                                    </div>
+                                    <span className="text-xs font-bold text-foreground">Skills</span>
+                                </div>
+                                {/* Rate */}
+                                <div className="flex flex-col items-center gap-3 h-full justify-end flex-1 group">
+                                    <div className="relative w-full bg-secondary/60 rounded-t-xl group-hover:bg-secondary transition-colors" style={{ height: '56%' }}>
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[var(--student-primary)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">56%</div>
+                                    </div>
+                                    <span className="text-xs font-bold text-muted-foreground">Rate</span>
+                                </div>
+                            </div>
                         </div>
-                    </GlassCard>
 
+                        {/* Bottom Right: AI assistant */}
+                        <div className="rounded-[2rem] p-6 relative overflow-hidden flex flex-col justify-end min-h-[250px] shadow-sm border border-[var(--student-primary)]/10"
+                            style={{ background: 'linear-gradient(135deg, #ffd3e0 0%, #fecfef 50%, #e8dbff 100%)' }}>
+
+                            {/* Decorative background overlay (simulating the pink glassy graphic) */}
+                            <div className="absolute inset-0 opacity-40 mix-blend-overlay">
+                                <div className="absolute top-0 right-10 w-40 h-40 bg-white rounded-full blur-2xl"></div>
+                                <div className="absolute bottom-10 -left-10 w-40 h-40 bg-pink-400 rounded-full blur-3xl"></div>
+                            </div>
+
+                            {/* Top right badges */}
+                            <div className="absolute top-6 right-6 flex items-center gap-2 z-10">
+                                <div className="bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 shadow-sm">
+                                    <Model size={14} className="text-foreground" />
+                                    <span className="text-xs font-bold text-foreground">Model</span>
+                                </div>
+                                <button className="w-8 h-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm">
+                                    <MoreHorizontal size={14} className="text-foreground" />
+                                </button>
+                            </div>
+
+                            {/* Input Container */}
+                            <div className="bg-background/90 backdrop-blur-xl rounded-[1.5rem] p-5 lg:p-6 z-10 shadow-lg border border-border/40">
+                                <h3 className="font-display font-semibold text-foreground mb-4 text-xl">AI assistant</h3>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Ask something..."
+                                        className="w-full bg-secondary/80 border-none rounded-full pl-5 pr-14 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--student-primary)]/50 placeholder:text-muted-foreground"
+                                    />
+                                    <button className="absolute right-1.5 top-1/2 -translate-y-1/2 w-10 h-10 bg-[var(--student-primary)] text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-md">
+                                        <Send size={16} className="ml-[-2px] mt-[1px]" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+
             </div>
         </div>
     )
 }
-
-
-
-
-

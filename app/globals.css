@@ -43,30 +43,35 @@
 
 @layer base {
   :root {
-    --background: #0f1115;
-    --foreground: #ffffff;
-    --card: #1c2128;
-    --card-foreground: #ffffff;
-    --popover: #1c2128;
-    --popover-foreground: #ffffff;
+    --background: #fafafa;
+    --foreground: #09090b;
+    --card: #ffffff;
+    --card-foreground: #09090b;
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
     --primary: #9b8cff;
-    --primary-foreground: #0f1115;
-    --secondary: #161a20;
-    --secondary-foreground: #ffffff;
-    --muted: #161a20;
-    --muted-foreground: #9aa4b2;
-    --accent: #c4b7ff;
-    --accent-foreground: #0f1115;
+    --primary-foreground: #ffffff;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #09090b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #09090b;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --border: rgba(255, 255, 255, 0.06);
-    --input: rgba(255, 255, 255, 0.1);
+    --border: #e4e4e7;
+    --input: #e4e4e7;
     --ring: #9b8cff;
     --chart-1: #9b8cff;
     --chart-2: #c4b7ff;
     --chart-3: #22c55e;
     --chart-4: #f59e0b;
     --chart-5: #38bdf8;
+
+    --student-primary: #FE6B4B;
+    --student-primary-foreground: #ffffff;
+    --student-bg-light: #E5EFFF;
+    --student-bg-dark: #0f1115;
 
     --space-1: 4px;
     --space-2: 8px;
@@ -132,6 +137,7 @@
 }
 
 @layer utilities {
+
   .bg-mesh-light,
   .bg-mesh-dark {
     background-color: var(--background);
@@ -229,6 +235,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

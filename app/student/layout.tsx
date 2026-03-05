@@ -1,7 +1,7 @@
 import type React from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { DashboardShell } from "@/components/layout/dashboard-shell"
+import { StudentShell } from "@/components/layout/student-shell"
 
 export default async function StudentLayout({
     children,
@@ -27,13 +27,12 @@ export default async function StudentLayout({
     const userInitials = userName[0].toUpperCase()
 
     return (
-        <DashboardShell
+        <StudentShell
             userName={userName}
             userEmail={userEmail}
             userInitials={userInitials}
-            role="Student"
         >
             {children}
-        </DashboardShell>
+        </StudentShell>
     )
 }
