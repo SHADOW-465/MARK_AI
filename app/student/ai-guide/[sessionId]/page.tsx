@@ -80,7 +80,7 @@ export default async function SessionPage({ params }: { params: { sessionId: str
     }))
 
     return (
-        <div className="flex flex-col h-[calc(100vh-4rem)] p-4 max-w-16 mx-auto">
+        <div className="flex flex-col h-[calc(100vh-88px)] p-4 w-full">
             <div className="flex items-center gap-3 mb-4 flex-shrink-0">
                 <Link href="/student/ai-guide" className="p-2 rounded-xl hover:bg-secondary text-muted-foreground">
                     <ArrowLeft size={18} />
