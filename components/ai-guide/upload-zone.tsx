@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 interface UploadZoneProps {
     studentId: string
-    onUploadComplete?: () => void
+    onUploadComplete?: (source: any) => void
 }
 
 export function UploadZone({ studentId, onUploadComplete }: UploadZoneProps) {
@@ -57,8 +57,9 @@ export function UploadZone({ studentId, onUploadComplete }: UploadZoneProps) {
 
             if (!res.ok) throw new Error('Upload failed')
 
+            const { data: source } = await res.json()
             setStatus('success')
-            if (onUploadComplete) onUploadComplete()
+            if (onUploadComplete) onUploadComplete(source)
         } catch (error) {
             console.error(error)
             setStatus('error')
