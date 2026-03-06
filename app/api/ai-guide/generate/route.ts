@@ -110,8 +110,9 @@ Error breakdown:
             }
         }
 
+        // No source or exam context — use a general study helper prompt
         if (!sourceContext && !examContext) {
-            return NextResponse.json({ error: "No content found to generate from" }, { status: 400 })
+            sourceContext = "(No specific materials uploaded yet. Generate helpful general study content for this topic.)"
         }
 
         // 3. Generate

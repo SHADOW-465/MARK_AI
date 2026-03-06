@@ -217,7 +217,8 @@ export function SessionView({
     const toggleSource = (id: string) =>
         setSelectedIds((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
 
-    const canGenerate = selectedIds.length > 0 || !!session.exam_context_id
+    // Allow generate even without sources — the API will use session type as context
+    const canGenerate = true
 
     return (
         <div className="flex h-[calc(100vh-8rem)] gap-3">

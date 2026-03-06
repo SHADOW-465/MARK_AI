@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { Sparkles, Loader2 } from "lucide-react"
-import { GlassCard } from "@/components/ui/glass-card"
 
 export function AiDailyBrief({ studentId }: { studentId: string }) {
     const [brief, setBrief] = useState<string | null>(null)
@@ -18,7 +17,7 @@ export function AiDailyBrief({ studentId }: { studentId: string }) {
     if (!loading && !brief) return null
 
     return (
-        <GlassCard variant="liquid" gradientColor="purple" className="p-5 flex items-start gap-3">
+        <div className="rounded-2xl p-5 flex items-start gap-3" style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}>
             <div className="p-2 rounded-xl bg-white/20 flex-shrink-0">
                 {loading
                     ? <Loader2 size={15} className="text-white animate-spin" />
@@ -32,6 +31,6 @@ export function AiDailyBrief({ studentId }: { studentId: string }) {
                     : <p className="text-white text-sm font-medium leading-relaxed">{brief}</p>
                 }
             </div>
-        </GlassCard>
+        </div>
     )
 }
