@@ -37,6 +37,7 @@ export async function POST(req: Request) {
             errorFocus,
             title,
             sourceIds,
+            subjectId,
         } = await req.json()
 
         if (!studentId) {
@@ -74,6 +75,7 @@ export async function POST(req: Request) {
                 chat_history: [],
                 generated_outputs: [],
                 last_active_at: new Date().toISOString(),
+                subject_id: subjectId || null,
             })
             .select()
             .single()
