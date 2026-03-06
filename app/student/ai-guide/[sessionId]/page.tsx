@@ -7,7 +7,9 @@ import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
-export default async function SessionPage({ params }: { params: { sessionId: string } }) {
+export default async function SessionPage({ params }: { params: Promise<{ sessionId: string }> }) {
+    const { sessionId } = await params
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect("/")
@@ -25,11 +27,12 @@ export default async function SessionPage({ params }: { params: { sessionId: str
     const { data: session } = await admin
         .from("ai_guide_sessions")
         .select("*")
-        .eq("id", params.sessionId)
-        .single()
+        .eq("id", sessionId)
+        .maybeSingle()
 
     if (!session || session.student_id !== student.id) notFound()
 
+    // student_sources table may not exist yet — handle gracefully
     const { data: allSources } = await admin
         .from("student_sources")
         .select("id, title, type, ocr_text, created_at")

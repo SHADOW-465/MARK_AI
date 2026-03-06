@@ -300,7 +300,7 @@ export default async function StudentDashboard() {
       }
       courses={<SubjectCarousel subjects={subjects} />}
       progress={<StudyProgressChart data={chartData} />}
-      assistant={<AssistantWidget />}
+      assistant={<AssistantWidget studentId={student.id} />}
       extras={extras}
     />
   )
