@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/ui/glass-card"
 import { DashboardLayout } from "@/components/student-dashboard/dashboard-layout"
 import { StudentProfileCard } from "@/components/student-dashboard/student-profile-card"
-import { CourseCarousel } from "@/components/student-dashboard/course-carousel"
+import { SubjectCarousel } from "@/components/student-dashboard/subject-carousel"
 import { StudyProgressChart } from "@/components/student-dashboard/study-progress-chart"
 import { ActivityStatsCard } from "@/components/student-dashboard/activity-stats-card"
 import { AssistantWidget } from "@/components/student-dashboard/assistant-widget"
@@ -120,38 +120,89 @@ export default async function StudentDashboard() {
 
   const monthlyActivity = Math.min(100, Math.max(35, Math.round(avgScore * 0.6 + (student.streak || 0) * 2)))
 
-  const courses = (recentExams || []).slice(0, 3).map((exam: any, index) => {
-    const totalMarks = exam.exams?.total_marks || exam.feedback_analysis?.[0]?.exam_total_marks || 100
-    const completion = Math.round(((exam.total_score || 0) / totalMarks) * 100)
-    return {
-      id: exam.id,
-      title: exam.exams?.subject || exam.feedback_analysis?.[0]?.exam_subject || `Course ${index + 1}`,
-      level: completion >= 70 ? "Advanced" : "Beginner",
-      completion,
-      instructor: "Faculty Mentor",
-      stats: `${Math.max(1, index + 3)}/${Math.max(6, index + 8)} classes`,
-      href: `/student/performance/${exam.id}`,
-    }
+  // Auto-create subjects from exam data and fetch all
+  const subjectNamesFromExams = new Set<string>()
+  ;(recentExams || []).forEach((row: any) => {
+    const name = row.feedback_analysis?.[0]?.exam_subject || row.exams?.subject
+    if (name) subjectNamesFromExams.add(name.trim())
   })
 
-  const fallbackCourses = [
-    { id: "f1", title: "Design Thinking", level: "Advanced", completion: 46, instructor: "Tomas Luis", stats: "4/12 classes", href: "/student/study" },
-    { id: "f2", title: "Leadership", level: "Beginner", completion: 72, instructor: "Nelly Roven", stats: "8/14 classes", href: "/student/study" },
-    { id: "f3", title: "IT English", level: "Advanced", completion: 56, instructor: "Stefan Colman", stats: "6/10 classes", href: "/student/study" },
-  ]
+  const { data: existingSubjects } = await supabase
+    .from("student_subjects")
+    .select("name, color")
+    .eq("student_id", student.id)
 
-  const chartData = [
-    { label: "Engage", value: Math.min(100, 40 + (student.streak || 0) * 4) },
-    { label: "Grow", value: avgScore },
-    { label: "Skills", value: Math.max(25, 100 - recoveryStats.concept * 5) },
-    {
-      label: "Rate",
-      value: Math.min(
-        100,
-        Math.round(((completedCount || 0) / Math.max(1, (completedCount || 0) + (pendingCount || 0))) * 100),
-      ),
-    },
-  ]
+  const existingNames = new Set((existingSubjects || []).map((s: any) => s.name))
+  const COLORS = ["#9b8cff", "#FE6B4B", "#22c55e", "#f59e0b", "#38bdf8", "#e879f9", "#fb7185", "#34d399"]
+
+  const toInsert = [...subjectNamesFromExams]
+    .filter((name) => !existingNames.has(name))
+    .map((name, i) => ({
+      student_id: student.id,
+      name,
+      color: COLORS[(existingNames.size + i) % COLORS.length],
+      auto_created: true,
+    }))
+
+  if (toInsert.length > 0) {
+    await supabase.from("student_subjects").insert(toInsert)
+  }
+
+  const { data: allSubjects } = await supabase
+    .from("student_subjects")
+    .select("*")
+    .eq("student_id", student.id)
+    .order("created_at", { ascending: true })
+
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+  const subjects = await Promise.all(
+    (allSubjects || []).map(async (subject: any) => {
+      const subjectSheets = (recentExams || []).filter((s: any) => {
+        const name = s.feedback_analysis?.[0]?.exam_subject || s.exams?.subject
+        return name?.toLowerCase() === subject.name.toLowerCase()
+      })
+
+      const avgSubjectScore =
+        subjectSheets.length > 0
+          ? Math.round(
+              subjectSheets.reduce((acc: number, s: any) => {
+                const total = s.exams?.total_marks || s.feedback_analysis?.[0]?.exam_total_marks || 100
+                return acc + ((s.total_score || 0) / total) * 100
+              }, 0) / subjectSheets.length,
+            )
+          : 0
+
+      const { count: totalTasks } = await supabase
+        .from("student_tasks").select("*", { count: "exact", head: true }).eq("subject_id", subject.id)
+      const { count: completedTasks } = await supabase
+        .from("student_tasks").select("*", { count: "exact", head: true }).eq("subject_id", subject.id).eq("status", "completed")
+      const { count: sessionCount } = await supabase
+        .from("study_sessions").select("*", { count: "exact", head: true }).eq("subject_id", subject.id).gte("created_at", weekAgo)
+
+      return {
+        ...subject,
+        avgScore: avgSubjectScore,
+        totalTasks: totalTasks || 0,
+        completedTasks: completedTasks || 0,
+        sessionCount: sessionCount || 0,
+      }
+    }),
+  )
+
+  // Study process chart: task completion % per subject (up to 4)
+  const chartData =
+    subjects.length > 0
+      ? subjects.slice(0, 4).map((s: any) => ({
+          label: s.name.length > 8 ? s.name.slice(0, 7) + "…" : s.name,
+          value: s.totalTasks > 0 ? Math.round((s.completedTasks / s.totalTasks) * 100) : 0,
+        }))
+      : [
+          { label: "Engage", value: Math.min(100, 40 + (student.streak || 0) * 4) },
+          { label: "Grow", value: avgScore },
+          { label: "Skills", value: Math.max(25, 100 - recoveryStats.concept * 5) },
+          { label: "Rate", value: Math.min(100, Math.round(((completedCount || 0) / Math.max(1, (completedCount || 0) + (pendingCount || 0))) * 100)) },
+        ]
 
   const extras = (
     <div className="space-y-6">
@@ -247,7 +298,7 @@ export default async function StudentDashboard() {
           <ActivityStatsCard inProgress={pendingCount || 0} upcoming={upcomingExams?.length || 0} completed={completedCount || 0} />
         </div>
       }
-      courses={<CourseCarousel courses={courses.length > 0 ? courses : fallbackCourses} />}
+      courses={<SubjectCarousel subjects={subjects} />}
       progress={<StudyProgressChart data={chartData} />}
       assistant={<AssistantWidget />}
       extras={extras}
