@@ -162,7 +162,7 @@ Rationale: Planner and Vault are functionally part of the subject workflow. Flas
 - 9 sections with equal visual weight — no clear primary action
 - avgScore defaults to 72 for new users with no exams — misleading
 - Subject carousel uses ambiguous progress rings (0% looks the same as no-data)
-- 8 nav items with overlapping purposes
+- 6 nav items with overlapping purposes
 - 4 separate paths to AI Guide
 
 **Proposed 3-column layout:**
