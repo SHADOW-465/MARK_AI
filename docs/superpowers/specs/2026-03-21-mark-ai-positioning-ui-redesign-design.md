@@ -15,6 +15,14 @@ This document covers three parallel workstreams:
 2. **UI/UX redesign** — fixing the student dashboard, navigation, subject cards, and AI Guide entry points
 3. **Pitch documentation** — a one-page principal brief and a 10-slide sales deck for institutional sales
 
+### 1.1 Current State Baseline
+
+As of 2026-03-21, the following prior approved specs have been implemented and are live in the codebase:
+- `2026-03-06-student-dashboard-subjects-design.md` — Subject-centric architecture, `student_subjects` table, `SubjectCarousel` component with circular progress rings, `study_sessions` and `student_tasks` with `subject_id` FK
+- `2026-03-06-ui-ux-audit-stabilization-design.md` — Global `StudentTopbar` with 6-item navigation (Dashboard · AI Guide · Performance · Flashcards · Planner · Vault), glass card design system, theme toggle
+
+**This document supersedes parts of both prior specs.** Specifically: the `SubjectCarousel` with circular progress rings is replaced by a subject status list (Section 4.4), and the 6-item navigation is replaced by a 4-item navigation (Section 4.2). All other prior implementations remain valid unless explicitly changed here.
+
 ---
 
 ## 2. Market Context & Research Findings
@@ -40,19 +48,25 @@ This document covers three parallel workstreams:
 
 **Phase 2 expansion**: ICSE private schools (2,750 schools, higher per-student pricing at ₹1,500–3,000/student/year, more application-oriented papers). Phase 3: regional language state boards (technically harder; requires multilingual OCR pipelines).
 
+> **Pricing note**: The ₹500–1,000/student/year figure used throughout this document applies to the CBSE beachhead only. ICSE Phase 2 pricing (₹1,500–3,000/student/year) reflects those schools' higher parent tuition fees and willingness to pay. Sales deck Slide 8 should present CBSE pricing for CBSE audiences and ICSE pricing for ICSE audiences — not a single blended figure.
+
+> **Market size sources**: The 5,000–8,000 school estimate is derived from CBSE's published school count (~28,960 affiliated schools nationwide as of Jan 2024) filtered to Tier 1 cities (Delhi NCR, Mumbai, Bangalore, Hyderabad, Pune account for approximately 20–25% of CBSE private schools). The 800–2,500 students/school range is from UDISE+ 2022–23 data for urban private unaided schools.
+
 ### 2.2 Competitive Landscape
 
 | Player | Grading Capability | Student Learning | India K-12 Focus | Pricing |
 |---|---|---|---|---|
 | Gradescope (Turnitin) | ★★★★★ | ✗ | ✗ (HE/Western) | Too high for India K-12 |
 | Eklavvya | ★★★★ | ✗ | ✗ (HE focus) | Enterprise/custom |
-| Chanakya AI | ★★★ | ✗ | ✓ | Early stage |
+| Chanakya AI | ★★★ | ✗ | ✓ | Early stage, no public pricing |
 | Embibe | ✗ | ★★★★★ | Partial (exam prep) | B2C model |
 | Extramarks | ★★ | ★★★ | ✓ | Hardware bundle |
 | Google Classroom | ✗ | ✗ | Partial | Free (no moat) |
 | **MARK AI** | **★★★★★** | **★★★★★** | **✓** | **₹500–1,000/student/yr** |
 
 **The PMF gap**: No product in India closes the loop between grading and personalised student learning at school-affordable pricing. MARK AI owns the upper-right quadrant of the competitive map (high grading + high learning).
+
+**Head-to-head vs Chanakya AI** (the closest direct Indian K-12 competitor): Chanakya AI does CBSE/ICSE worksheet generation and basic handwritten answer grading. It has no student-facing learning features, no diagnostic error classification (concept/calculation/keyword), no personalised recovery path, and no parent portal. MARK AI's differentiation is the full loop — grading is only the first stage. When a sales conversation raises Chanakya AI, the response is: "They grade. We grade, diagnose, and recover."
 
 ### 2.3 Key Market Tailwinds
 
@@ -100,7 +114,7 @@ Teacher saves          Principal sees           Scores improve
 - One platform replaces 3 tools (grading, analytics, learning)
 
 **For the Teacher (decision influencer)**
-- Grade 40 answer sheets in 20 minutes, not 8 hours
+- Grade 40 answer sheets in 20 minutes, not 8 hours (based on ~12 min/sheet manual average vs AI-assisted review at ~30 sec/sheet)
 - AI suggests marks — teacher reviews and approves (positioned as assistant, not replacement)
 - Feedback comments auto-generated per student, ready to share with parents
 
@@ -128,7 +142,7 @@ Teacher saves          Principal sees           Scores improve
 
 ### 4.2 Navigation Restructure
 
-**Current (8 items)**: Dashboard · AI Guide · Performance · Planner · Study · Vault · Flashcards · Analytics
+**Current (6 items, live in `components/layout/student-topbar.tsx` `NAV_ITEMS`)**: Dashboard · AI Guide · Performance · Flashcards · Planner · Vault
 
 **Proposed (4 items)**:
 | Nav Item | What It Contains |
@@ -139,6 +153,8 @@ Teacher saves          Principal sees           Scores improve
 | **Results** | Performance analytics + exam history — replaces Performance + Analytics |
 
 Rationale: Planner and Vault are functionally part of the subject workflow. Flashcards and AI Guide are both study tools. Performance and Analytics overlap significantly. Consolidating gives students a mental model that matches the actual loop.
+
+**Responsive behaviour**: The 3-column dashboard layout collapses to a single column below 768px, rendering in order: Today's Focus → Subjects → Pending Tasks → Upcoming Exam Alert → AI Daily Brief → Recent Results. The nav collapses to a bottom tab bar on mobile (4 tabs).
 
 ### 4.3 Student Dashboard Redesign
 
@@ -175,14 +191,16 @@ Rationale: Planner and Vault are functionally part of the subject workflow. Flas
 └─────────────────┴──────────────────────────────┴──────────────────┘
 ```
 
-**Key changes from current:**
-- Subject carousel (horizontal scroll) → subject list with colour-coded status labels
+**Key changes from current (superseding prior specs):**
+- **`SubjectCarousel` with circular progress rings is deprecated.** The component (`components/student-dashboard/subject-carousel.tsx`) is replaced by a `SubjectStatusList` component in the left column. The circular ring visual is removed; status labels replace it (see Section 4.4). This reverses the carousel approach from `2026-03-06-student-dashboard-subjects-design.md`.
+- Subject carousel (horizontal scroll) → subject status list with colour-coded labels
 - Study Process Chart → removed from dashboard (lives in Results)
 - Recent Results (3 items, right column) → moved to right sidebar (2 items only)
 - Mark Recovery Widget → merged into AI Daily Brief
 - Active Sessions Widget → removed from dashboard (lives in Study nav)
 - Assistant Widget → removed as separate section (replaced by Today's Focus card)
 - `avgScore` default of 72 removed — new users see explicit empty state
+- `monthlyActivity` formula removed — it uses `avgScore` as input and produces misleading values for new users; remove entirely from `app/student/dashboard/page.tsx`
 
 ### 4.4 Subject Status Signals
 
@@ -195,7 +213,7 @@ Replace circular progress rings with clear status labels:
 | On track | avgScore ≥ 70% | Green `#22c55e` | `✓ {score}% · on track` |
 | No data | No graded exams yet | Muted | `No exams yet` |
 
-### 4.5 AI Guide Consolidation
+### 4.5 AI Guide Consolidation & Today's Focus Logic
 
 **Current**: 4 entry points (dashboard widget, `/student/ai-guide` list, subject detail right column, "Study This" button on results). Each creates a session differently; student doesn't know if they're continuing or starting new.
 
@@ -206,6 +224,18 @@ Replace circular progress rings with clear status labels:
 - "Study This" button on results → redirects to Study nav, pre-selecting that exam's session if it exists
 
 One session model. One list. Context-filtered views, not separate flows.
+
+**Today's Focus selection logic** (server-side, runs on dashboard load):
+
+Priority order — first matching rule wins:
+
+1. **Exam in ≤ 7 days**: Pick the subject of the nearest upcoming exam. Session title: "Prepare for {exam_name}". CTA: "Start prep session →"
+2. **Recent low-scoring exam** (score < 65%, graded in last 14 days): Pick the subject with the lowest recent exam score that has no AI Guide session in the last 7 days. Session title: "Review: {worst error area} in {subject}". CTA: "Start recovery session →"
+3. **Pending task overdue** (due_date passed, status = pending): Pick the subject of the oldest overdue task. CTA: "Catch up on {subject} →"
+4. **Most-studied subject** (highest session count this week): Suggest continuing momentum. CTA: "Continue {subject} →"
+5. **No data / new student**: Show empty state ("Complete your first exam to unlock personalised recommendations") — no AI call made.
+
+Rules 1–4 read from existing Supabase data (no new AI call required). Only when the student taps "Start Session" does an AI Guide session get created or resumed. This keeps dashboard load fast and avoids unnecessary AI calls.
 
 ### 4.6 Empty States
 
@@ -222,6 +252,10 @@ All pages must show honest, actionable empty states when no data exists:
 Remove all fallback defaults: `avgScore = 72`, `monthlyActivity` formula, and static chart placeholders must not render for users with zero data.
 
 ### 4.7 Teacher Dashboard Additions (for institutional pitch)
+
+**Route**: `/dashboard/class/[classId]` — new page extending the existing teacher dashboard at `/dashboard/*`. Access control: teacher role only (same auth guard as existing dashboard routes). The panel is surfaced as a new nav item "Class Insights" in the teacher sidebar (`components/layout/sidebar-navigation.tsx`).
+
+**Component**: `ClassInsightsPanel` — new component at `components/dashboard/class-insights-panel.tsx`. Data fetched server-side from existing `answer_sheets` + `feedback_analysis` tables; no new tables required.
 
 The teacher/principal dashboard needs a **class-wide insights panel** to support the institutional pitch:
 
@@ -276,9 +310,9 @@ This panel is what a principal sees when they log into the dashboard — it surf
 | 1 | The Problem | Teacher grading overload. Student score stagnation. The feedback that comes too late. |
 | 2 | Market Timing | CBSE OSM 2026 rollout. NEP 2020 PARAKH mandate. The window is now. |
 | 3 | The Full Loop | Grade → Diagnose → Recover diagram. Why doing only one step doesn't work. |
-| 4 | Teacher Experience | Screenshots: upload → AI grades → review → publish. 20 min not 8 hours. |
-| 5 | Student Experience | Screenshots: personalised study guide, error recovery, AI Guide session. |
-| 6 | Principal Dashboard | Screenshots: class-wide analytics, at-risk students, error breakdown. |
+| 4 | Teacher Experience | Screenshots: upload → AI grades → review → publish. 20 min not 8 hours. **⚠ Blocked on Phase 1 delivery — use existing grading flow screenshots until redesign ships.** |
+| 5 | Student Experience | Screenshots: personalised study guide, error recovery, AI Guide session. **⚠ Blocked on Phase 1 delivery — placeholder wireframes until new dashboard ships.** |
+| 6 | Principal Dashboard | Screenshots: class-wide analytics, at-risk students, error breakdown. **⚠ Blocked on Phase 2 delivery — `ClassInsightsPanel` must ship before this slide can be finalised.** |
 | 7 | Competitive Landscape | Positioning map. "Gradescope grades. Embibe teaches. MARK AI does both." |
 | 8 | Pricing | ₹500–1,000/student/year. School-wide licence. Less than one hour of private tutoring. |
 | 9 | Data Security | DPDP Act compliance. Student data stays in India. No third-party sharing. |
@@ -303,12 +337,12 @@ Sub-line: *Built for CBSE schools · NEP 2020 aligned · DPDP compliant · ₹50
 ## 6. Implementation Priority
 
 ### Phase 1 — UI/UX (Weeks 1–3)
-1. Collapse navigation from 8 to 4 items
-2. Rebuild student dashboard with 3-column layout and Today's Focus hero card
-3. Replace subject carousel with subject status list (red/amber/green signals)
-4. Remove all fake default data (avgScore=72, static chart fallbacks)
-5. Add honest empty states across all student pages
-6. Consolidate AI Guide entry points to one primary + one secondary
+1. Collapse navigation from 6 to 4 items — update `NAV_ITEMS` in `components/layout/student-topbar.tsx`
+2. Rebuild student dashboard with 3-column layout and Today's Focus hero card (static rule-based logic, no AI call — see Section 4.5)
+3. Replace `SubjectCarousel` with `SubjectStatusList` component (red/amber/green status labels — Section 4.4 supersedes prior carousel design)
+4. Remove all fake default data: `avgScore = 72` fallback, `monthlyActivity` formula, and static chart placeholders from `app/student/dashboard/page.tsx`
+5. Add honest empty states across all student pages (Section 4.6 table)
+6. Consolidate AI Guide entry points to one primary (Today's Focus) + one secondary (Study nav)
 
 ### Phase 2 — Teacher/Principal Dashboard (Weeks 4–5)
 7. Add class-wide error breakdown panel to teacher dashboard
