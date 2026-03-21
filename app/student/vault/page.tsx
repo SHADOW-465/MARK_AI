@@ -7,7 +7,9 @@ export default async function LearningLibrary() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) return <div>Unauthorized</div>
+    if (!user) return (
+        <div className="p-8 text-center text-muted-foreground">Please log in to continue.</div>
+    )
 
     const { data: student } = await supabase
         .from("students")
@@ -15,7 +17,9 @@ export default async function LearningLibrary() {
         .eq("user_id", user.id)
         .single()
 
-    if (!student) return <div>Student not found</div>
+    if (!student) return (
+        <div className="p-8 text-center text-muted-foreground">Student profile not found. Ask your teacher to add you.</div>
+    )
 
     // 1. Fetch Tasks for Kanban (Missions)
     const { data: tasks } = await supabase

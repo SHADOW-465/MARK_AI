@@ -1,13 +1,15 @@
 import { createClient } from "@/lib/supabase/server"
 import { GlassCard } from "@/components/ui/glass-card"
 import { FlashcardDeck } from "@/components/student/flashcard-deck"
-import { Brain, Zap, Clock, History, Plus } from "lucide-react"
+import { Brain, Zap, Clock, History, Plus, BookOpen } from "lucide-react"
 import { CustomCardDialog } from "@/components/student/custom-card-dialog"
 
 export default async function FlashcardStudio() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return <div>Unauthorized</div>
+    if (!user) return (
+        <div className="p-8 text-center text-muted-foreground">Please log in to continue.</div>
+    )
 
     const { data: student } = await supabase
         .from("students")
@@ -15,7 +17,9 @@ export default async function FlashcardStudio() {
         .eq("user_id", user.id)
         .single()
 
-    if (!student) return <div>Student not found</div>
+    if (!student) return (
+        <div className="p-8 text-center text-muted-foreground">Student profile not found. Ask your teacher to add you.</div>
+    )
 
     // Fetch Cards due for review
     const { data: cards } = await supabase
@@ -78,7 +82,18 @@ export default async function FlashcardStudio() {
 
                 {/* Main Deck View */}
                 <div className="lg:col-span-3 space-y-6">
-                    <FlashcardDeck initialCards={cards || []} studentId={student.id} />
+                    {cards && cards.length === 0 ? (
+                        <GlassCard className="min-h-[300px] flex flex-col items-center justify-center text-center p-10 border-dashed">
+                            <BookOpen size={40} className="text-muted-foreground mb-4 opacity-30" />
+                            <h3 className="text-lg font-bold mb-2">No flashcards yet</h3>
+                            <p className="text-sm text-muted-foreground max-w-xs">
+                                Flashcards are generated automatically after your first exam is graded.
+                                You can also create your own cards using the button above.
+                            </p>
+                        </GlassCard>
+                    ) : (
+                        <FlashcardDeck initialCards={cards || []} studentId={student.id} />
+                    )}
                 </div>
             </div>
         </div>
