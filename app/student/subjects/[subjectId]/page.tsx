@@ -202,7 +202,7 @@ export default async function SubjectDetailPage({
               <StudyProgressChart data={chartData} />
             </GlassCard>
           )}
-          <SubjectHistoryPanel exams={examHistory as any} />
+          <SubjectHistoryPanel exams={examHistory as any} studentId={student.id} />
         </div>
 
         {/* Right: AI Guide */}

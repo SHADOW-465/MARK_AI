@@ -1,5 +1,5 @@
-import Link from "next/link"
 import { GlassCard } from "@/components/ui/glass-card"
+import { StudyThisButton } from "@/components/student/study-this-button"
 import { cn } from "@/lib/utils"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 
@@ -11,7 +11,7 @@ interface ExamResult {
   feedback_analysis: { exam_name: string; exam_subject: string; exam_total_marks: number }[] | null
 }
 
-export function SubjectHistoryPanel({ exams }: { exams: ExamResult[] }) {
+export function SubjectHistoryPanel({ exams, studentId }: { exams: ExamResult[]; studentId: string }) {
   if (exams.length === 0) {
     return (
       <GlassCard className="p-5">
@@ -65,10 +65,9 @@ export function SubjectHistoryPanel({ exams }: { exams: ExamResult[] }) {
           const trend = prev ? r.percentage - prev.percentage : null
 
           return (
-            <Link
+            <div
               key={r.id}
-              href={`/student/ai-guide?examId=${r.id}`}
-              className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3 hover:border-primary/40 transition-colors"
+              className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3"
             >
               <div>
                 <p className="text-sm font-semibold text-foreground line-clamp-1">{r.title}</p>
@@ -76,7 +75,7 @@ export function SubjectHistoryPanel({ exams }: { exams: ExamResult[] }) {
                   {new Date(r.date).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {trend !== null && (
                   <span className={cn("text-xs", trend > 0 ? "text-emerald-500" : trend < 0 ? "text-red-500" : "text-muted-foreground")}>
                     {trend > 0 ? <TrendingUp size={12} /> : trend < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
@@ -90,8 +89,13 @@ export function SubjectHistoryPanel({ exams }: { exams: ExamResult[] }) {
                 )}>
                   {r.percentage}%
                 </span>
+                <StudyThisButton
+                  examId={r.id}
+                  examName={r.title}
+                  studentId={studentId}
+                />
               </div>
-            </Link>
+            </div>
           )
         })}
       </div>
