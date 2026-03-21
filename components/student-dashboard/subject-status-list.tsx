@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { Plus, ArrowUpRight, AlertTriangle, CheckCircle2 } from "lucide-react"
 import React from "react"
 
-interface Subject {
+export interface Subject {
   id: string
   name: string
   color: string
