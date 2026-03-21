@@ -16,12 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const NAV_ITEMS = [
-    { href: "/student/dashboard", label: "Dashboard" },
-    { href: "/student/ai-guide", label: "AI Guide" },
-    { href: "/student/performance", label: "Performance" },
-    { href: "/student/flashcards", label: "Flashcards" },
-    { href: "/student/planner", label: "Planner" },
-    { href: "/student/vault", label: "Vault" },
+    { href: "/student/dashboard", label: "Home" },
+    { href: "/student/subjects", label: "Subjects" },
+    { href: "/student/ai-guide", label: "Study" },
+    { href: "/student/performance", label: "Results" },
 ]
 
 export function StudentTopbar() {
