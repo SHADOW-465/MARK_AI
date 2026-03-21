@@ -1,7 +1,8 @@
 // components/student-dashboard/subject-status-list.tsx
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Plus } from "lucide-react"
+import { Plus, ArrowUpRight, AlertTriangle, CheckCircle2 } from "lucide-react"
+import React from "react"
 
 interface Subject {
   id: string
@@ -20,11 +21,11 @@ interface SubjectStatusListProps {
 
 function getStatus(subject: Subject): {
   label: string
-  colour: string
-  icon: string
+  color: string
+  icon: React.ElementType | null
 } {
   if (subject.avgScore === 0 && subject.totalTasks === 0) {
-    return { label: "No exams yet", colour: "text-muted-foreground", icon: "" }
+    return { label: "No exams yet", color: "text-muted-foreground", icon: null }
   }
   const improved =
     subject.previousAvgScore !== undefined &&
@@ -32,28 +33,29 @@ function getStatus(subject: Subject): {
   if (improved) {
     return {
       label: `${subject.avgScore}% · improving`,
-      colour: "text-amber-500",
-      icon: "↗",
+      color: "text-amber-500",
+      icon: ArrowUpRight,
     }
   }
   if (subject.avgScore < 65 && subject.avgScore > 0) {
     return {
       label: `${subject.avgScore}% · needs focus`,
-      colour: "text-red-500",
-      icon: "⚠",
+      color: "text-red-500",
+      icon: AlertTriangle,
     }
   }
-  if (subject.avgScore >= 70) {
+  // Fixed: threshold lowered from >= 70 to >= 65 to eliminate the 65–69 score band gap
+  if (subject.avgScore >= 65) {
     return {
       label: `${subject.avgScore}% · on track`,
-      colour: "text-emerald-500",
-      icon: "✓",
+      color: "text-emerald-500",
+      icon: CheckCircle2,
     }
   }
   return {
     label: `${subject.avgScore}%`,
-    colour: "text-muted-foreground",
-    icon: "",
+    color: "text-muted-foreground",
+    icon: null,
   }
 }
 
@@ -68,8 +70,10 @@ export function SubjectStatusList({ subjects }: SubjectStatusListProps) {
 
   return (
     <div className="space-y-2">
+      {/* TODO: pass previousAvgScore from dashboard page to enable trend detection */}
       {subjects.map((subject) => {
         const status = getStatus(subject)
+        const StatusIcon = status.icon
         return (
           <Link
             key={subject.id}
@@ -85,14 +89,15 @@ export function SubjectStatusList({ subjects }: SubjectStatusListProps) {
                 {subject.name}
               </span>
             </div>
-            <span className={cn("text-xs font-medium", status.colour)}>
-              {status.icon && <span className="mr-1">{status.icon}</span>}
+            <span className={cn("text-xs font-medium flex items-center gap-1", status.color)}>
+              {StatusIcon && <StatusIcon size={12} />}
               {status.label}
             </span>
           </Link>
         )
       })}
 
+      {/* Navigates to the subjects index page where the create affordance lives */}
       <Link
         href="/student/subjects"
         className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
