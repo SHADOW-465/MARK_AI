@@ -6,7 +6,12 @@
       "Bash(cd:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(find /c/Users/acer/Documents/projects/MARK_AI -name .env* -type f)",
+      "Bash(bash \"C:\\\\Users\\\\acer\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.0.5\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"C:\\\\Users\\\\acer\\\\Documents\\\\projects\\\\MARK_AI\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx next:*)"
     ]
   }
 }
