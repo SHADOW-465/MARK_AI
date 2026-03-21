@@ -15,6 +15,7 @@ import {
   BookOpen,
   BarChart2,
   Brain,
+  BarChart3,
 } from "lucide-react"
 
 const TEACHER_NAV = [
@@ -22,6 +23,7 @@ const TEACHER_NAV = [
   { href: "/dashboard/exams", label: "Exams", icon: FileText, matchPrefix: true },
   { href: "/dashboard/grading", label: "Grading", icon: CheckCircle, matchPrefix: true },
   { href: "/dashboard/students", label: "Students", icon: Users, matchPrefix: true },
+  { href: "/dashboard/class", label: "Class Insights", icon: BarChart3, matchPrefix: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, matchPrefix: true },
 ]
 
